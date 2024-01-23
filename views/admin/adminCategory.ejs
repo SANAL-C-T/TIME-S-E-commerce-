@@ -1,0 +1,33 @@
+<%- include("../partials/adminheader.ejs") %>
+<div class="container">
+    <div class="mt-4">
+        <a href="/admin/editProduct">
+            <button>EDIT CATEGORY</button>
+        </a>
+        <a href="/admin/deleteProduct">
+            <button class="mx-2">DELETE CATEGORY</button>
+        </a>
+    </div>
+
+    <h2 class="mt-4 mb-4">Category detail add</h2>
+
+    <form method="post" action="/admin/category">
+        <div class="mb-3">
+            <label for="categoryName" class="form-label">Category Name</label>
+            <input type="text" class="form-control" id="categoryName" name="categoryName" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="Categorystatus" class="form-label">Category status</label>
+            <select class="form-select" id="Categorystatus" name="Categorystatus" required>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add Category</button>
+    </form>
+</div>
+
+
+<%- include("../partials/adminfooter.ejs") %>

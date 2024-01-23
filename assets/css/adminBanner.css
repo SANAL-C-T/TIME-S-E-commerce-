@@ -1,0 +1,59 @@
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+button{
+    border-style: hidden;
+    padding: 4px;
+    border: solid black 1.5px;
+}
+
+
+#b1{
+    background-color: rgb(253, 157, 4);
+
+}
+#b1:hover{
+    background-color: #f7f322;
+}
+
+#b2{
+    background-color: rgb(253, 157, 4);
+}
+#b2:hover{
+    background-color: #f7f322;
+}
+
+.sideMenu{
+    background-color: #fcfafa;
+
+    width: max-content;
+
+}
+
+
+.sideMenu a{
+    display: block;
+    color: black;
+    background-color: rgb(228, 228, 222);
+    padding: 10px;
+    text-decoration: none;
+    
+}
+.sideMenu a:hover{
+    background-color: rgb(246, 177, 3);
+    border: solid black 1.5px;
+
+}
+
+
+
+
+
+.banner img{
+    border: solid black 1.5px;
+    border-radius: 5px;
+}

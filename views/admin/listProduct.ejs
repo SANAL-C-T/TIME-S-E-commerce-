@@ -1,0 +1,107 @@
+<%- include("../partials/adminheader.ejs") %>
+
+
+
+
+<div class="container">
+<div class="mt-4 ">
+
+    <a href="/admin/products">
+    <button>ADD PRODUCT</button></a>
+    <a href="/admin/deleteProduct">
+    <button class="mx-2 ">DELETE PRODUCT</button></a>
+
+</div>
+   
+
+
+<!-- 
+
+    <h2 class="mt-4 mb-4">Edit product details </h2>
+
+    <form method="post" action="/admin/editProducts" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="productName" class="form-label">Product Name</label>
+            <input type="text" class="form-control" id="productName" name="productName" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="productCategory" class="form-label">Product Category</label>
+            <input type="text" class="form-control" id="productCategory" name="productCategory" required>
+        </div>
+
+
+        <div class="mb-3">
+            <label for="productDescription" class="form-label">Product Description</label>
+            <input type="text" class="form-control" id="productDescription" name="productDescription" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="productPrice" class="form-label">Product Price</label>
+            <input type="tel" class="form-control" id="productPrice" name="productPrice" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="addedDate" class="form-label">Product Added on</label>
+            <input type="date" class="form-control" id="addedDate" name="addedDate" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="productsize" class="form-label">Size</label>
+            <input type="tel" class="form-control" id="productsize" name="productsize" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="productImage" class="form-label">Product Image</label>
+            <input type="file" class="form-control" id="productImage" name="productImage" accept="image/*" multiple required>
+        
+        
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+</div> -->
+
+
+<h1><%= urlData.pageTitle %></h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Stock</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Price</th>
+                <!-- Add other product details as needed -->
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% urlData.pro.forEach(product => { %>
+                <tr>
+                    <td><%= product.
+                        productName %></td>
+                    <td><%= product.productDescription %></td>
+                    <td><%= product.stockCount %></td>
+                    <td><%= product.productCategory %></td>
+                    <td><%= product.Status %></td>
+                    <td><%= product.
+                        productPrice %></td>
+                    <!-- Add other product details as needed -->
+                    <td>
+                        <!-- Add links or buttons for edit, delete, etc. -->
+                        <a href="/admin/editProduct/<%= product._id %>">Edit</a>
+                        <!-- Add other actions as needed -->
+                    </td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+
+
+
+
+
+<%- include("../partials/adminfooter.ejs") %>

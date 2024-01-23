@@ -1,0 +1,85 @@
+<%- include("../partials/adminheader.ejs") %>
+
+
+
+
+<div class="container">
+<div class="mt-4 ">
+
+    <a href="/admin/listProduct">
+    <button>LIST PRODUCT</button></a>
+    
+
+</div>
+   
+
+
+
+
+    <h2 class="mt-4 mb-4">Product detail upload</h2>
+
+    <form method="post" action="/admin/products" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="productName" class="form-label">Product Name</label>
+            <input type="text" class="form-control" id="productName" name="productName" required>
+        </div>
+
+      
+
+        <div class="mb-3">
+            <label for="productCategory" class="form-label">Product Category</label>
+            <select class="form-select" id="productCategory" name="productCategory" required>
+                <option value="" disabled selected>Select a category</option>
+                <% urlData.cat.forEach(category => { %>
+                    <option value="<%= category._id %>"><%= category.categoryName %></option>
+                <% }) %>
+            </select>
+        </div>
+        
+
+        <div class="mb-3">
+            <label for="productDescription" class="form-label">Product Description</label>
+            <input type="text" class="form-control" id="productDescription" name="productDescription" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="productPrice" class="form-label">Product Price</label>
+            <input type="tel" class="form-control" id="productPrice" name="productPrice" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="addedDate" class="form-label">Product Added on</label>
+            <input type="date" class="form-control" id="addedDate" name="addedDate" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="productsize" class="form-label">Size</label>
+            <input type="tel" class="form-control" id="productsize" name="productsize" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="productcolour" class="form-label">Colour</label>
+            <input type="tel" class="form-control" id="productcolour" name="productcolour" required>
+        </div>
+        <div class="mb-3">
+            <label for="stockCount" class="form-label">stock Count</label>
+            <input type="tel" class="form-control" id="stockCount" name="stockCount" required>
+        </div>
+        <div class="mb-3">
+            <label for="productImage" class="form-label">Product Image</label>
+            <input type="file" class="form-control" id="productImage" name="productImage" accept="image/*" multiple required>
+        
+        
+        </div>
+
+        <button type="submit" class="btn btn-primary">Upload Product</button>
+    </form>
+</div>
+
+
+
+
+
+
+
+<%- include("../partials/adminfooter.ejs") %>

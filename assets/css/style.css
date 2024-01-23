@@ -1,0 +1,26 @@
+body{
+    background-color: rgb(254, 255, 255);
+}
+
+
+.form-control::placeholder {
+    color: white;
+
+  }
+  .banner0{
+    height:500px;
+   
+}
+
+
+.onePIC0{
+    height: 100%;
+    object-fit: cover;
+   
+  
+}
+.bannerCaption0{
+color: rgb(14, 210, 145);
+font-weight: bolder;
+font-family: sans-serif;
+}

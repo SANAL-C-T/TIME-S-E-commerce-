@@ -3,79 +3,132 @@
 
 
 
-<div class="container">
-<div class="mt-4 ">
-
-    <a href="/admin/listProduct">
-    <button>LIST PRODUCT</button></a>
-    <a href="/admin/deleteProduct">
-    <button class="mx-2 ">DELETE PRODUCT</button></a>
-
-</div>
-   
 
 
 
 
-    <h2 class="mt-4 mb-4">Product detail upload</h2>
-
-    <form method="post" action="/admin/products" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label for="productName" class="form-label">Product Name</label>
-            <input type="text" class="form-control" id="productName" name="productName" required>
+    <div class="container">
+        <div class="mt-4">
+            <a href="/admin/listProduct">
+                <button>LIST PRODUCT</button>
+            </a>
         </div>
 
-      
+        <h2 class="mt-4 mb-4">Product detail upload</h2>
 
-        <div class="mb-3">
-            <label for="productCategory" class="form-label">Product Category</label>
-            <select class="form-select" id="productCategory" name="productCategory" required>
-                <option value="" disabled selected>Select a category</option>
-                <% urlData.cat.forEach(category => { %>
-                    <option value="<%= category._id %>"><%= category.categoryName %></option>
-                <% }) %>
-            </select>
-        </div>
-        
 
-        <div class="mb-3">
-            <label for="productDescription" class="form-label">Product Description</label>
-            <input type="text" class="form-control" id="productDescription" name="productDescription" required>
-        </div>
 
-        <div class="mb-3">
-            <label for="productPrice" class="form-label">Product Price</label>
-            <input type="tel" class="form-control" id="productPrice" name="productPrice" required>
-        </div>
 
-        <div class="mb-3">
-            <label for="addedDate" class="form-label">Product Added on</label>
-            <input type="date" class="form-control" id="addedDate" name="addedDate" required>
-        </div>
 
-        <div class="mb-3">
-            <label for="productsize" class="form-label">Size</label>
-            <input type="tel" class="form-control" id="productsize" name="productsize" required>
-        </div>
+        <form>
+            <div class="mb-3">
+                <label for="productName" class="form-label">Product Name</label>
+                <input type="text" class="form-control" id="productName" name="productName" required>
+            </div>
 
-        <div class="mb-3">
-            <label for="productcolour" class="form-label">Colour</label>
-            <input type="tel" class="form-control" id="productcolour" name="productcolour" required>
-        </div>
-        <div class="mb-3">
-            <label for="stockCount" class="form-label">stock Count</label>
-            <input type="tel" class="form-control" id="stockCount" name="stockCount" required>
-        </div>
-        <div class="mb-3">
-            <label for="productImage" class="form-label">Product Image</label>
-            <input type="file" class="form-control" id="productImage" name="productImage" accept="image/*" multiple required>
-        
-        
-        </div>
+            <div class="mb-3">
+                <label for="productDescription" class="form-label">Product Description</label>
+                <input type="text" class="form-control" id="productDescription" name="productDescription" required>
+            </div>
 
-        <button type="submit" class="btn btn-primary">Upload Product</button>
+            <div class="d-flex justify-content-between">
+                <div class="mb-3">
+                    <label for="productPrice" class="form-label">Product Price</label>
+                    <input type="tel" class="form-control" id="productPrice" name="productPrice" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="productCategory" class="form-label">Product Category</label>
+                    <select class="form-select" id="productCategory" name="productCategory" required>
+                        <option value="" disabled selected>Select a category</option>
+                        <% urlData.cat.forEach(category=> { %>
+                            <option value="<%= category._id %>">
+                                <%= category.categoryName %>
+                            </option>
+                            <% }) %>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="addedDate" class="form-label">Product Added on</label>
+                    <input type="date" class="form-control" id="addedDate" name="addedDate" required>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <div class="mb-3">
+                    <label for="productsize" class="form-label">Size</label>
+                    <input type="tel" class="form-control" id="productsize" name="productsize" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="productcolour" class="form-label">Colour</label>
+                    <input type="tel" class="form-control" id="productcolour" name="productcolour" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="stockCount" class="form-label">Stock Count</label>
+                    <input type="tel" class="form-control" id="stockCount" name="stockCount" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="productImage" class="form-label">Product Image</label>
+                <div class="container mt-3 w-100">
+                    <div class="card shadow-sw w-100">
+                        <div class="card-header d-flex justify-content-between">
+                            <h4>Selected images</h4>
+                            <div class="fors" id="imageForm">
+                                <input type="file" name="productImage" id="image" accept="image/*" class="d-none"
+                                    multiple onchange="image_select()">
+                                <button class="btn btn-sm btn-primary" type="button"
+                                    onclick="document.getElementById('image').click()">Select Image</button>
+                            </div>
+                        </div>
+                        <div class="card-body d-flex  justify-content-start" id="container"></div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+            <button type="button" class="btn btn-primary" onclick="submitForm()">Submit</button>
+
+
+    </div>
+
     </form>
-</div>
+
+    <!-- Modal for Crop -->
+
+
+
+
+
+    <div class="modal fade" id="cropModal" tabindex="-1" role="dialog" aria-labelledby="cropModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog custom-modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cropModalLabel">Crop Image</h5>
+                </div>
+                <div class="modal-body">
+                    <!-- Image container for Cropper.js -->
+                    <div class="image-container">
+                        <img src="" id="cropImage" class="img-fluid custom-image">
+                    </div>
+                    <button id="cropButton" class="btn btn-success">CROP</button>
+                    <img src="" id="outputimg" class="mx-5">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success">SAVE</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 
@@ -83,4 +136,250 @@
 
 
 
-<%- include("../partials/adminfooter.ejs") %>
+
+    <%- include("../partials/adminfooter.ejs") %>
+
+        <script>
+            function submitForm() {
+
+                // Create a FormData object to store form data, including files
+                const formData = new FormData();
+
+                // Append form fields to the FormData object
+                formData.append('productName', document.getElementById('productName').value);
+                formData.append('productDescription', document.getElementById('productDescription').value);
+                formData.append('productPrice', document.getElementById('productPrice').value);
+                formData.append('productCategory', document.getElementById('productCategory').value);
+                formData.append('addedDate', document.getElementById('addedDate').value);
+                formData.append('productsize', document.getElementById('productsize').value);
+                formData.append('productcolour', document.getElementById('productcolour').value);
+                formData.append('stockCount', document.getElementById('stockCount').value);
+
+
+                images.forEach((image, index) => {
+                    formData.append('productImages[]', image.file);
+                });
+
+
+                //fetch request to submit the form data to backend.
+                fetch("/admin/products", {
+                    method: 'POST',
+                    body: formData,
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Form submitted successfully:', data);
+
+                    })
+                    .catch(error => console.error('Error submitting form:', error.message));
+            }
+
+            let images = [];
+
+            function image_select() {
+                var image = document.getElementById("image").files;
+
+                // Add new images
+                for (let i = 0; i < image.length; i++) {
+                    if (checkDupli(image[i].name)) {
+                        images.push({
+                            "name": image[i].name,
+                            "url": URL.createObjectURL(image[i]),
+                            "file": image[i]
+                        });
+                    } else {
+                        alert("Image already exists");
+                    }
+                }
+
+                // Update the display
+                document.getElementById("container").innerHTML = image_show();
+            }
+
+
+            function image_show() {
+                let image = '';
+                images.forEach((i, index) => {
+                    image += `
+                <div class="image_container d-flex justify-content-center position-relative">
+                    <img src="${i.url}" class="img-container">
+                    <span class="position-absolute" onclick="delete_image(${index})">&times;</span>
+                    <button class="btn btn-primary crop-button" data-toggle="modal" data-target="#cropModal" onclick="openCropModal(${index})">Crop</button>
+
+                </div>`;
+                });
+                return image;
+            }
+
+
+
+
+            function delete_image(index) {
+                images.splice(index, 1);
+
+                // Update the display
+                document.getElementById("container").innerHTML = image_show();
+            }
+
+            function checkDupli(name) {
+                return !images.some(image => image.name === name);
+            }
+
+
+
+
+
+
+
+            //crop function...........................................
+            function openCropModal(index) {
+                // Declare the cropper variable
+                let cropper;
+            
+                // Create a unique ID for each modal
+                const modalId = `cropModal-${index}`;
+            
+                // Create the modal structure
+                const modalHtml = `
+                  <div class="modal fade" id="${modalId}" tabindex="-1" role="dialog" aria-labelledby="cropModalLabel-${index}" aria-hidden="true">
+                      <div class="modal-dialog custom-modal-dialog" role="document">
+                          <div class="modal-content">
+                              <div class="modal-header">
+                                  <h5 class="modal-title" id="cropModalLabel-${index}">Crop Image</h5>
+                              </div>
+                              <div class="modal-body">
+                                  <!-- Image container for Cropper.js -->
+                                  <div class="image-container">
+                                      <img src="" id="cropImage-${index}" class="img-fluid custom-image">
+                                  </div>
+                                  <button id="cropButton-${index}" class="btn btn-success">CROP</button>
+                                  <img src="" id="outputimg-${index}" class="mx-5">
+                              </div>
+                              <div class="modal-footer">
+                                  <button type="button" class="btn btn-success" id="saveButton-${index}">SAVE</button>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                `;
+            
+                // Append the modal HTML to the body
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+                // Get the modal elements
+                const modal = $(`#${modalId}`);
+                const modalImage = document.getElementById(`cropImage-${index}`);
+                const cropButton = document.getElementById(`cropButton-${index}`);
+                const outputImg = document.getElementById(`outputimg-${index}`);
+                const saveButton = document.getElementById(`saveButton-${index}`);
+            
+                const selectedImage = images[index];
+                modalImage.src = selectedImage.url;
+            
+                // Create a new Cropper instance when the modal is shown
+                modal.on('shown.bs.modal', function () {
+                  cropper = new Cropper(modalImage, {
+                    aspectRatio: 0,
+                    viewMode: 0
+                  });
+                });
+            
+                // Event listener for the "CROP" button
+                cropButton.addEventListener("click", function () {
+                  // Get the cropped image data URL
+                  const croppedImage = cropper.getCroppedCanvas().toDataURL("image/png");
+            
+                  // Display the cropped image
+                  outputImg.src = croppedImage;
+            
+                  // Apply CSS styles to the cropped image
+                  outputImg.style.maxWidth = "100%";
+                  outputImg.style.maxHeight = "400px";
+            
+                  // You can use the croppedImage variable for further processing or uploading
+                  console.log("Cropped Image Data URL:", croppedImage);
+                });
+            
+                // Event listener for the "SAVE" button
+                saveButton.addEventListener("click", function () {
+                  // Add your logic to save the croppedImage
+                  // For example, you might want to upload it to the server
+                  console.log("Save the cropped image:", outputImg.src);
+            
+                  // Hide the modal
+                  modal.modal('hide');
+                });
+            
+                // Show the modal
+                modal.modal('show');
+              }
+
+
+
+
+
+
+
+
+        </script>
+
+        <script src="../node_modules/./cropperjs/dist/cropper.min.js"></script>
+
+
+
+        <style>
+            .image_container {
+                height: 150px;
+                width: 200px;
+                border-radius: 6px;
+                overflow: hidden;
+                margin: 10px;
+                position: relative;
+            }
+
+            .img-container {
+                height: 100%;
+                width: 100%;
+                object-fit: contain;
+            }
+
+            .image_container span {
+                top: 2px;
+                right: 2px;
+                color: red;
+                font-size: 24px;
+                font-weight: normal;
+                cursor: pointer;
+                position: absolute;
+            }
+
+            /* Added styles for the crop button */
+            .crop-button {
+                position: absolute;
+                bottom: 5px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+
+            .modal-open {
+                overflow: auto;
+            }
+
+            /*modal width*/
+            .custom-modal-dialog {
+                max-width: auto;
+            }
+
+            /*crop image size style*/
+            .custom-image {
+                max-width: 180%;
+                max-height: 400px;
+                width: auto;
+            }
+        </style>

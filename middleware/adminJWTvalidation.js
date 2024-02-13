@@ -44,6 +44,8 @@ const haveToken1=async(req,res,next)=>{
 
 
 const haveToken2=async(req,res,next)=>{
+
+    console.log("1","2")
     try{
         console.log("jwt toke outside if")
         // console.log("in havetoken 2:",req.cookies);

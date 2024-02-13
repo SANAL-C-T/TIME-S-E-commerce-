@@ -5,7 +5,7 @@ categoryName:{
     type:String
 },
 Categorystatus:{
-    type:String
+    type:Boolean
 },
 
 })

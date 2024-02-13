@@ -10,7 +10,7 @@ const cookie=require("cookie-parser")
 
 
 server.use(express.static('assets'));
-server.use(express.static('upload'));
+server.use(express.static('upload'));// upload is the root folder, i dont need to specify the folder in any path.were the item is required from this folder.
 // configeration file should be in server.
 server.set("view engine","ejs")
 server.engine("html",require("ejs").renderFile)

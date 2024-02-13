@@ -1,85 +1,308 @@
 <%- include("../partials/adminheader.ejs") %>
 
-
-
-
 <div class="container">
-<div class="mt-4 ">
+  <div class="mt-4">
+    <a href="/admin/listProduct"> <button>LIST PRODUCT</button></a>
+  </div>
 
-    <a href="/admin/listProduct">
-    <button>LIST PRODUCT</button></a>
+  <form>
+    <div class="mb-3">
+      <label for="productName" class="form-label">Product Name</label>
+      <input
+        type="text"
+        class="form-control"
+        id="productName"
+        name="productName"
+        value="<%=urlData.proData.productName%>"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label for="productDescription" class="form-label"
+        >Product Description</label
+      >
+      <input
+        type="text"
+        class="form-control"
+        id="productDescription"
+        name="productDescription"
+        value="<%=urlData.proData. productDescription%>"
+      />
+    </div>
+
+    <div class="d-flex justify-content-between">
+      <div class="mb-3">
+        <label for="productPrice" class="form-label">Product Price</label>
+        <input
+          type="tel"
+          class="form-control"
+          id="productPrice"
+          name="productPrice"
+          value="<%=urlData.proData.productPrice%>"
+        />
+      </div>
+
+      <div class="mb-3">
+        <label for="productCategory" class="form-label">Product Category</label>
+        <select
+          class="form-select"
+          id="productCategory"
+          name="productCategory"
+          required
+        >
+          <option value="" disabled selected>Select a category</option>
+          <% urlData.cate.forEach(category => { %>
+          <option value="<%= category._id %>">
+            <%= category.categoryName %>
+          </option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="addedDate" class="form-label">Product Added on</label>
+        <input
+          type="date"
+          class="form-control"
+          id="addedDate"
+          name="addedDate"
+          value="<%=urlData.proData.addedDate%>"
+        />
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between">
+      <div class="mb-3">
+        <label for="productsize" class="form-label">Size</label>
+        <input
+          type="tel"
+          class="form-control"
+          id="productsize"
+          name="productsize"
+          value="<%=urlData.proData.productsize%>"
+        />
+      </div>
+
+      <div class="mb-3">
+        <label for="productcolour" class="form-label">Colour</label>
+        <input
+          type="tel"
+          class="form-control"
+          id="productcolour"
+          name="productcolour"
+          value="<%=urlData.proData.productcolour%>"
+        />
+      </div>
+
+      <div class="mb-3">
+        <label for="stockCount" class="form-label">Stock Count</label>
+        <input
+          type="tel"
+          class="form-control"
+          id="stockCount"
+          name="stockCount"
+          value="<%=urlData.proData.stockCount%>"
+        />
+      </div>
+    </div>
+
+    <label for="productImage" class="form-label">Product Image</label>
+    <div class="container mt-3 w-100">
+      <div class="card shadow-sw w-100 imagebox">
+        <div id="img1">
+          <img src="<%=urlData.proData.productImage[0].image1%>" />
+          <label for="image1" class="form-label m-4 text-primary">Image1</label>
+          <input
+            type="file"
+            class="form-control"
+            id="productimg1"
+            index=0
+            accept="image/*"
+            onchange="image_select(event, 'img1')"
+          />
+        </div>
+
+        <div id="img2">
+          <img src="<%=urlData.proData.productImage[0].image2%>" />
+          <label for="image2" class="form-label m-4 text-primary">Image2</label>
+          <input
+            type="file"
+            class="form-control"
+            id="productimg2"
+            index=1
+            accept="image/*"
+            onchange="image_select(event, 'img2')"
+          />
+        </div>
+
+        <div id="img3">
+          <img src="<%=urlData.proData.productImage[0].image3%>" />
+          <label for="image3" class="form-label m-4 text-primary">Image3</label>
+          <input
+            type="file"
+            class="form-control"
+            id="productimg3"
+            index=2
+            accept="image/*"
+            onchange="image_select(event, 'img3')"
+          />
+        </div>
+
+        <div id="img4">
+          <img src="<%=urlData.proData.productImage[0].image4%>" />
+          <label for="image4" class="form-label m-4 text-primary">Image4</label>
+          <input
+            type="file"
+            class="form-control"
+            id="productimg4"
+            index=3
+            accept="image/*"
+            onchange="image_select(event, 'img4')"
+          />
+        </div>
+
+        <div id="img5">
+          <img src="<%=urlData.proData.productImage[0].image5%>" />
+          <label for="image5" class="form-label m-4 text-primary">Image5</label>
+          <input
+            type="file"
+            class="form-control"
+            id="productimg5"
+            index=4
+            accept="image/*"
+            onchange="image_select(event, 'img5')"
+          />
+        </div>
+      </div>
+    </div>
+
+    <button type="button" productId="<%=urlData.proData._id%>" class="btn btn-primary" onclick="submitForm(this)">
+      Update the data
+    </button>
+  </form>
+
+  <%- include("../partials/adminfooter.ejs") %>
+
+  <script>
     
 
-</div>
-   
+    let newImage = [];
 
+    function image_select(event, id) {
+      let inputElement = event.target;
+      let imageElement = document.getElementById(id);
 
-
-
-    <h2 class="mt-4 mb-4">Product detail upload</h2>
-
-    <form method="post" action="/admin/products" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label for="productName" class="form-label">Product Name</label>
-            <input type="text" class="form-control" id="productName" name="productName" required>
-        </div>
-
+      let imgElement = document
+        .getElementById(id)
+        .getElementsByTagName("img")[0];
+      //already selected
+      
+       let index = inputElement.getAttribute("index");
       
 
-        <div class="mb-3">
-            <label for="productCategory" class="form-label">Product Category</label>
-            <select class="form-select" id="productCategory" name="productCategory" required>
-                <option value="" disabled selected>Select a category</option>
-                <% urlData.cat.forEach(category => { %>
-                    <option value="<%= category._id %>"><%= category.categoryName %></option>
-                <% }) %>
-            </select>
-        </div>
-        
+      // Get the new selected file
+      let selectedFile = inputElement.files[0];
+     
 
-        <div class="mb-3">
-            <label for="productDescription" class="form-label">Product Description</label>
-            <input type="text" class="form-control" id="productDescription" name="productDescription" required>
-        </div>
+      newImage.push({ index: index, file:selectedFile });
+      // Create a FileReader to read the selected file
+      let reader = new FileReader();
 
-        <div class="mb-3">
-            <label for="productPrice" class="form-label">Product Price</label>
-            <input type="tel" class="form-control" id="productPrice" name="productPrice" required>
-        </div>
+      // Set up the FileReader to update the image src when the file is read
+      reader.onload = function (e) {
+        // Update the src attribute of the image element
+        imgElement.src = e.target.result;
+      };
 
-        <div class="mb-3">
-            <label for="addedDate" class="form-label">Product Added on</label>
-            <input type="date" class="form-control" id="addedDate" name="addedDate" required>
-        </div>
+      // Read the selected file as a data URL (base64 encoded)
+      reader.readAsDataURL(selectedFile);
 
-        <div class="mb-3">
-            <label for="productsize" class="form-label">Size</label>
-            <input type="tel" class="form-control" id="productsize" name="productsize" required>
-        </div>
 
-        <div class="mb-3">
-            <label for="productcolour" class="form-label">Colour</label>
-            <input type="tel" class="form-control" id="productcolour" name="productcolour" required>
-        </div>
-        <div class="mb-3">
-            <label for="stockCount" class="form-label">stock Count</label>
-            <input type="tel" class="form-control" id="stockCount" name="stockCount" required>
-        </div>
-        <div class="mb-3">
-            <label for="productImage" class="form-label">Product Image</label>
-            <input type="file" class="form-control" id="productImage" name="productImage" accept="image/*" multiple required>
-        
-        
-        </div>
 
-        <button type="submit" class="btn btn-primary">Upload Product</button>
-    </form>
+    }
+
+      function submitForm(button){
+        let id=button.getAttribute("productId")
+        console.log(id)
+
+        const formData = new FormData();
+        formData.append('productName', document.getElementById('productName').value);
+        formData.append('productDescription', document.getElementById('productDescription').value);
+        formData.append('productPrice', document.getElementById('productPrice').value);
+        formData.append('productCategory', document.getElementById('productCategory').value);
+        formData.append('addedDate', document.getElementById('addedDate').value);
+        formData.append('productsize', document.getElementById('productsize').value);
+        formData.append('productcolour', document.getElementById('productcolour').value);
+        formData.append('stockCount', document.getElementById('stockCount').value);
+
+
+
+        newImage.forEach((x)=>{
+            formData.append('productImages[]',x.file);
+            formData.append('imageIndexes[]', x.index);
+        });
+
+        console.log([...formData]);
+
+        fetch("/admin/editProduct/"+id,{
+            method: 'POST', // Explicitly set the method to 'POST'
+            body: formData,
+          })
+          .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Form submitted successfully:', data);
+            // Handle the server response as needed
+        })
+        .catch(error => console.error('Error submitting form:', error.message));
+      }
+      
+
+
+
+
+
+  
+  </script>
+
+  <style>
+    .imagebox {
+      background-color: rgb(255, 255, 255);
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+    #img1 img,
+    #img2 img,
+    #img3 img,
+    #img4 img,
+    #img5 img {
+      margin: 10px;
+      width: 155px;
+      height: 150px;
+    }
+    #img1 input,
+    #img2 input,
+    #img3 input,
+    #img4 input,
+    #img5 input {
+      width: auto;
+      height: auto;
+      margin-bottom: 25px;
+      margin-left: 10px;
+    }
+    #img1 label,
+    #img2 label,
+    #img3 label,
+    #img4 label,
+    #img5 label {
+      width: 200px;
+      height: auto;
+    }
+  </style>
 </div>
-
-
-
-
-
-
-
-<%- include("../partials/adminfooter.ejs") %>

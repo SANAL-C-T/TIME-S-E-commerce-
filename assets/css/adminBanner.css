@@ -57,3 +57,51 @@ button{
     border: solid black 1.5px;
     border-radius: 5px;
 }
+
+
+
+
+/* .notification{
+    position: fixed;
+    top: 30px;
+    right: 20px;
+    background: linear-gradient(to right,rgba(108, 241, 110, 0.714),rgba(74, 168, 2, 0.766) );
+   
+}
+.toast_success{
+    position: relative;
+    padding: 10px;
+    color: #191717;
+    margin:10px;
+    display: grid;
+    width: 200px;
+} */
+
+#imageview{
+
+display: flex;
+justify-content: space-around;
+
+}
+
+#imageview img{
+   
+    width: 100px;
+    margin-top:20px ;
+    margin-bottom:20px ;
+    }
+
+    #imageview input{
+       
+        height: 35px;
+        
+        }
+
+        @media only screen and (max-width: 768px) {
+            #imageview{
+              
+                display: block; /* Change to block for small screens */
+            }
+           
+           
+        }

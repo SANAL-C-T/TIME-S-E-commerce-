@@ -1,32 +1,35 @@
 const { default: mongoose } = require("mongoose")
 const mangoose=require("mongoose")
 require("../model/config")
+
+
 const productCollection=mangoose.Schema({
     productName:{
         type:String,
         required:true
     },
     productCategory:{
-        type:String,
-        required:true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'category'
     },
     productDescription:{
         type:String,
         required:true
     },
-    variant:[{
-        productsize:{
-            type:String,
-            // required:true
-        },
-        productcolour:{
-            type:String,
-            // required:true
-        }
-    }],
+            variant:[{
+                productsize:{
+                    type:String,
+                   
+                },
+                productcolour:{
+                    type:String,
+                 
+                }
+            }],
+
     quantity:{
         type:Number,
-        // required:true
+       
     },
     productImage:[{
         image1:{
@@ -48,6 +51,7 @@ const productCollection=mangoose.Schema({
             type:String
         },
     }],
+
     image360degree:[{
         image3601:{
             type:String
@@ -74,6 +78,9 @@ const productCollection=mangoose.Schema({
         enum:["draft","published","outOfStock","lowStock"]
     },
     stockCount:{
+        type:Number
+    },
+    uniqueID:{// for checking status
         type:Number
     },
     specification:[{
@@ -121,8 +128,17 @@ const productCollection=mangoose.Schema({
     rating:{
         type:Number
     },
+
+    Comment:{
+        type:String
+    },
+    
     addedDate:{
         type:Date
+    },
+    isDeleted:{
+        type:Boolean,
+        default: false,
     }
 
 })

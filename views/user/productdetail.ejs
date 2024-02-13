@@ -1,0 +1,86 @@
+<%-include("../partials/userloggedHeder.ejs")%>
+
+<div id="page" class="container-fluid ">
+
+  
+        <div id="imageSection">
+
+
+            <div class="card m-2" id="mainImage">
+
+                <img src="<%=pdetail.productImage[0].image1%>" class="card-img-top" id="largeimg">
+
+            </div>
+
+              <br>
+              <br>
+
+              <div id="smallImage">
+                <img src="<%=pdetail.productImage[0].image1%>" class="card-img-top" id="sm1" onclick="changeImage('largeimg','sm1')">
+                <img src="<%=pdetail.productImage[0].image2%>" class="card-img-top" id="sm2" onclick="changeImage('largeimg','sm2')">
+                <img src="<%=pdetail.productImage[0].image3%>" class="card-img-top" id="sm3" onclick="changeImage('largeimg','sm3')">
+                <img src="<%=pdetail.productImage[0].image4%>" class="card-img-top" id="sm4" onclick="changeImage('largeimg','sm4')">
+                <img src="<%=pdetail.productImage[0].image5%>" class="card-img-top" id="sm5" onclick="changeImage('largeimg','sm5')">
+            </div>
+
+
+        </div>
+
+
+      
+          <div class="card m-2" id="textleft"  style="width:100%;">
+            <div class="card-body">
+              <h2 class="card-title"><%=pdetail.productName%></h2>
+              <br>
+              <h6 class="card-title">CATEGORY:<%=pdetail.productCategory.categoryName%></h6>
+              <br>
+              <h3 class="card-title"> &#8377; <%=pdetail.productPrice%></h3>
+              <br>
+              <p class="card-text" style="text-align: justify;"><%= pdetail.productDescription %></p>
+
+              <br>
+              <a href="#" class="btn btn-warning">BUY NOW</a>
+              <br>
+              <br>
+              <h3 class="card-text">Ratings & Reviews</h3>
+
+              <p class="card-text">Ratings</p>
+              <p class="card-text">Reviews</p>
+            </div>
+          </div>
+
+<div class="card m-2  " id="textright" style="width: 100%;">
+<div class="card-body">
+  <h3 class="card-title">Specifications</h3>
+  <p class="card-text">Dail shap</p>
+  <p class="card-text">Generic Name</p>
+  <p class="card-text">Strap Color</p>
+  <p class="card-text">Strap Material</p>
+  <p class="card-text">Size</p>
+  <p class="card-text">Touchscreen</p>
+  <p class="card-text">Water Resistant</p>
+  <p class="card-text">Usage</p>
+  <p class="card-text">Compatible OS</p>
+  <p class="card-text">Closure</p>
+  <p class="card-text">Battery Life</p>
+  <p class="card-text">Call Function</p>
+  <p class="card-text">Bluetooth</p>
+  <p class="card-text">Wi-Fi</p>
+  <p class="card-text">Display Resolution</p>
+  <p class="card-text">Sensor</p>
+  <p class="card-text">Alarm Clock</p>
+  <p class="card-text">Country of Origin</p>
+  
+</div>
+</div>
+
+        </div>
+
+        
+
+
+
+
+                   
+
+<%-include("../partials/footer.ejs")%>

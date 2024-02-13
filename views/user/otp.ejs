@@ -1,46 +1,72 @@
 <%-include("../partials/otpHeader.ejs")%>
 
+<div class="row justify-content-center align-content-center">
+    <div class="col-md-6 bg-warning p-5">
+        <h2>Verify your Email</h2>
+        <h4>Verify Email to continue ...</h4>
 
-<div class=" row justify-content-center align-content-center ">
-    <div class="col-md-6  bg-warning  p-5  ">
-     <h2 >Verify your Email </h2>
+        <div>
+            <form method="post" action="/verifyOtp">
+                <div>
+                    <input type="text" maxlength="1" name="otp1" id="verificationCode" oninput="validateNumericInput(this)" required>
+                    <input type="text" maxlength="1" name="otp2" id="verificationCode" oninput="validateNumericInput(this)" required>
+                    <input type="text" maxlength="1" name="otp3" id="verificationCode" oninput="validateNumericInput(this)" required>
+                    <input type="text" maxlength="1" name="otp4" id="verificationCode" oninput="validateNumericInput(this)" required>
+                    <input type="text" maxlength="1" name="otp5" id="verificationCode" oninput="validateNumericInput(this)" required>
+                </div>
+                <div>
+                    <button id="otpButton" type="submit">Verify</button>
+                </div>
+                <div class="alert alert-info mt-3" role="alert">
+                    <div id="otpTimer">Time remaining: <span id="timer"></span></div>
+                </div>
+            </form>
 
+            <button id="otpBut" class="mt-3"><a href="/resentOtp">Resend OTP </a></button>
+        </div>
 
-    <h4  > Verify Email to continue ... </h4>
+       
+                        <% if (locals.errorMessage) { %>
+                            <div class="alert alert-danger" role="alert">
+                                <%= locals.errorMessage %>
+                            </div>
+                        <% } %>
+                    
 
+                
 
-    <div >
-        <form method="post" action="/verifyOtp">
-            <div  >
-                <input type="text" maxlength="1" name="otp1" id="verificationCode"  oninput="validateNumericInput(this)" required>
-                <input type="text" maxlength="1" name="otp2" id="verificationCode"  oninput="validateNumericInput(this)" required>
-                <input type="text" maxlength="1" name="otp3" id="verificationCode"  oninput="validateNumericInput(this)" required>
-                <input type="text" maxlength="1" name="otp4" id="verificationCode"  oninput="validateNumericInput(this)" required>
-                <input type="text" maxlength="1" name="otp5" id="verificationCode"  oninput="validateNumericInput(this)" required>
+                </div>
             </div>
-            <div>
-                <button id="otpButton" type="submit">Verify</button>
-            </div>
-        </form>
+        </div>
 
-        <button id="otpBut" class="mt-3 "><a href="/resentOtp">Resend OTP </a></button>
+        <script>
+            function validateNumericInput(input) {
+                input.value = input.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+            }
+
+            // Function to start the OTP timer
+            function startOTPTimer(durationInSeconds) {
+                let timer = durationInSeconds;
+                const timerElement = document.getElementById("timer");
+
+                const countdown = setInterval(function () {
+                    const minutes = Math.floor(timer / 60);
+                    const seconds = timer % 60;
+
+                    timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+                    if (--timer < 0) {
+                        clearInterval(countdown);
+                        timerElement.textContent = "Time expired!";
+                        document.getElementById("otpButton").disabled = true;
+                    }
+                }, 1000);
+            }
+
+            const otpDuration = 60;
+            startOTPTimer(otpDuration);
+        </script>
     </div>
-    
-    <script>
-        function validateNumericInput(input) {
-            input.value = input.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
-        }
-    </script>
-    
-    
 
-
-
-
+    <%-include("../partials/footer.ejs")%>
 </div>
-
-
-
-
-
-<%-include("../partials/footer.ejs")%>

@@ -2,7 +2,7 @@
 
 
 
-    <table>
+<table id="example" class="table table-striped" style="width:100%">
         <thead>
             <tr>
                 <th>User ID</th>
@@ -37,7 +37,10 @@
         </tbody>
     </table>
 
+    <script>
 
+        new DataTable('#example');
+      </script>
 
 
 <%- include("../partials/adminfooter.ejs") %>

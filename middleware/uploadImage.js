@@ -37,13 +37,35 @@ const singleUpload = (req, res, next) => {
     
 };
 
+
+
 const multiUpload = (req, res, next) => {
-    upload.array("productImage", 5)(req, res, function (err) {
+console.log("hello  data is comming to multer")
+
+
+ // Assuming data is the array structure you provided
+ const data = req.body;
+
+ for (let index = 0; index < data.length; index++) {
+     const item = data[index];
+
+     if (Array.isArray(item)) {
+         console.log(`Field ${index}:`);
+         console.log(`   ${item[0]}: ${item[1]}`);
+     } else if (item instanceof File) {
+         console.log(`File ${index}:`);
+         console.log(`   Name: ${item.name}`);
+         console.log(`   Size: ${item.size} bytes`);
+        
+     } else {
+         console.log(`Unknown type ${index}: ${item}`);
+     }
+ }
+ //this is the uploading function
+    upload.array("productImages[]", 5)(req, res, function (err) {
         if (err ) {
             console.log(err.message ,"image not uploaded")
         } else {
-            //logic for collecting new name and path of stored image.
-
             console.log("image upload success")
         }
         next(); 

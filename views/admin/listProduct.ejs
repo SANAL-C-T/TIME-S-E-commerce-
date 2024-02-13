@@ -1,107 +1,190 @@
 <%- include("../partials/adminheader.ejs") %>
 
-
-
-
 <div class="container">
-<div class="mt-4 ">
+  <div class="mt-4 mx-5 ">
+    <a href="/admin/products"> <button>ADD PRODUCT</button></a>
+  </div>
 
-    <a href="/admin/products">
-    <button>ADD PRODUCT</button></a>
-    <a href="/admin/deleteProduct">
-    <button class="mx-2 ">DELETE PRODUCT</button></a>
+  <h1 class="mx-5 "><%= urlData.pageTitle %></h1>
 
+  <br />
+  <table id="example" class="table table-striped table-responsive" style="width: 100%">
+    <thead>
+      <tr>
+        <th>NAME</th>
+        <th>DESCRIPTION</th>
+        <th>STOCK</th>
+        <th>CATEGORY</th>
+        <th>STATUS</th>
+        <th>PRICE</th>
+        <th>ACTION</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% urlData.pro.forEach(product => { %>
+      <tr>
+        <td><%= product.productName %></td>
+        <td><%= product.productDescription %></td>
+        <td><%= product.stockCount %></td>
+        <td><%= product.productCategory.categoryName %></td>
+        <td><%= product.isDeleted %></td>
+        <td><%= product.productPrice %></td>
+
+        <td>
+          <a
+            href="/admin/editProduct/<%= product._id %>"
+            class="btn btn-primary w-100 my-2 "
+          >EDIT</a>
+          <br />
+         
+
+          <% if(product.isDeleted === false) { %>
+            <button
+              type="button"
+              class="btn btn-danger delete-button w-100  my-2"
+              data-bs-toggle="modal"
+              data-bs-target="#modalId"
+              delete-button-attribute="<%=product._id%>"
+            >
+              DELETE
+            </button>
+          <% } else { %>
+            <button
+              type="button"
+              class="btn btn-success restore-button w-100 my-2 "
+              data-bs-toggle="modal"
+              data-bs-target="#modalId1"
+              restore-button-attribute="<%=product._id%>"
+            >
+              RESTORE
+            </button>
+          <% } %>
+
+          <div
+            class="modal fade"
+            id="modalId"
+            tabindex="-1"
+            data-bs-backdrop="static"
+            data-bs-keyboard="false"
+            role="dialog"
+            aria-labelledby="modalTitleId"
+            aria-hidden="true"
+          >
+            <div
+              class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm"
+              role="document"
+            >
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="modalTitleId">Warning</h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  Admin, do you want to delete this product?
+                </div>
+                <div class="modal-footer">
+                  <a id="deleteproduct" class="btn btn-danger">YES I WANT TO DELETE</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+       
+
+          <div
+            class="modal fade"
+            id="modalId1"
+            tabindex="-1"
+            data-bs-backdrop="static"
+            data-bs-keyboard="false"
+            role="dialog"
+            aria-labelledby="modalTitleId"
+            aria-hidden="true"
+          >
+            <div
+              class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm"
+              role="document"
+            >
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="modalTitleId">Warning</h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  Admin, do you want to restore this product?
+                </div>
+                <div class="modal-footer">
+                  <a id="restoreproduct" class="btn btn-success">YES I WANT TO RESTORE</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+
+  <br />
+
+  <script>
+    const modalElement = document.getElementById("modalId");
+    const restoremodalElement = document.getElementById("modalId1");
+
+    // Initialize modals
+    const myModal = new bootstrap.Modal(modalElement);
+    const restoreModal = new bootstrap.Modal(restoremodalElement);
+
+    // getting the buttons.
+    const deletebuttons = document.querySelectorAll('.delete-button');
+    const restorebuttons = document.querySelectorAll('.restore-button');
+
+    // add event listeners on the delete button.
+    deletebuttons.forEach((button) => {
+      button.addEventListener("click", function () {
+        const catid = button.getAttribute("delete-button-attribute");
+        document.getElementById('deleteproduct').href = "/admin/DeleteProduct/" + catid;
+        modalElement.show();
+      });
+    });
+
+    // add event listeners on all restore buttons.
+    restorebuttons.forEach((button) => {
+      button.addEventListener("click", function () {
+        const catid = button.getAttribute("restore-button-attribute");
+        document.getElementById('restoreproduct').href = "/admin/RestoreProduct/" + catid;
+        restoremodalElement.show();
+      });
+    });
+
+    new DataTable("#example");
+
+
+  </script>
+
+  <style>
+    /* Add custom styles for the table container */
+    #example_wrapper {
+    
+    }
+
+    /* Add custom styles for the DataTable itself */
+    #example {
+        width: 100%;
+        
+    }
+</style>
+
+
+  <%- include("../partials/adminfooter.ejs") %>
 </div>
-   
-
-
-<!-- 
-
-    <h2 class="mt-4 mb-4">Edit product details </h2>
-
-    <form method="post" action="/admin/editProducts" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label for="productName" class="form-label">Product Name</label>
-            <input type="text" class="form-control" id="productName" name="productName" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="productCategory" class="form-label">Product Category</label>
-            <input type="text" class="form-control" id="productCategory" name="productCategory" required>
-        </div>
-
-
-        <div class="mb-3">
-            <label for="productDescription" class="form-label">Product Description</label>
-            <input type="text" class="form-control" id="productDescription" name="productDescription" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="productPrice" class="form-label">Product Price</label>
-            <input type="tel" class="form-control" id="productPrice" name="productPrice" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="addedDate" class="form-label">Product Added on</label>
-            <input type="date" class="form-control" id="addedDate" name="addedDate" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="productsize" class="form-label">Size</label>
-            <input type="tel" class="form-control" id="productsize" name="productsize" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="productImage" class="form-label">Product Image</label>
-            <input type="file" class="form-control" id="productImage" name="productImage" accept="image/*" multiple required>
-        
-        
-        </div>
-
-        <button type="submit" class="btn btn-primary">Save</button>
-    </form>
-</div> -->
-
-
-<h1><%= urlData.pageTitle %></h1>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Stock</th>
-                <th>Category</th>
-                <th>Status</th>
-                <th>Price</th>
-                <!-- Add other product details as needed -->
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% urlData.pro.forEach(product => { %>
-                <tr>
-                    <td><%= product.
-                        productName %></td>
-                    <td><%= product.productDescription %></td>
-                    <td><%= product.stockCount %></td>
-                    <td><%= product.productCategory %></td>
-                    <td><%= product.Status %></td>
-                    <td><%= product.
-                        productPrice %></td>
-                    <!-- Add other product details as needed -->
-                    <td>
-                        <!-- Add links or buttons for edit, delete, etc. -->
-                        <a href="/admin/editProduct/<%= product._id %>">Edit</a>
-                        <!-- Add other actions as needed -->
-                    </td>
-                </tr>
-            <% }); %>
-        </tbody>
-    </table>
-
-
-
-
-
-<%- include("../partials/adminfooter.ejs") %>

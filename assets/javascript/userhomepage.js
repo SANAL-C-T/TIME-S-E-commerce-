@@ -15,5 +15,28 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
+//image selector for imageviewer................
+
+function changeImage(largeimg,smallimg){
+   
+    let x=document.getElementById(largeimg)    //[object HTMLImageElement] is the output
+    let y=document.getElementById(smallimg)
+   x.src=y.src;
 
 
+    
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    // Initialize medium-zoom on your image
+    const zoom = mediumZoom('#mainImage img', {
+        background: '#000',
+        margin: 20,
+        scrollOffset: 20,
+     
+    });
+
+    // Add other images to the same zoom group
+    zoom.add('#smallImage img');
+    
+});

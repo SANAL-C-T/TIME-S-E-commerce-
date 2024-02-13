@@ -62,21 +62,22 @@
     <div class="row">
 <!-- ---------------------------------------------------------------------------------------------- -->
 <% for (let i = 0; i < 4 && i < loadProduct.length; i++) { %>
-  <div class="col-lg-3 col-md-12 mb-4">
-    <div class="card h-100">
+  <div class="col-lg-3 col-md-12 mb-4" >
+    <div class="card h-100" id="cd">
       <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
         
-          <img src="<%= loadProduct[i].productImage[0].image1 %>" class="w-100" />
+          <img src="<%= loadProduct[i].productImage[0].image1 %>" class="w-100" id="proimg" />
       
       </div>
       <div class="card-body">
         <a href="" class="text-reset">
-          <div><h5 class="card-title mb-3"><%= loadProduct[i].productName %></h5></div>
+          <div><h5 class="card-title mb-3"id="txtcrd"><%= loadProduct[i].productName %></h5></div>
         </a>
-        <a href="/product1" class="text-reset">
-          <button class="m-2 bg-warning ">BUY NOW</button>
+        <h6 class="mb-3 text-danger">&#8377; <%= loadProduct[i].productPrice %></h6>
+        <a href="/product/<%= loadProduct[i]._id %> " class="text-reset">
+          <button class="m-2 " id="btBYNOW">BUY NOW</button>
         </a>
-        <h6 class="mb-3 "><%= loadProduct[i].productPrice %></h6>
+        
       </div>
     </div>
   </div>
@@ -194,20 +195,21 @@ Imagine effortlessly handling your Apple Watch with simple gestures, making it i
 <!-- ---------------------------------------------------------------------------------------------- -->
 <% for (let i = 0; i < 4 && i < loadProductA.length; i++) { %>
   <div class="col-lg-3 col-md-12 mb-4">
-    <div class="card h-100">
+    <div class="card h-100" id="cd" >
       <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
         
-          <img src="<%= loadProductA[i].productImage[0].image1 %>" class="w-100" />
+          <img src="<%= loadProductA[i].productImage[0].image1 %>" class="w-100" id="proimg"  />
       
       </div>
       <div class="card-body">
         <a href="" class="text-reset">
-          <div><h5 class="card-title mb-3"><%= loadProductA[i].productName %></h5></div>
+          <div><h5 class="card-title mb-3"id="txtcrd"><%= loadProductA[i].productName %></h5></div>
         </a>
-        <a href="/product2" class="text-reset">
-          <button class="m-2 bg-warning ">BUY NOW</button>
+        <h6 class="mb-3 text-danger">&#8377; <%= loadProductA[i].productPrice %></h6>
+        <a href="/product/<%= loadProduct[i]._id %> " class="text-reset">
+          <button class="m-2 " id="btBYNOW">BUY NOW</button>
         </a>
-        <h6 class="mb-3"><%= loadProductA[i].productPrice %></h6>
+       
       </div>
     </div>
   </div>
@@ -259,27 +261,29 @@ Imagine effortlessly handling your Apple Watch with simple gestures, making it i
   <h4>MARQ Captain (Gen 2)</h4>
   <h5>“Uncompromising by design”</h5>
 </div>
-<section style="background-color: #e8e8e8;">
-  <div class="text-center container py-5">
-    <div class="row">
+<section style="background-color: #e8e8e8;" >
+  <div class="text-center container py-5" >
+    <div class="row" >
 <!-- ---------------------------------------------------------------------------------------------- -->
 <% for (let i = 0; i < 4 && i < loadProductG.length; i++) { %>
-  <div class="col-lg-3 col-md-12 mb-4">
-    <div class="card h-100">
+  <div class="col-lg-3 col-md-12 mb-4" >
+    <div class="card h-100" id="cd">
       <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
         
-          <img src="<%= loadProductG[i].productImage[0].image1 %>" class="w-100" />
+          <img src="<%= loadProductG[i].productImage[0].image1 %>" class="w-100" id="proimg" />
       
       </div>
       <div class="card-body">
-        <a href="" class="text-reset">
-          <div><h5 class="card-title mb-3"><%= loadProductG[i].productName %></h5></div>
+        <a href="" class="text-reset" >
+          <div><h5 class="card-title mb-3"id="txtcrd"><%= loadProductG[i].productName %></h5></div>
         </a>
-        <a href="/product3" class="text-reset">
-          <button class="m-2 bg-warning ">BUY NOW</button>
+        <h6 class="mb-3 text-danger ">&#8377; <%= loadProductG[i].productPrice %></h6>
+        <a href="/product/<%= loadProductG[i]._id %> " class="text-reset">
+          <button class="m-2 "id="btBYNOW">BUY NOW</button>
         </a>
-        <h6 class="mb-3"><%= loadProductG[i].productPrice %></h6>
+       
       </div>
+      
     </div>
   </div>
 <% } %>

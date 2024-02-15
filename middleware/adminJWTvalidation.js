@@ -25,10 +25,11 @@ const haveToken1=async(req,res,next)=>{
     try{
         console.log("jwt toke outside if")
         console.log("in havetoken 1:",req.cookies);
+        console.log("not working")
         const token = req.cookies.token;
         if(token){
 
-            console.log("jwt toke in use")
+            console.log("jwt toke in use working")
             // res.redirect("/admin/banner")
             next()
 
@@ -45,18 +46,16 @@ const haveToken1=async(req,res,next)=>{
 
 const haveToken2=async(req,res,next)=>{
 
-    console.log("1","2")
+    console.log("is using JWT havetoken2 of admin")
     try{
-        console.log("jwt toke outside if")
-        // console.log("in havetoken 2:",req.cookies);
         const token = req.cookies.token;
         if(token){
 
             console.log("jwt toke in use havetoken 2")
-            // res.redirect("/admin/products")
             next()
 
         }else{
+            console.log("jwt toke not in use havetoken 2")
             res.redirect("/admin/enter")
            
         }

@@ -456,7 +456,14 @@ const filter = async (req, res) => {
     }
 };
 
-
+const cart=async(req,res)=>{
+    try{
+        res.render("user/cart.ejs")
+    }
+    catch(error){
+        console.log(error.message)
+    }
+}
 
 
 module.exports = {
@@ -478,6 +485,7 @@ module.exports = {
     resetpassword,
     contactb,
     aboutb,
-    filter
+    filter,
+    cart
 
 }

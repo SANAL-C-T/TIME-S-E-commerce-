@@ -182,13 +182,21 @@ const showcategory = async (req, res) => {
 const addcategory = async (req, res) => {
 
     let cateN = req.body.categoryName
-    try {
 
+
+    try {
+        let act;
+        let stat=req.body.Categorystatus
+        if(stat=="active"){
+            act=true;
+        }else if(stat=="inactive"){
+            act=false;
+        }
 
         console.log("incoming data:::::", req.body)
         const addcategoryDetails = new categoryData({
             categoryName: req.body.categoryName,
-            Categorystatus: req.body.Categorystatus
+            Categorystatus: act
         });
 
         console.log(addcategoryDetails.categoryName); // Corrected line
@@ -262,8 +270,6 @@ const usermanage = async (req, res) => {
         console.log(error.message)
     }
 }
-
-
 
 
 const usersetting = async (req, res) => {

@@ -16,6 +16,10 @@
         value="<%=urlData.proData.productName%>"
       />
     </div>
+<div id="productNameMessage" class="text-danger m-3" ></div>
+
+
+
 
     <div class="mb-3">
       <label for="productDescription" class="form-label"
@@ -29,6 +33,9 @@
         value="<%=urlData.proData. productDescription%>"
       />
     </div>
+    <div id="productDescriptionMessage" class="text-danger m-3" ></div>
+
+
 
     <div class="d-flex justify-content-between">
       <div class="mb-3">
@@ -41,6 +48,8 @@
           value="<%=urlData.proData.productPrice%>"
         />
       </div>
+      <div id="productPriceMessage" class="text-danger m-3" ></div>
+
 
       <div class="mb-3">
         <label for="productCategory" class="form-label">Product Category</label>
@@ -58,6 +67,8 @@
           <% }) %>
         </select>
       </div>
+      <div id="productCategoryMessage" class="text-danger m-3" ></div>
+
 
       <div class="mb-3">
         <label for="addedDate" class="form-label">Product Added on</label>
@@ -70,6 +81,8 @@
         />
       </div>
     </div>
+    <div id="addedDateMessage" class="text-danger m-3" ></div>
+
 
     <div class="d-flex justify-content-between">
       <div class="mb-3">
@@ -82,6 +95,7 @@
           value="<%=urlData.proData.productsize%>"
         />
       </div>
+      <div id="productsizeMessage" class="text-danger m-3" ></div>
 
       <div class="mb-3">
         <label for="productcolour" class="form-label">Colour</label>
@@ -93,6 +107,7 @@
           value="<%=urlData.proData.productcolour%>"
         />
       </div>
+      <div id="productcolourMessage" class="text-danger m-3" ></div>
 
       <div class="mb-3">
         <label for="stockCount" class="form-label">Stock Count</label>
@@ -104,6 +119,8 @@
           value="<%=urlData.proData.stockCount%>"
         />
       </div>
+      <div id="stockCountMessage" class="text-danger m-3" ></div>
+
     </div>
 
     <label for="productImage" class="form-label">Product Image</label>
@@ -183,6 +200,9 @@
 
   <%- include("../partials/adminfooter.ejs") %>
 
+
+
+
   <script>
     
 
@@ -195,12 +215,11 @@
       let imgElement = document
         .getElementById(id)
         .getElementsByTagName("img")[0];
-      //already selected
-      
+
        let index = inputElement.getAttribute("index");
       
 
-      // Get the new selected file
+      // Get the new selected image
       let selectedFile = inputElement.files[0];
      
 
@@ -210,11 +229,11 @@
 
       // Set up the FileReader to update the image src when the file is read
       reader.onload = function (e) {
-        // Update the src attribute of the image element
+      // Updating the src attribute of the image element
         imgElement.src = e.target.result;
       };
 
-      // Read the selected file as a data URL (base64 encoded)
+      // Read the selected file as a data URL
       reader.readAsDataURL(selectedFile);
 
 
@@ -222,6 +241,11 @@
     }
 
       function submitForm(button){
+
+        if(addProVlidation() == !isValid){
+          return;
+      }
+
         let id=button.getAttribute("productId")
         console.log(id)
 
@@ -237,15 +261,19 @@
 
 
 
-        newImage.forEach((x)=>{
-            formData.append('productImages[]',x.file);
-            formData.append('imageIndexes[]', x.index);
-        });
+        if (newImage) {
+          newImage.forEach((x) => {
+              formData.append('productImages[]', x.file);
+              formData.append('imageIndexes[]', x.index);
+          });
+      }
+
+      
 
         console.log([...formData]);
 
         fetch("/admin/editProduct/"+id,{
-            method: 'POST', // Explicitly set the method to 'POST'
+            method: 'POST', 
             body: formData,
           })
           .then(response => {
@@ -261,8 +289,89 @@
         .catch(error => console.error('Error submitting form:', error.message));
       }
       
-
-
+      let isValid = true;
+      function addProVlidation() {
+        let productName = document.getElementById('productName').value;
+        let productDescription = document.getElementById('productDescription').value;
+        let productPrice = document.getElementById('productPrice').value;
+        let productCategory = document.getElementById("productCategory").value;
+        let addedDate = document.getElementById("addedDate").value;
+        let productsize = document.getElementById("productsize").value;
+        let productcolour = document.getElementById("productcolour").value;
+        let stockCount = document.getElementById("stockCount").value;
+    
+        let productNameMessage = document.getElementById('productNameMessage');
+        let productDescriptionMessage = document.getElementById('productDescriptionMessage');
+        let productPriceMessage = document.getElementById('productPriceMessage');
+        let productCategoryMessage = document.getElementById('productCategoryMessage');
+        let addedDateMessage = document.getElementById('addedDateMessage');
+        let productsizeMessage = document.getElementById('productsizeMessage');
+        let productcolourMessage = document.getElementById('productcolourMessage');
+        let stockCountMessage = document.getElementById('stockCountMessage');
+    
+       
+    
+        if (productName === "") {
+            productNameMessage.innerHTML = "Product name cannot be empty";
+            isValid = false;
+        } else {
+            productNameMessage.innerHTML = "";
+        }
+    
+        if (productCategory === "") {
+            productCategoryMessage.innerHTML = "Product category cannot be empty";
+            isValid = false;
+        } else {
+            productCategoryMessage.innerHTML = "";
+        }
+    
+        if (productDescription === "") {
+            productDescriptionMessage.innerHTML = "Product description cannot be empty";
+            isValid = false;
+        } else {
+            productDescriptionMessage.innerHTML = "";
+        }
+    
+        if (addedDate === "") {
+            addedDateMessage.innerHTML = "Product addedDate cannot be empty";
+            isValid = false;
+        } else {
+            addedDateMessage.innerHTML = "";
+        }
+    
+        if (productsize === "") {
+            productsizeMessage.innerHTML = "Product size cannot be empty";
+            isValid = false;
+        } else {
+            productsizeMessage.innerHTML = "";
+        }
+    
+        if (productPrice < 0) {
+            productPriceMessage.innerHTML = "Price cannot be negative";
+            isValid = false;
+        } else {
+            productPriceMessage.innerHTML = "";
+        }
+    
+        if (productcolour === "") {
+            productcolourMessage.innerHTML = "Product colour cannot be empty";
+            isValid = false;
+        } else {
+            productcolourMessage.innerHTML = "";
+        }
+    
+        if (stockCount === "") {
+            stockCountMessage.innerHTML = "Product stock cannot be empty";
+            isValid = false;
+        } else if (stockCount < 0) {
+            stockCountMessage.innerHTML = "Stock cannot be negative";
+            isValid = false;
+        } else {
+            stockCountMessage.innerHTML = "";
+        }
+    
+        return isValid;
+    }
 
 
 

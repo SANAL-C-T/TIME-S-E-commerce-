@@ -1,7 +1,7 @@
 <%-include("../partials/otpHeader.ejs")%>
 
 <div class="row justify-content-center align-content-center">
-    <div class="col-md-6 bg-warning p-5">
+    <div class="col-md-6 p-5">
         <h2>Verify your Email</h2>
         <h4>Verify Email to continue ...</h4>
 
@@ -15,26 +15,24 @@
                     <input type="text" maxlength="1" name="otp5" id="verificationCode" oninput="validateNumericInput(this)" required>
                 </div>
                 <div>
-                    <button id="otpButton" type="submit">Verify</button>
+                    <button id="otpButton" type="submit" style.display = 'block'>Verify</button>
                 </div>
-                <div class="alert alert-info mt-3" role="alert">
-                    <div id="otpTimer">Time remaining: <span id="timer"></span></div>
-                </div>
+               <div class="mt-3 text-danger">
+                <div id="otpTimer">Time remaining: <span id="timer"></span></div>
+               </div>
+                   
+              
             </form>
 
-            <button id="otpBut" class="mt-3"><a href="/resentOtp">Resend OTP </a></button>
-        </div>
+            <button id="otpBut" class="mt-3 mb-3 " style="display: none;"><a href="/resentOtp">Resend OTP</a></button>
 
-       
+        </div>
                         <% if (locals.errorMessage) { %>
+                            
                             <div class="alert alert-danger" role="alert">
                                 <%= locals.errorMessage %>
                             </div>
                         <% } %>
-                    
-
-                
-
                 </div>
             </div>
         </div>
@@ -58,13 +56,20 @@
                     if (--timer < 0) {
                         clearInterval(countdown);
                         timerElement.textContent = "Time expired!";
-                        document.getElementById("otpButton").disabled = true;
+                        document.getElementById('otpBut').style.display = 'block';
+                        document.getElementById("otpButton").style.display= "none";
                     }
                 }, 1000);
             }
 
+
+
             const otpDuration = 60;
+
             startOTPTimer(otpDuration);
+
+
+           
         </script>
     </div>
 

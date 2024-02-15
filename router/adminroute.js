@@ -23,28 +23,12 @@ adminUrlRouter.get("/banner",jwtAuth. haveToken1,adminin.adminbanner)
 
 //add product
 adminUrlRouter.get("/products",jwtAuth. haveToken2,adminin.adminproduct)
-adminUrlRouter.post("/products",multerUpload.multiUpload,product.addproduct)
+adminUrlRouter.post("/products",jwtAuth. haveToken2,multerUpload.multiUpload,product.addproduct)
 
 //edit product
 adminUrlRouter.get("/editProduct/:id",jwtAuth.haveToken2,product.edit)
 
 adminUrlRouter.post("/editProduct/:id",jwtAuth.haveToken2,multerUpload.multiUpload, product.saveedit)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 adminUrlRouter.get("/listProduct",jwtAuth.haveToken2,product.listProducts)
 

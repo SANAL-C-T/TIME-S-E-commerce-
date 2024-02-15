@@ -13,7 +13,7 @@ const addproduct=async(req,res)=>{
             filePath.push(element.filename)
         });
         //  console.log(filePath)
-            console.log("asasasasasas:::",req.body);//has all the datas of upload, including image.
+            console.log("bodyData in addproduct:::",req.body);//has all the datas of upload, including image.
 
 
             console.log(JSON.stringify(req.files));
@@ -33,7 +33,7 @@ const addproduct=async(req,res)=>{
             }
         // console.log("incoming:",req.body.productCategory)
         const category = await categData.findOne({ _id: req.body.productCategory });
-            console.log("category::::",category)
+            console.log("category data in addproduct::::",category)
 
         const addproductDetails=new productData({
             productName:req.body.productName,
@@ -95,7 +95,7 @@ const edit=async(req,res)=>{
             cate:y,
             pageTitle:r
         }
-        console.log("-----            -----------")
+        console.log("-----//////---/////////-----////////--------")
         res.render("admin/editProduct.ejs",{urlData})
     }
     catch(error){

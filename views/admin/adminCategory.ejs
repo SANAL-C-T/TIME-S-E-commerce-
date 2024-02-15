@@ -2,7 +2,7 @@
 <div class="container">
   <h2 class="mt-4 mb-4">CATEGORY DETAIL ADD</h2>
 
-  <form method="post" action="/admin/category">
+  <form onsubmit="return validation()"  method="post" action="/admin/category">
     <div class="mb-3">
       <label for="categoryName" class="form-label">Category Name</label>
       <input
@@ -13,7 +13,7 @@
         required
       />
     </div>
-
+<div id="carterror" class="text-danger m-3 "></div>
     <div class="mb-3">
       <label for="Categorystatus" class="form-label">Category status</label>
       <select
@@ -205,6 +205,21 @@
       });
     });
   });
+
+
+function validation(){
+  let categoryName=document.getElementById('categoryName').value
+let carterror=document.getElementById('carterror');
+  if(categoryName==""){
+    carterror.innerHTML="Category name cannot be empty"
+    return false;
+  }else{
+    return true;
+  }
+}
+
+
+
 </script>
 
 <%- include("../partials/adminfooter.ejs") %>

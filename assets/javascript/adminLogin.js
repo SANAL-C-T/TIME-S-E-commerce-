@@ -1,7 +1,4 @@
 
-
-
-
 function validateFeild(){
 let username =document.getElementById("username")
 let password =document.getElementById("password")
@@ -23,24 +20,6 @@ else{
 
 
 
-function addProVlidation(){
-    let productPrice=document.getElementById("productPrice").value
-    let stockCount=document.getElementById("stockCount").value
-
-    if(productPrice<0){
-        alert(" price cannot be  negative")
-    
-        return false;
-    }
-    else if(stockCount<0){
-        alert("stock cannot be negative")
-        return false;
-    }
-    else{
-        return true;
-
-}
-}
 
 
 

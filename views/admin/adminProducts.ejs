@@ -1,13 +1,6 @@
 <%- include("../partials/adminheader.ejs") %>
 
-
-
-
-
-
-
-
-    <div class="container">
+    <div class="container ">
         <div class="mt-4">
             <a href="/admin/listProduct">
                 <button>LIST PRODUCT</button>
@@ -17,24 +10,24 @@
         <h2 class="mt-4 mb-4">Product detail upload</h2>
 
 
-
-
-
-        <form>
+        <form id="formclr">
             <div class="mb-3">
                 <label for="productName" class="form-label">Product Name</label>
                 <input type="text" class="form-control" id="productName" name="productName" required>
+                <div id="productNameMessage" class="text-danger m-3"></div>
             </div>
 
             <div class="mb-3">
                 <label for="productDescription" class="form-label">Product Description</label>
                 <input type="text" class="form-control" id="productDescription" name="productDescription" required>
+                <div id="productDescriptionMessage" class="text-danger m-3"></div>
             </div>
 
             <div class="d-flex justify-content-between">
                 <div class="mb-3">
                     <label for="productPrice" class="form-label">Product Price</label>
                     <input type="tel" class="form-control" id="productPrice" name="productPrice" required>
+                    <div id="productPriceMessage" class="text-danger m-3"></div>
                 </div>
 
                 <div class="mb-3">
@@ -48,10 +41,12 @@
                             <% }) %>
                     </select>
                 </div>
+                <div id="productCategoryMessage" class="text-danger m-3"></div>
 
                 <div class="mb-3">
                     <label for="addedDate" class="form-label">Product Added on</label>
                     <input type="date" class="form-control" id="addedDate" name="addedDate" required>
+                    <div id="addedDateMessage" class="text-danger m-3"></div>
                 </div>
             </div>
 
@@ -59,16 +54,19 @@
                 <div class="mb-3">
                     <label for="productsize" class="form-label">Size</label>
                     <input type="tel" class="form-control" id="productsize" name="productsize" required>
+                    <div id="productsizeMessage" class="text-danger m-3"></div>
                 </div>
 
                 <div class="mb-3">
                     <label for="productcolour" class="form-label">Colour</label>
                     <input type="tel" class="form-control" id="productcolour" name="productcolour" required>
+                    <div id="productcolourMessage" class="text-danger m-3"></div>
                 </div>
 
                 <div class="mb-3">
                     <label for="stockCount" class="form-label">Stock Count</label>
                     <input type="tel" class="form-control" id="stockCount" name="stockCount" required>
+                    <div id="stockCountMessage" class="text-danger m-3"></div>
                 </div>
             </div>
 
@@ -91,11 +89,7 @@
             </div>
 
 
-
-
-
-
-            <button type="button" class="btn btn-primary" onclick="submitForm()">Submit</button>
+            <button type="button" class="btn btn-primary" onclick="submitForm(),successmessage()">Submit</button>
 
 
     </div>
@@ -133,6 +127,26 @@
 
 
 
+<!-- success message modal -->
+
+		<div class="modal fade" id="statusSuccessModal" tabindex="-1" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false"> 
+			<div class="modal-dialog modal-dialog-centered modal-sm" role="document"> 
+				<div class="modal-content"> 
+					<div class="modal-body text-center p-lg-4"> 
+						<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130.2 130.2">
+							<circle class="path circle" fill="none" stroke="#198754" stroke-width="6" stroke-miterlimit="10" cx="65.1" cy="65.1" r="62.1" />
+							<polyline class="path check" fill="none" stroke="#198754" stroke-width="6" stroke-linecap="round" stroke-miterlimit="10" points="100.2,40.2 51.5,88.8 29.8,67.5 " /> 
+						</svg> 
+						<h4 class="text-success mt-3">Success</h4> 
+						<p class="mt-3">You have successfully added a product.</p>
+						<button type="button" class="btn btn-sm mt-3 btn-success" data-bs-dismiss="modal"  onclick="cleardata()">Ok</button> 
+					</div> 
+				</div> 
+			</div> 
+		</div>
+	</div>
+</div>
+
 
 
 
@@ -140,7 +154,16 @@
     <%- include("../partials/adminfooter.ejs") %>
 
         <script>
+
+
+//...........form submit...............
+
             function submitForm() {
+
+
+                if (!addProVlidation()) {
+                    return;
+                }
 
                 // Create a FormData object to store form data, including files
                 const formData = new FormData();
@@ -154,12 +177,17 @@
                 formData.append('productsize', document.getElementById('productsize').value);
                 formData.append('productcolour', document.getElementById('productcolour').value);
                 formData.append('stockCount', document.getElementById('stockCount').value);
+               
+               
+             
+            
 
-
-                images.forEach((image, index) => {
+               imgArry.forEach((image, index) => {
                     formData.append('productImages[]', image.file);
                 });
 
+                
+              
 
                 //fetch request to submit the form data to backend.
                 fetch("/admin/products", {
@@ -174,6 +202,11 @@
                     })
                     .then(data => {
                         console.log('Form submitted successfully:', data);
+
+
+
+
+                        
 
                     })
                     .catch(error => console.error('Error submitting form:', error.message));
@@ -216,12 +249,8 @@
                 return image;
             }
 
-
-
-
             function delete_image(index) {
                 images.splice(index, 1);
-
                 // Update the display
                 document.getElementById("container").innerHTML = image_show();
             }
@@ -232,15 +261,29 @@
 
 
 
+//........success message modal triger.....
+
+function  successmessage(){
+    $('#statusSuccessModal').modal('show');
+}
+
+//.............clear data..........
+function cleardata(){
+    let formElement = document.getElementById('formclr');
+    formElement.reset();
+    location.reload();
+   
+}
 
 
 
 
-            //crop function...........................................
+//...................cropper...............................
+let imgArry=[]
             function openCropModal(index) {
                 // Declare the cropper variable
                 let cropper;
-            
+                event.preventDefault();
                 // Create a unique ID for each modal
                 const modalId = `cropModal-${index}`;
             
@@ -283,44 +326,132 @@
             
                 // Create a new Cropper instance when the modal is shown
                 modal.on('shown.bs.modal', function () {
-                  cropper = new Cropper(modalImage, {
-                    aspectRatio: 0,
-                    viewMode: 0
-                  });
+                    cropper = new Cropper(modalImage, {
+                        aspectRatio: 0,
+                        viewMode: 0
+                    });
                 });
             
                 // Event listener for the "CROP" button
                 cropButton.addEventListener("click", function () {
-                  // Get the cropped image data URL
-                  const croppedImage = cropper.getCroppedCanvas().toDataURL("image/png");
-            
-                  // Display the cropped image
-                  outputImg.src = croppedImage;
-            
-                  // Apply CSS styles to the cropped image
-                  outputImg.style.maxWidth = "100%";
-                  outputImg.style.maxHeight = "400px";
-            
-                  // You can use the croppedImage variable for further processing or uploading
-                  console.log("Cropped Image Data URL:", croppedImage);
+                    // Get the cropped canvas
+                    const croppedCanvas = cropper.getCroppedCanvas();
+                
+                    // Convert the cropped canvas to Blob
+                    croppedCanvas.toBlob(blob => {
+                        // Display the cropped image
+                        outputImg.src = URL.createObjectURL(blob);
+                
+                        // Update the selected image in the images array
+                        images[index].url = URL.createObjectURL(blob);
+                        images[index].file = new File([blob], selectedImage.name); // Update the file
+                        imgArry = images;
+                
+                        // Update the display
+                        document.getElementById("container").innerHTML = image_show();
+                
+                        // You can use the 'blob' variable for further processing or uploading
+                        console.log("Cropped Image Blob:", blob);
+                    }, 'image/png');
                 });
+                
             
                 // Event listener for the "SAVE" button
                 saveButton.addEventListener("click", function () {
-                  // Add your logic to save the croppedImage
-                  // For example, you might want to upload it to the server
-                  console.log("Save the cropped image:", outputImg.src);
+                    // Your existing code...
             
-                  // Hide the modal
-                  modal.modal('hide');
+                    // Hide the modal
+                    modal.modal('hide');
                 });
             
                 // Show the modal
                 modal.modal('show');
-              }
+            }
+            
 
+//validation 
+function addProVlidation() {
+    let productName = document.getElementById('productName').value;
+    let productDescription = document.getElementById('productDescription').value;
+    let productPrice = document.getElementById('productPrice').value;
+    let productCategory = document.getElementById("productCategory").value;
+    let addedDate = document.getElementById("addedDate").value;
+    let productsize = document.getElementById("productsize").value;
+    let productcolour = document.getElementById("productcolour").value;
+    let stockCount = document.getElementById("stockCount").value;
 
+    let productNameMessage = document.getElementById('productNameMessage');
+    let productDescriptionMessage = document.getElementById('productDescriptionMessage');
+    let productPriceMessage = document.getElementById('productPriceMessage');
+    let productCategoryMessage = document.getElementById('productCategoryMessage');
+    let addedDateMessage = document.getElementById('addedDateMessage');
+    let productsizeMessage = document.getElementById('productsizeMessage');
+    let productcolourMessage = document.getElementById('productcolourMessage');
+    let stockCountMessage = document.getElementById('stockCountMessage');
 
+    let isValid = true;
+
+    if (productName === "") {
+        productNameMessage.innerHTML = "Product name cannot be empty";
+        isValid = false;
+    } else {
+        productNameMessage.innerHTML = "";
+    }
+
+    if (productCategory === "") {
+        productCategoryMessage.innerHTML = "Product category cannot be empty";
+        isValid = false;
+    } else {
+        productCategoryMessage.innerHTML = "";
+    }
+
+    if (productDescription === "") {
+        productDescriptionMessage.innerHTML = "Product description cannot be empty";
+        isValid = false;
+    } else {
+        productDescriptionMessage.innerHTML = "";
+    }
+
+    if (addedDate === "") {
+        addedDateMessage.innerHTML = "Product addedDate cannot be empty";
+        isValid = false;
+    } else {
+        addedDateMessage.innerHTML = "";
+    }
+
+    if (productsize === "") {
+        productsizeMessage.innerHTML = "Product size cannot be empty";
+        isValid = false;
+    } else {
+        productsizeMessage.innerHTML = "";
+    }
+
+    if (productPrice < 0) {
+        productPriceMessage.innerHTML = "Price cannot be negative";
+        isValid = false;
+    } else {
+        productPriceMessage.innerHTML = "";
+    }
+
+    if (productcolour === "") {
+        productcolourMessage.innerHTML = "Product colour cannot be empty";
+        isValid = false;
+    } else {
+        productcolourMessage.innerHTML = "";
+    }
+
+    if (stockCount === "") {
+        stockCountMessage.innerHTML = "Product stock cannot be empty";
+        isValid = false;
+    } else if (stockCount < 0) {
+        stockCountMessage.innerHTML = "Stock cannot be negative";
+        isValid = false;
+    } else {
+        stockCountMessage.innerHTML = "";
+    }
+
+    return isValid;
+}
 
 
 
@@ -382,4 +513,109 @@
                 max-height: 400px;
                 width: auto;
             }
+
+
+
+
+
+
+
+
+            .modal#statusSuccessModal .modal-content, 
+            .modal#statusErrorsModal .modal-content {
+                border-radius: 30px;
+            }
+            .modal#statusSuccessModal .modal-content svg, 
+            .modal#statusErrorsModal .modal-content svg {
+                width: 100px; 
+                display: block; 
+                margin: 0 auto;
+            }
+            .modal#statusSuccessModal .modal-content .path, 
+            .modal#statusErrorsModal .modal-content .path {
+                stroke-dasharray: 1000; 
+                stroke-dashoffset: 0;
+            }
+            .modal#statusSuccessModal .modal-content .path.circle, 
+            .modal#statusErrorsModal .modal-content .path.circle {
+                -webkit-animation: dash 0.9s ease-in-out; 
+                animation: dash 0.9s ease-in-out;
+            }
+            .modal#statusSuccessModal .modal-content .path.line, 
+            .modal#statusErrorsModal .modal-content .path.line {
+                stroke-dashoffset: 1000; 
+                -webkit-animation: dash 0.95s 0.35s ease-in-out forwards; 
+                animation: dash 0.95s 0.35s ease-in-out forwards;
+            }
+            .modal#statusSuccessModal .modal-content .path.check, 
+            .modal#statusErrorsModal .modal-content .path.check {
+                stroke-dashoffset: -100; 
+                -webkit-animation: dash-check 0.95s 0.35s ease-in-out forwards; 
+                animation: dash-check 0.95s 0.35s ease-in-out forwards;
+            }
+            
+            @-webkit-keyframes dash { 
+                0% {
+                    stroke-dashoffset: 1000;
+                }
+                100% {
+                    stroke-dashoffset: 0;
+                }
+            }
+            @keyframes dash { 
+                0% {
+                    stroke-dashoffset: 1000;
+                }
+                100%{
+                    stroke-dashoffset: 0;
+                }
+            }
+            @-webkit-keyframes dash { 
+                0% {
+                    stroke-dashoffset: 1000;
+                }
+                100% {
+                    stroke-dashoffset: 0;
+                }
+            }
+            @keyframes dash { 
+                0% {
+                    stroke-dashoffset: 1000;}
+                100% {
+                    stroke-dashoffset: 0;
+                }
+            }
+            @-webkit-keyframes dash-check { 
+                0% {
+                    stroke-dashoffset: -100;
+                }
+                100% {
+                    stroke-dashoffset: 900;
+                }
+            }
+            @keyframes dash-check {
+                0% {
+                    stroke-dashoffset: -100;
+                }
+                100% {
+                    stroke-dashoffset: 900;
+                }
+            }
+            .box00{
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+            }
+
+
+
+
+
+
+
+
+
+
+
+
         </style>

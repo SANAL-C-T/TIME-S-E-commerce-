@@ -44,6 +44,8 @@ userUrlRouter.get("/buyproduct",jwtauth.userhaveToken1,user.buyProduct)
 
 userUrlRouter.get("/product/:proid",jwtauth.userhaveToken1,user.categoryWiseProduct)
 
+userUrlRouter.get("/cart",user.cart)
+
 userUrlRouter.get("/logout",user.logout)
 
 

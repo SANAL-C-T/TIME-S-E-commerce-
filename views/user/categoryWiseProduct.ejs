@@ -175,13 +175,16 @@
 <%-include("../partials/footer.ejs")%>
 
 <script>
+
+    let re;
     document.addEventListener('DOMContentLoaded', async function () {
         const filters = document.querySelectorAll('input[name=productType]');
         const sorts = document.querySelectorAll('input[name=pricesort]');
         const discounts = document.querySelectorAll('input[name=discounted]');
         const searchInputs = document.querySelector('input[name="ser"]');
         const page = 1;
-       
+
+       console.log(searchInputs)
            
         filters.forEach((selection)=>{
             selection.addEventListener("change",newProductlist);
@@ -204,10 +207,10 @@
                 const discounted=document.querySelector('input[name=discounted]:checked');
                 const pricesort=document.querySelector('input[name=pricesort]:checked');
                 const ser = document.querySelector('input[name=ser]').value; 
-               
+              re=ser;
                 
                 try{
-                  
+                  //posting the user input to backend.
                 const responseData= await fetch("/api/productfilter",{
                     method:"POST",
                     headers:{
@@ -223,9 +226,12 @@
                     
                 })
                
-                    const data=await responseData.json()
+                    const data=await responseData.json() //incoming data from backend is here.
+
                     console.log("frontend",data)
+
                     updateTitle(data);//updating the page title
+
                     updateProductHTML(data);//updating the page content.
                    
                 }
@@ -234,6 +240,8 @@
                 }
 
             }
+
+            
             var lock;//non selected category manager.
             function updateTitle(data) {
                 const title = document.querySelector(".nam");
@@ -248,19 +256,20 @@
             
             
         
-//.............................................
+//...................product card..........................
 
             function updateProductHTML(data) {
                 const contain = document.querySelector(".pdlist");
-    
+    console.log("qqqq",data)
+    console.log("re",re)
                 // Clear existing content 
-                if(lock!=1){
+               if(lock!=1){
                     contain.innerHTML = '';
                 }
                 let cards=[] 
                 
-                if (Array.isArray(data.products)) {
-                   
+                if (re=="") {
+                  
                     data.products.forEach(product => {
                         const cardHTML = `<div class="col-lg-3 col-md-12 mb-4 ">
                             <div class="card h-100">
@@ -292,8 +301,9 @@
                     paginations.innerHTML = generatePagination(data.docCount, data.a);
                    
             
-                } else if (Array.isArray(data.serc)) {
-
+                } else  {
+               
+                    console.log('Search Results:', data.serc);
                     data.serc.forEach(product => {
                         const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
                             <div class="card h-100">
@@ -315,24 +325,25 @@
                         cards.push(cardHTML)
                     });
                   
-                
+                    contain.innerHTML = cards.join("");
             }
             
 
- //................................................
-            function generatePagination(totalProducts, currentPage) {
-                  const totalPages = Math.ceil(totalProducts / 4);
-        let paginationHTML = `<nav aria-label="Page navigation example"><ul class="pagination">`;
+ //......pagination section..........................................
+ function generatePagination(totalProducts, currentPage) {
+    const totalPages = Math.ceil(totalProducts / 4);
+    let paginationHTML = `<nav aria-label="Page navigation example"><ul class="pagination">`;
 
-        for (let i = 1; i <= totalPages; i++) {
-            paginationHTML += `<li class="page-item ${i === currentPage ? 'active' : ''}">
-                                <a class="page-link"  onclick="newProductlist(${i})">${i}</a>
-                            </li>`;
-        }
+    for (let i = 1; i <= totalPages; i++) {
+        paginationHTML += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+                            <a class="page-link" onclick="newProductlist(${i})">${i}</a>
+                          </li>`;
+    }
 
-        paginationHTML += `</ul></nav>`;
-        return paginationHTML;
-            }
+    paginationHTML += `</ul></nav>`;
+    return paginationHTML;
+}
+
         }
 
 

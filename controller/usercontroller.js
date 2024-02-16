@@ -383,7 +383,7 @@ const filter = async (req, res) => {
         }
 
 
-        console.log("qqqq",pricesort)
+        // console.log("qqqq",pricesort)
 
         let products;
         let docCount;
@@ -442,6 +442,7 @@ const filter = async (req, res) => {
         }
 
         let a = (pageNumber - 1) * itemsPerPage;
+        //sending a response body to the frontend as a part of post fetch.
         res.json({
             products,
             a,

@@ -1,6 +1,6 @@
 
 document.addEventListener("DOMContentLoaded", function () {
-    let carouselIds = ['carouselExampleControls0', 'bottomCarousel0', 'bottom2Carousel0'];
+    let carouselIds = ['carouselExampleControls0', 'bottomCarousel0', 'bottom2Carousel0','tx1'];
 
     carouselIds.forEach(carouselId => {
         let myCarousel0 = document.getElementById(carouselId);
@@ -13,6 +13,16 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+
+
+
+
+
+
+
+
+
 
 
 function validateSignup(){
@@ -34,6 +44,12 @@ function validateSignup(){
         emailMessage.innerHTML = 'Email cannot be empty';
         return false;
     }
+    else if(!email.value.includes('@')){
+        email.style.border="solid 2px red"
+        emailMessage.innerHTML = 'Invalid email address';
+        return false;
+    }
+
     else if(phone.value.trim()==""){
         phone.style.border="solid 2px red"
         phoneMessage.innerHTML = 'Phone number cannot be empty';

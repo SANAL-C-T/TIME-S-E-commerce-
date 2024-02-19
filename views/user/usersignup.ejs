@@ -14,7 +14,7 @@
       
       <form onsubmit="return validateSignup()" action="/signup" method="post">
         <div class="m-3">
-          <label for="username" class="form-label">Username:</label>
+          <label for="username" class="form-label"><i class="fa-solid fa-user" style="color: #010c14;"></i>     Username:</label>
           <input
             type="text"
             class="form-control"
@@ -26,7 +26,7 @@
         <div id="usernameMessage" class="text-danger m-3"></div>
 
         <div class="m-3">
-          <label for="email" class="form-label">Email:</label>
+          <label for="email" class="form-label"><i class="fa-solid fa-envelope" style="color: #01090f;"></i>   Email:</label>
           <input
             type="text"
             class="form-control"
@@ -38,7 +38,7 @@
         <div id="emailMessage" class="text-danger m-3"></div>
 
         <div class="m-3">
-          <label for="phone" class="form-label">Phone number:</label>
+          <label for="phone" class="form-label"><i class="fa-solid fa-phone" style="color: #010f1a;"></i>    Phone number:</label>
           <input
             type="tel"
             class="form-control"
@@ -50,7 +50,7 @@
         <div id="phoneMessage" class="text-danger m-3"></div>
 
         <div class="m-3">
-          <label for="password" class="form-label">Password:</label>
+          <label for="password" class="form-label"><i class="fa-solid fa-lock" style="color: #010d16;"></i>   Password:</label>
           <input
             type="password"
             class="form-control"
@@ -60,7 +60,19 @@
           />
         </div>
         <div id="passwordMessage" class="text-danger m-3"></div>
+
+
         <button  type="submit" value="signup"  class="btn btn-warning mb-5 m-3  ">SIGNUP</button>
+
+
+        <% if (locals.errorMessage) { %>
+          <div id="errorAlert" class="alert alert-danger" role="alert">
+              <%= locals.errorMessage %>
+          </div>
+          
+      <% } %>
+
+
 
       </form>
     </div>

@@ -39,6 +39,13 @@
   z-index: 1;
 }
 
+#largeimg{
+  object-fit: contain;
+  padding: 25px;
+}
+
+
+
 /* child */
 #smallImage img {
   margin-top: 10px;
@@ -73,19 +80,20 @@
 }
 
 #proimg {
-  /* width: 350px; */
-  height: 250px;
+  height: 190px;
+  object-fit: contain;
+  padding: 25px;
 }
 #btBYNOW {
   width: 100px;
-  background-color: orange;
+  background-color: rgb(253, 202, 108);
   border-radius: 10px;
   border: solid black 1px;
   box-shadow: 0 0 2px;
 }
 
 #btBYNOW:hover {
-  background-color: gold;
+  background-color: rgb(251, 160, 2);
 }
 
 @media only screen and (max-width: 768px) {
@@ -96,5 +104,22 @@
 }
 #txtcrd {
   height: 50px;
+  text-decoration: none;
+  
 }
 
+.bg-image {
+  transition: transform 0.3s ease-in-out;
+}
+
+.bg-image:hover {
+  transform: scale(1.2);
+}
+
+.bodyimg{
+  transition: transform 0.3s ease-in-out;
+}
+
+.bodyimg:hover{
+  transform: scale(1.1);
+}

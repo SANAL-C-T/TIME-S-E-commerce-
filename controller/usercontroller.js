@@ -50,37 +50,43 @@ const loginVerify = async (req, res) => {
         let pass = req.body.password;
 
         let dbEmail = await userData.findOne({ username: user }).select('username')
-        let dbpass = await userData.findOne({ password: pass }).select('password')
+        let dbpass = await userData.findOne({ username: user }).select('password')
         let stat = await userData.findOne({ username: user }).select('status')
-        console.log("stat", stat)
-        if (stat.status == false) {
-
-            res.redirect("/login")
-        }
-if(dbEmail==null||stat==null){
+        
+        if(dbEmail===null||stat===null){
     
-    res.redirect("/login")
-}
+            res.locals.errorMessage = 'Invalid email or password';
+            res.render("user/userlogin.ejs")
+        }
+
+        if (stat.status === false) {
+            res.locals.errorMessage = 'you are blocked by admin';
+            res.render("user/userlogin.ejs")
+        }
+   
 
 
-        if (dbEmail.username == user && dbpass.password == pass) {
+        if (dbEmail.username === user && dbpass.password === pass) {
             console.log("verified user")
 
-     const usertoken = JWTtoken.sign({ id: dbEmail },
-                jwtcode,
-                { expiresIn: "28800000" })
+                const usertoken = JWTtoken.sign({ id: dbEmail },
+                        jwtcode,
+                        { expiresIn: "28800000" })
 
-    const options = {
+                const options = {
                 expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
                 httpOnly: true
-            }
-     res.cookie("usertoken", usertoken, options)
-            console.log("token created")
-            res.redirect("/home")
+                }
+
+                res.cookie("usertoken", usertoken, options)
+
+                console.log("token created")
+            
+                res.redirect("/home")
         } else {
             console.log("not verified user")
-
-            res.redirect("/login")
+            res.locals.errorMessage = 'Invalid email or password';
+            res.render("user/userlogin.ejs")
 
         }
     }
@@ -124,8 +130,11 @@ const storeData = async (req, res) => {
             req.session.destroy()
         } else {
             console.log("email already exist")
+            res.locals.errorMessage = 'User already exist, please login';
+            res.render("user/usersignup.ejs")
+
         }
-        res.redirect("/login")
+        // res.redirect("/login")
     }
     catch (error) {
         console.log("test", error.message)
@@ -135,6 +144,8 @@ const storeData = async (req, res) => {
 
 const allproductPage = async (req, res) => {
     try {
+
+        console.log("test")
         const allproduct = await productDatas.find({isDeleted: false})
         res.render("user/productdisplay.ejs", { allproduct })
     }
@@ -173,7 +184,7 @@ const productdetail = async (req, res) => {
                 select: 'categoryName',
             })
             .exec();
-
+           
         if (!pdetail) {
             
             return res.status(404).send('Product not found');
@@ -283,8 +294,10 @@ const contactb = async (req, res) => {
 
 const categoryWiseProduct = async (req, res) => {
     try {
+
+        console.log("rete")
         const qid = req.params.proid;
-        console.log(qid)
+        console.log("id",qid)
 
         const catwise = await productDatas.findOne({ _id: qid, isDeleted: false })
             .populate({
@@ -294,6 +307,8 @@ const categoryWiseProduct = async (req, res) => {
             })
             .exec();
 
+
+            console.log(catwise)
         if (!catwise) {
            
             return res.status(404).send('Category-wise product not found');
@@ -415,11 +430,6 @@ const filter = async (req, res) => {
                 .limit(itemsPerPage)
                 .exec();
 
-
-
-          
-
-
         
             serc = await productDatas
                 .find({ ...searching, isDeleted: false })
@@ -457,14 +467,25 @@ const filter = async (req, res) => {
     }
 };
 
-const cart=async(req,res)=>{
+
+const editprofile=async(req,res)=>{
     try{
-        res.render("user/cart.ejs")
+        res.render("user/userprofileedit")
     }
     catch(error){
         console.log(error.message)
     }
 }
+
+const profile=async(req,res)=>{
+    try{
+        res.render("user/userprofile")
+    }
+    catch(error){
+        console.log(error.message)
+    }
+}
+
 
 
 module.exports = {
@@ -487,6 +508,7 @@ module.exports = {
     contactb,
     aboutb,
     filter,
-    cart
+    editprofile,
+    profile
 
 }

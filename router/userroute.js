@@ -1,6 +1,7 @@
 const userUrlRouter=require("express").Router();
 const otpc=require("../controller/otpController")
 const user=require("../controller/usercontroller")
+const cart=require("../controller/cartController")
 const middleman=require("../middleware/userSideMiddleware")
 const otpOptions=require("../controller/otpController")
 const jwtauth=require("../middleware/userJWTmiddleware")
@@ -44,11 +45,14 @@ userUrlRouter.get("/buyproduct",jwtauth.userhaveToken1,user.buyProduct)
 
 userUrlRouter.get("/product/:proid",jwtauth.userhaveToken1,user.categoryWiseProduct)
 
-userUrlRouter.get("/cart",user.cart)
+userUrlRouter.get("/cart/:prodid",cart.cartadd)
+// userUrlRouter.get("/cart/:prodid",cart.cartadd)
 
 userUrlRouter.get("/logout",user.logout)
 
+userUrlRouter.get("/profileEdit",user.editprofile)
 
+userUrlRouter.get("/Myprofile",user.profile)
 
 
 

@@ -49,7 +49,7 @@ const otpVerify = async (req, res) => {
             res.redirect("/saveData");
         } else {
            
-            res.locals.errorMessage = 'Invalid OTP. Please try again.';
+            res.locals.errorMessage = 'Invalid OTP. Try again after 1 minute.';
             
             res.render("user/otp.ejs");
         }

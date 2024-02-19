@@ -3,7 +3,7 @@
 <div class="row justify-content-center align-content-center">
     <div class="col-md-6 p-5">
         <h2>Verify your Email</h2>
-        <h4>Verify Email to continue ...</h4>
+        <h4>Send OTP will be valid for the next 1 minute.</h4>
 
         <div>
             <form method="post" action="/verifyOtp">
@@ -29,10 +29,24 @@
         </div>
                         <% if (locals.errorMessage) { %>
                             
-                            <div class="alert alert-danger" role="alert">
+                            <div id="errorMessageContainer" class="alert alert-danger" role="alert">
                                 <%= locals.errorMessage %>
                             </div>
+<script>
+    setTimeout(function(){
+        var errorAlert=document.getElementById('errorMessageContainer')
+        if(errorAlert){
+            errorAlert.style.display="none"
+            document.getElementById('otpBut').style.display = 'block';
+        }
+    },40000)
+</script>
+
+
+
+
                         <% } %>
+
                 </div>
             </div>
         </div>
@@ -66,7 +80,20 @@
 
             const otpDuration = 60;
 
-            startOTPTimer(otpDuration);
+            var errorMessageContainer = document.getElementById('errorMessageContainer');
+            if (errorMessageContainer) {
+                var isActive = errorMessageContainer.style.display !== 'none';
+                console.log('Is active:', isActive);
+            }
+
+      //if error is not active this will work,      
+if(!isActive){
+    startOTPTimer(otpDuration);
+}
+            
+                
+            
+           
 
 
            

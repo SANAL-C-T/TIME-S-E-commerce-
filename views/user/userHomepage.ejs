@@ -69,10 +69,10 @@
           <img src="<%= loadProduct[i].productImage[0].image1 %>" class="w-100" id="proimg" />
       
       </div>
-      <div class="card-body">
-        <a href="" class="text-reset">
+      <div class="card-body bodyimg">
+       
           <div><h5 class="card-title mb-3"id="txtcrd"><%= loadProduct[i].productName %></h5></div>
-        </a>
+        
         <h6 class="mb-3 text-danger">&#8377; <%= loadProduct[i].productPrice %></h6>
         <a href="/product/<%= loadProduct[i]._id %> " class="text-reset">
           <button class="m-2 " id="btBYNOW">BUY NOW</button>
@@ -201,12 +201,12 @@ Imagine effortlessly handling your Apple Watch with simple gestures, making it i
           <img src="<%= loadProductA[i].productImage[0].image1 %>" class="w-100" id="proimg"  />
       
       </div>
-      <div class="card-body">
-        <a href="" class="text-reset">
+      <div class="card-body bodyimg">
+        
           <div><h5 class="card-title mb-3"id="txtcrd"><%= loadProductA[i].productName %></h5></div>
-        </a>
+        
         <h6 class="mb-3 text-danger">&#8377; <%= loadProductA[i].productPrice %></h6>
-        <a href="/product/<%= loadProduct[i]._id %> " class="text-reset">
+        <a href="/product/<%= loadProductA[i]._id %> " class="text-reset">
           <button class="m-2 " id="btBYNOW">BUY NOW</button>
         </a>
        
@@ -273,13 +273,13 @@ Imagine effortlessly handling your Apple Watch with simple gestures, making it i
           <img src="<%= loadProductG[i].productImage[0].image1 %>" class="w-100" id="proimg" />
       
       </div>
-      <div class="card-body">
-        <a href="" class="text-reset" >
+      <div class="card-body  bodyimg">
+       
           <div><h5 class="card-title mb-3"id="txtcrd"><%= loadProductG[i].productName %></h5></div>
-        </a>
+        
         <h6 class="mb-3 text-danger ">&#8377; <%= loadProductG[i].productPrice %></h6>
         <a href="/product/<%= loadProductG[i]._id %> " class="text-reset">
-          <button class="m-2 "id="btBYNOW">BUY NOW</button>
+          <button class="m-2" id="btBYNOW">BUY NOW</button>
         </a>
        
       </div>

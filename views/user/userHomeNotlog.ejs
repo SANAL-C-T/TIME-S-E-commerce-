@@ -30,18 +30,13 @@
       <span class="visually-hidden">Next</span>
     </button>
 
- <div class="carousel-caption  d-md-block top-0   bannerCaption0">
+ <div class="carousel-caption  d-md-block top-0   bannerCaption0" >
     <h1 class="mt-5 ">SAMSUNG WATCHES</h1>
     <h4>Seamless Connectivity, Stylish Design</h4>
 </div>
-
-
   </div> 
  
 </div>  
-
-
-
 
 <br>
 
@@ -50,9 +45,12 @@
   magic. Embark on your day after a blissful night's sleep, thanks to the cutting edge Sleep Coaching
   feature now gracing the Galaxy Watch 6.</p>
 <br>
-
+<div id="tx1">
   <h4>The Samsung Galaxy Watch 6</h4>
-  <h5>“Ignite your daily wellness adventure”</h5>
+  <h5 class="hologram-text">“Ignite your daily wellness adventure”</h5>
+</div>
+
+
 </div>
 
 <br>
@@ -66,17 +64,17 @@
     <div class="card h-100">
       <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
         
-          <img src="<%= loadProduct[i].productImage[0].image1 %>" class="w-100" />
+          <img src="<%= loadProduct[i].productImage[0].image1 %>" id="proimg" class="w-100" />
       
       </div>
-      <div class="card-body">
-        <a href="" class="text-reset">
-          <div><h5 class="card-title mb-3"><%= loadProduct[i].productName %></h5></div>
-        </a>
+      <div class="card-body  bodyimg">
+       
+          <div><h5 class="card-title mb-3" id="txtcrd"><%= loadProduct[i].productName %></h5></div>
+       
         <a href="/product1" class="text-reset">
-          <button class="m-2 bg-warning ">CLICK FOR MORE</button>
+          <button class="m-2 " id="btBYNOW">CLICK FOR MORE</button>
         </a>
-        <h6 class="mb-3 "><%= loadProduct[i].productPrice %></h6>
+        <h6 class="mb-3 ">&#8377;  <%= loadProduct[i].productPrice %></h6>
       </div>
     </div>
   </div>
@@ -86,19 +84,6 @@
 <!--  --------------------------------------------------------------------------------------- -->
     </div>  <!-- row closing -->
 </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -134,17 +119,6 @@
   </div>  -->
   
 
-
-
-
-
-
-
-
-
-
-
-
   </div>
 
 <!-- here the products of samasung brad is to be displayed,   -->
@@ -178,16 +152,20 @@
 
 <div class="carousel-caption d-md-block  top-0   bannerCaption0">
   <h1 class="mt-5 ">APPLE WATCHES</h1>
-  <h4>“Smarter. Brighter. Mightier”</h4>
+  <h4 >“Smarter. Brighter. Mightier”</h4>
 </div>
 
 </div>
-
+<br>
 <div class="container text-center  "><p>Introducing a magical new way to interact with your Apple Watch without even touching the screen. Experience a display that's not only twice as bright but also offers an unparalleled level of convenience. Now, you can elevate your style with a watch case and strap combination that's not just stylish but also carbon neutral.
 Imagine effortlessly handling your Apple Watch with simple gestures, making it incredibly user friendly, especially when your hands are full. A double tap of your index finger and thumb lets you seamlessly answer calls, open notifications, play and pause music, and more.Discover a new standard of elegance, functionality, and health management with the Apple Watch—where cutting edge technology meets a commitment to your well being.</p>
 <br>
+<div id="tx1">
   <h4>Apple Watch Series 9</h4>
-  <h5>“Reimagined.Remarkable.”</h5>
+  <h5 class="hologram-text">“Reimagined.Remarkable.”</h5>
+
+</div>
+ 
 </div>
 
 <section style="background-color: #e8e8e8;">
@@ -199,17 +177,17 @@ Imagine effortlessly handling your Apple Watch with simple gestures, making it i
     <div class="card h-100">
       <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
         
-          <img src="<%= loadProductA[i].productImage[0].image1 %>" class="w-100" />
+          <img src="<%= loadProductA[i].productImage[0].image1 %>" class="w-100" id="proimg" />
       
       </div>
-      <div class="card-body">
-        <a href="" class="text-reset">
-          <div><h5 class="card-title mb-3"><%= loadProductA[i].productName %></h5></div>
-        </a>
+      <div class="card-body  bodyimg">
+      
+          <div><h5 class="card-title mb-3" id="txtcrd"><%= loadProductA[i].productName %></h5></div>
+       
         <a href="/product2" class="text-reset">
-          <button class="m-2 bg-warning ">CLICK FOR MORE</button>
+          <button class="m-2 " id="btBYNOW">CLICK FOR MORE</button>
         </a>
-        <h6 class="mb-3"><%= loadProductA[i].productPrice %></h6>
+        <h6 class="mb-3">&#8377;  <%= loadProductA[i].productPrice %></h6>
       </div>
     </div>
   </div>
@@ -248,7 +226,7 @@ Imagine effortlessly handling your Apple Watch with simple gestures, making it i
   </button>
 <div class="carousel-caption  d-md-block  top-0  bannerCaption0">
   <h1 class="mt-5 ">GARMIN WATCHES</h1>
-  <h4>“Next-level adventure”</h4>
+  <h4 >“Next-level adventure”</h4>
 </div>
 
 
@@ -257,9 +235,12 @@ Imagine effortlessly handling your Apple Watch with simple gestures, making it i
 
   You're not just built for the moment; you're made to endure. And so is your watch. </p>
 <br>
-
+<div id="tx1">
   <h4>MARQ Captain (Gen 2)</h4>
-  <h5>“Uncompromising by design”</h5>
+  <h5 class="hologram-text">“Uncompromising by design”</h5>
+
+</div>
+  
 </div>
 
 
@@ -272,17 +253,17 @@ Imagine effortlessly handling your Apple Watch with simple gestures, making it i
     <div class="card h-100">
       <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
         
-          <img src="<%= loadProductG[i].productImage[0].image1 %>" class="w-100" />
+          <img src="<%= loadProductG[i].productImage[0].image1 %>" class="w-100"id="proimg" />
       
       </div>
-      <div class="card-body">
-        <a href="" class="text-reset">
-          <div><h5 class="card-title mb-3"><%= loadProductG[i].productName %></h5></div>
-        </a>
+      <div class="card-body  bodyimg">
+        
+          <div><h5 class="card-title mb-3" id="txtcrd"><%= loadProductG[i].productName %></h5></div>
+      
         <a href="/product3" class="text-reset">
-          <button class="m-2 bg-warning ">CLICK FOR MORE</button>
+          <button class="m-2 " id="btBYNOW">CLICK FOR MORE</button>
         </a>
-        <h6 class="mb-3"><%= loadProductG[i].productPrice %></h6>
+        <h6 class="mb-3">&#8377;  <%= loadProductG[i].productPrice %></h6>
       </div>
     </div>
   </div>

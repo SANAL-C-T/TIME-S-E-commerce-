@@ -145,7 +145,8 @@ const adminbanner = async (req, res) => {
 const adminproduct = async (req, res) => {
     try {
 
-        const categories = await categoryData.find();
+        const categories = await categoryData.find({
+            Categorystatus:true});
         const urlData = {
             pageTitle: 'ADMIN PRODUCT ADD',
             cat: categories
@@ -193,17 +194,17 @@ const addcategory = async (req, res) => {
             act=false;
         }
 
-        console.log("incoming data:::::", req.body)
+        // console.log("incoming data:::::", req.body)
         const addcategoryDetails = new categoryData({
             categoryName: req.body.categoryName,
             Categorystatus: act
         });
 
-        console.log(addcategoryDetails.categoryName); // Corrected line
+        console.log(addcategoryDetails.categoryName);
 
 
-        const alreadyCat = await categoryData.findOne({ categoryName: cateN })
-
+        // const alreadyCat = await categoryData.findOne({ categoryName: cateN })
+        const alreadyCat = await categoryData.findOne({ categoryName: {$regex:new RegExp(cateN,'i')}})
 
         if (alreadyCat === null) {
             await addcategoryDetails.save();
@@ -313,7 +314,7 @@ try{
     console.log("cat delete")
     const ide=req.params.id
 
-    console.log("::::::::::",ide)
+    // console.log("::::::::::",ide)
     const cid = await categoryData.updateOne({_id: ide}, {$set: {Categorystatus: false}});
     res.redirect("/admin/category")
 
@@ -343,12 +344,37 @@ const cats=req.params.id;
 
 const editorCategory=async(req,res)=>{
     try{
+let categid=req.params.id
+let catedata=await categoryData.findOne({_id:categid})
+
+
+const toEjs={
+catsdata:catedata
+}
+res.render("admin/admineditcategory.ejs",{toEjs})
+
 
     }
     catch(error){
         console.log(error.message)
     }
 }
+
+const editedCategory=async(req,res)=>{
+try{
+let newcategoryname=req.body.categoryName;
+let newstatus=req.body.Categorystatus;
+let ids=req.params.id;
+await categoryData.updateOne({_id:ids},{$set:{categoryName:newcategoryname,Categorystatus:newstatus}})
+res.redirect("/admin/category")
+}
+catch(error){
+    console.log(error.message)
+}
+}
+
+
+
 
 
 
@@ -368,7 +394,8 @@ module.exports = {
     usersetting1,
     deleCategory,
     editorCategory,
-    restoreCategory
+    restoreCategory,
+    editedCategory
 
 
 }

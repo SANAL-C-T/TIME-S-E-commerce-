@@ -12,22 +12,127 @@ const jwtcode = process.env.jwt_user_secret
 //control function begins here
 const homeNotLog = async (req, res) => {
     try {
-        const loadProduct = await productDatas.find({ productCategory: '65ae1ded74d4441c5067ee22', isDeleted: false })
-        const loadProductA = await productDatas.find({ productCategory: '65ae1df474d4441c5067ee24', isDeleted: false })
-        const loadProductG = await productDatas.find({ productCategory: '65ae1e0674d4441c5067ee26', isDeleted: false })
-        res.render("user/userHomeNotlog.ejs", { loadProduct, loadProductA, loadProductG });
+        let loadProduct = 0;
+let loadProductG = 0;
+let loadProductA = 0;
+
+const samsungProduct = await productDatas.find({
+    productCategory: '65ae1ded74d4441c5067ee22', // Replace with the actual category ID
+    isDeleted: false,
+})
+.populate({
+    path: 'productCategory',
+    match: { Categorystatus: true } // Only include categories with Categorystatus set to true
+})
+.exec();
+
+if (samsungProduct[0].productCategory && samsungProduct[0].productCategory.Categorystatus === true) {
+    console.log("Samsung product loaded");
+    loadProduct = samsungProduct;
+} else {
+    loadProduct = 0;
+}
+
+const appleProduct = await productDatas.find({
+    productCategory: '65ae1df474d4441c5067ee24', // Replace with the actual category ID
+    isDeleted: false,
+})
+.populate({
+    path: 'productCategory',
+    match: { Categorystatus: true } // Only include categories with Categorystatus set to true
+})
+.exec();
+
+if (appleProduct[0].productCategory && appleProduct[0].productCategory.Categorystatus === true) {
+    console.log("Apple product loaded");
+    loadProductA = appleProduct;
+} else {
+    loadProductA = 0;
+}
+
+const garminProduct = await productDatas.find({
+    productCategory: '65ae1e0674d4441c5067ee26', // Replace with the actual category ID
+    isDeleted: false,
+})
+.populate({
+    path: 'productCategory',
+    match: { Categorystatus: true } // Only include categories with Categorystatus set to true
+})
+.exec();
+
+if (garminProduct[0].productCategory && garminProduct[0].productCategory.Categorystatus === true) {
+    console.log("Garmin product loaded");
+    loadProductG = garminProduct;
+} else {
+    loadProductG = 0;
+}
+
+res.render("user/userHomeNotlog.ejs", { loadProduct, loadProductA, loadProductG });
+
     } catch (error) {
         console.error(error.message);
     }
 };
 
 
-
+//this is the homepage of a loggedin user.
 const home = async (req, res) => {
     try {
-        const loadProduct = await productDatas.find({ productCategory: '65ae1ded74d4441c5067ee22', isDeleted: false })
-        const loadProductA = await productDatas.find({ productCategory: '65ae1df474d4441c5067ee24', isDeleted: false })
-        const loadProductG = await productDatas.find({ productCategory: '65ae1e0674d4441c5067ee26', isDeleted: false })
+        let loadProduct = 0;
+        let loadProductG = 0;
+        let loadProductA = 0;
+        
+        const samsungProduct = await productDatas.find({
+            productCategory: '65ae1ded74d4441c5067ee22', // Replace with the actual category ID
+            isDeleted: false,
+        })
+        .populate({
+            path: 'productCategory',
+            match: { Categorystatus: true } // Only include categories with Categorystatus set to true
+        })
+        .exec();
+        
+        if (samsungProduct[0].productCategory && samsungProduct[0].productCategory.Categorystatus === true) {
+            console.log("Samsung product loaded");
+            loadProduct = samsungProduct;
+        } else {
+            loadProduct = 0;
+        }
+        
+        const appleProduct = await productDatas.find({
+            productCategory: '65ae1df474d4441c5067ee24', // Replace with the actual category ID
+            isDeleted: false,
+        })
+        .populate({
+            path: 'productCategory',
+            match: { Categorystatus: true } // Only include categories with Categorystatus set to true
+        })
+        .exec();
+        
+        if (appleProduct[0].productCategory && appleProduct[0].productCategory.Categorystatus === true) {
+            console.log("Apple product loaded");
+            loadProductA = appleProduct;
+        } else {
+            loadProductA = 0;
+        }
+        
+        const garminProduct = await productDatas.find({
+            productCategory: '65ae1e0674d4441c5067ee26', // Replace with the actual category ID
+            isDeleted: false,
+        })
+        .populate({
+            path: 'productCategory',
+            match: { Categorystatus: true } // Only include categories with Categorystatus set to true
+        })
+        .exec();
+        
+        if (garminProduct[0].productCategory && garminProduct[0].productCategory.Categorystatus === true) {
+            console.log("Garmin product loaded");
+            loadProductG = garminProduct;
+        } else {
+            loadProductG = 0;
+        }
+
         res.render("user/userHomepage.ejs", { loadProduct, loadProductA, loadProductG });
 
     } catch (error) {
@@ -44,54 +149,99 @@ const login = async (req, res) => {
     }
 }
 
-const loginVerify = async (req, res) => {
-    try {
-        let user = req.body.username;
-        let pass = req.body.password;
-
-        let dbEmail = await userData.findOne({ username: user }).select('username')
-        let dbpass = await userData.findOne({ username: user }).select('password')
-        let stat = await userData.findOne({ username: user }).select('status')
+// const loginVerify = async (req, res) => {
+//     try {
+//         let user = req.body.username;
+//         let pass = req.body.password;
+// console.log(pass)
+//         let dbEmail = await userData.findOne({ username: user }).select('username')
+//         let dbpass = await userData.findOne({ username: user }).select('password')
+//         let stat = await userData.findOne({ username: user }).select('status')
         
-        if(dbEmail===null||stat===null){
-    
-            res.locals.errorMessage = 'Invalid email or password';
-            res.render("user/userlogin.ejs")
-        }
 
-        if (stat.status === false) {
-            res.locals.errorMessage = 'you are blocked by admin';
-            res.render("user/userlogin.ejs")
-        }
+//         const match = await bcrypt.compare(pass,dbpass);
+
+//         console.log("match",match)
+//         if(dbEmail===null||stat===null){
+    
+//             res.locals.errorMessage = 'Invalid email or password';
+//             res.render("user/userlogin.ejs")
+//         }
+
+//         if (stat.status === false) {
+//             res.locals.errorMessage = 'you are blocked by admin';
+//             res.render("user/userlogin.ejs")
+//         }
    
 
 
-        if (dbEmail.username === user && dbpass.password === pass) {
-            console.log("verified user")
+//         if (dbEmail.username === user && match) {
+//             console.log("verified user")
 
-                const usertoken = JWTtoken.sign({ id: dbEmail },
-                        jwtcode,
-                        { expiresIn: "28800000" })
+//                 const usertoken = JWTtoken.sign({ id: dbEmail },
+//                         jwtcode,
+//                         { expiresIn: "28800000" })
 
-                const options = {
+//                 const options = {
+//                 expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+//                 httpOnly: true
+//                 }
+
+//                 res.cookie("usertoken", usertoken, options)
+
+//                 console.log("token created")
+            
+//                 res.redirect("/home")
+//         } else {
+//             console.log("not verified user")
+//             res.locals.errorMessage = 'Invalid email or password';
+//             res.render("user/userlogin.ejs")
+
+//         }
+//     }
+//     catch (error) {
+//         console.log(error.message)
+//     }
+// }
+const loginVerify = async (req, res) => {
+    try {
+        const user = req.body.username;
+        const pass = req.body.password;
+
+        // Query for user details including username, password, and status
+        const userRecord = await userData.findOne({ username: user }).select('username password status');
+
+        if (!userRecord) {
+            res.locals.errorMessage = 'Invalid email or password';
+            return res.render("user/userlogin.ejs");
+        }
+
+        const isBlocked = userRecord.status === false;
+        const isPasswordValid = await bcrypt.compare(pass, userRecord.password);
+
+        if (isBlocked) {
+            res.locals.errorMessage = 'You are blocked by admin';
+            return res.render("user/userlogin.ejs");
+        }
+
+        if (isPasswordValid) {
+            const usertoken = JWTtoken.sign({ id: userRecord.username,_id:userRecord._id }, jwtcode, { expiresIn: "28800000" });
+
+            const options = {
                 expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
                 httpOnly: true
-                }
+            };
 
-                res.cookie("usertoken", usertoken, options)
-
-                console.log("token created")
-            
-                res.redirect("/home")
+            res.cookie("usertoken", usertoken, options);
+            console.log("Token created");
+            return res.redirect("/home");
         } else {
-            console.log("not verified user")
             res.locals.errorMessage = 'Invalid email or password';
-            res.render("user/userlogin.ejs")
-
+            return res.render("user/userlogin.ejs");
         }
-    }
-    catch (error) {
-        console.log(error.message)
+    } catch (error) {
+        console.log(error.message);
+        // Handle the error appropriately, e.g., send an error response to the client
     }
 }
 
@@ -108,11 +258,25 @@ const signup = async (req, res) => {
 }
 
 
+
+const secretPass=async (password)=>{
+    try{
+       
+        const hashedPass=await bcrypt.hash(password,10);
+        return hashedPass;
+    }
+    catch(error){
+        console.log(error.message)
+    }
+};
+
+
 // store comming data to database
 const storeData = async (req, res) => {
     // console.log(req.session.email)
+    
     try {// here i am only storing the data at the time of signup
-
+        const passwordCode=await secretPass(req.session.password);
         const userEmail = req.session.email;
         const emailIndb = await userData.findOne({ email: userEmail })
 
@@ -120,21 +284,22 @@ const storeData = async (req, res) => {
         if (emailIndb == null) {
             const userdetails = new userData({
                 username: req.session.username,
-             email: req.session.email,
-            password: req.session.password,
+                email: req.session.email,
+                 password: passwordCode,
              phone: req.session.phone,
              verified: true
             })
-            console.log("Saved in database")
-        await userdetails.save()
+            console.log("Signup data saved in database")
+            await userdetails.save()
             req.session.destroy()
+            res.redirect("/login")
         } else {
             console.log("email already exist")
             res.locals.errorMessage = 'User already exist, please login';
             res.render("user/usersignup.ejs")
 
         }
-        // res.redirect("/login")
+        
     }
     catch (error) {
         console.log("test", error.message)
@@ -418,7 +583,7 @@ const filter = async (req, res) => {
                 })
                 .countDocuments();
 
-            // Finding products based on selection excluding deleted products
+            // Finding the products based on selection excluding deleted products
             products = await productDatas
                 .find({ 'productCategory': category._id, isDeleted: false })
                 .populate({
@@ -432,7 +597,7 @@ const filter = async (req, res) => {
 
         
             serc = await productDatas
-                .find({ ...searching, isDeleted: false })
+                .find({ ...searching, isDeleted: false,'productCategory': category._id, })
                 .populate({
                     path: 'productCategory',
                     model: 'category',

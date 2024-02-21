@@ -1,6 +1,6 @@
 <%- include("../partials/adminheader.ejs") %>
 <div class="container">
-  <h2 class="mt-4 mb-4">CATEGORY DETAIL ADD</h2>
+  <h2 class="mt-4 mb-4">ADD CATEGORY DETAIL </h2>
 
   <form onsubmit="return validation()"  method="post" action="/admin/category">
     <div class="mb-3">
@@ -26,7 +26,16 @@
         <option value="inactive">FALSE (IN ACTIVE)</option>
       </select>
     </div>
-    <button type="submit" class="btn btn-primary">Add Category</button>
+
+    <% if (locals.errormessage) { %>
+      <div class="error-message">
+        <%= locals.errormessage %>
+      </div>
+    <% } %>
+    
+
+
+    <button type="submit" class="btn btn-success ">Add Category</button>
   </form>
 
   <h2 class="mt-4 mb-4">CATEGORY LIST</h2>
@@ -177,13 +186,13 @@
     const deleteButtons = document.querySelectorAll(".delete-button");
     const restoreButtons = document.querySelectorAll(".restore-button");
 
-    // Add click event listener to each delete button
+    // Adding click event listener to each delete button
     deleteButtons.forEach((button) => {
       button.addEventListener("click", function () {
         // Get the category id from the data attribute
         const categoryId = this.getAttribute("data-category-id");
 
-        // Update the href attribute of the delete link with the category id
+        // Update the href  of the delete link with the category id
         deleteCategoryLink.href = "/admin/deleteCategory/" + categoryId;
 
         // Open the delete modal
@@ -191,7 +200,7 @@
       });
     });
 
-    // Add click event listener to each restore button
+    // Adding click event listener to each restore button
     restoreButtons.forEach((button) => {
       button.addEventListener("click", function () {
         // Get the category id from the data attribute
@@ -207,19 +216,26 @@
   });
 
 
-function validation(){
-  let categoryName=document.getElementById('categoryName').value
-let carterror=document.getElementById('carterror');
-  if(categoryName==""){
-    carterror.innerHTML="Category name cannot be empty"
-    return false;
-  }else{
-    return true;
+
+  function validation() {
+    let categoryName = document.getElementById('categoryName').value;
+    let carterror = document.getElementById('carterror');
+
+    // Regular expression to match only alphabets
+    let alphabetRegex = /^[a-zA-Z]+$/;
+
+    if (categoryName.trim() === "") {
+      carterror.innerHTML = "Category name cannot be empty";
+      return false;
+    } else if (!alphabetRegex.test(categoryName)) {
+      carterror.innerHTML = "Category name should contain only alphabets";
+      return false;
+    } else {
+      // Clear previous error messages
+      carterror.innerHTML = "";
+      return true;
+    }
   }
-}
-
-
-
 </script>
 
 <%- include("../partials/adminfooter.ejs") %>

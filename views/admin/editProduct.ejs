@@ -54,19 +54,20 @@
       <div class="mb-3">
         <label for="productCategory" class="form-label">Product Category</label>
         <select
-          class="form-select"
-          id="productCategory"
-          name="productCategory"
-          required
+            class="form-select"
+            id="productCategory"
+            name="productCategory"
+            required
         >
-          <option value="" disabled selected>Select a category</option>
-          <% urlData.cate.forEach(category => { %>
-          <option value="<%= category._id %>">
-            <%= category.categoryName %>
-          </option>
-          <% }) %>
+            <option value="" disabled selected>Select a category</option>
+            <% urlData.cate.forEach(category => { %>
+                <option value="<%= category._id %>" <% if(category._id.toString() === urlData.proData.productCategory.toString()) { %> selected <% } %>>
+                    <%= category.categoryName %>
+                </option>
+            <% }) %>
         </select>
-      </div>
+    </div>
+    
       <div id="productCategoryMessage" class="text-danger m-3" ></div>
 
 
@@ -92,7 +93,7 @@
           class="form-control"
           id="productsize"
           name="productsize"
-          value="<%=urlData.proData.productsize%>"
+          value="<%=urlData.proData. variantproductsize%>"
         />
       </div>
       <div id="productsizeMessage" class="text-danger m-3" ></div>
@@ -242,7 +243,7 @@
 
       function submitForm(button){
 
-        if(addProVlidation() == !isValid){
+        if(!addProVlidation()){
           return;
       }
 
@@ -284,13 +285,14 @@
         })
         .then(data => {
             console.log('Form submitted successfully:', data);
-            // Handle the server response as needed
+            
         })
         .catch(error => console.error('Error submitting form:', error.message));
       }
       
-      let isValid = true;
+     
       function addProVlidation() {
+        let isValid = true;
         let productName = document.getElementById('productName').value;
         let productDescription = document.getElementById('productDescription').value;
         let productPrice = document.getElementById('productPrice').value;
@@ -312,6 +314,7 @@
        
     
         if (productName === "") {
+
             productNameMessage.innerHTML = "Product name cannot be empty";
             isValid = false;
         } else {

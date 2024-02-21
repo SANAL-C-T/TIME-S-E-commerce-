@@ -13,6 +13,9 @@ const product=require("../controller/productController")
 
 
 // all routes related to admin
+
+
+
 adminUrlRouter.get("/enter",jwtAuth.haveToken,adminin.adminlogin)
 adminUrlRouter.post("/enter",adminin.adminVerification)
 
@@ -43,7 +46,8 @@ adminUrlRouter.get("/category",jwtAuth. haveToken3,adminin.showcategory)
 adminUrlRouter.post("/category",jwtAuth. haveToken3,adminin.addcategory)
 adminUrlRouter.get("/deleteCategory/:id",jwtAuth. haveToken3,adminin.deleCategory)
 adminUrlRouter.get("/restoreCategory/:id",jwtAuth. haveToken3,adminin.restoreCategory)
-adminUrlRouter.get("/editCategory",jwtAuth. haveToken3,adminin.editorCategory)
+adminUrlRouter.get("/editCategory/:id",jwtAuth. haveToken3,adminin.editorCategory)
+adminUrlRouter.post("/editedcategory/:id",jwtAuth. haveToken3,adminin.editedCategory)
 adminUrlRouter.post("/category",adminin.addcategory)
 
 

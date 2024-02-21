@@ -1,12 +1,14 @@
 
 const user = require("../model/userSchema");
 const JWTtoken = require('jsonwebtoken');
-const jwtcode = process.env.jwt_user_secret // Replace with your actual secret key
+const jwtcode = process.env.jwt_user_secret
 
 const active = async (req, res, next) => {
     try {
         const usertoken = req.cookies.usertoken;
+console.log("usertokennnnn::::",usertoken)
 
+console.log("code",jwtcode)
         JWTtoken.verify(usertoken, jwtcode, async (error, decoded) => {
             if (error) {
                 console.error('Error verifying token:', error.message);
@@ -15,11 +17,13 @@ const active = async (req, res, next) => {
                 return;
             } else {
              
-                const userId = decoded.id;
-                console.log('User ID:', userId._id);
+                const userId = decoded._id;
+                console.log('User ID:', userId);
 
                
-                const userArray = await user.find({ _id: userId._id });
+                const userArray = await user.find({ _id: userId });
+                console.log("mmm",userArray)
+
                 if (userArray.length === 0 || userArray[0].status === false) {
                     console.log("User is blocked or not found. Redirecting to /logout");
                     res.redirect("/logout");

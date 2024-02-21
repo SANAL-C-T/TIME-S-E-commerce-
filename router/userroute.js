@@ -9,7 +9,7 @@ const userBlock=require("../middleware/blocked")
 
 userUrlRouter.get("/home.",jwtauth.userhaveToken,user.homeNotLog)//for general home
 
-
+userUrlRouter.get("/product1",user.login)
 userUrlRouter.get("/a",user.notfound)
 userUrlRouter.get("/login",jwtauth.userhaveToken,user.login)
 userUrlRouter.post("/login",user.loginVerify)
@@ -17,7 +17,7 @@ userUrlRouter.get("/forgot",user.forgotpassword)
 userUrlRouter.post("/forgot",user.resetpassword)
 
 
-userUrlRouter.get("/home",jwtauth.userhaveToken1,user.home)//for userlogged home
+userUrlRouter.get("/home",userBlock.active,jwtauth.userhaveToken1,user.home)//for userlogged home
 // userUrlRouter.get("/about",user.about)
 userUrlRouter.get("/about.",jwtauth.aboutToken,user.about)
 userUrlRouter.get("/about",userBlock.active,jwtauth.aboutToken2,user.aboutb)

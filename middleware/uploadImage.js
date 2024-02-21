@@ -8,6 +8,7 @@ const storage=multer.diskStorage({
         callback(null,"upload") //this is the destiontion to which pic is stored
     },
     filename: function (req, file, cb) {//remnaming function
+        console.log("incoming image to multer",file)
         var ext=file.originalname.substring(file.originalname.lastIndexOf("."))
 
         cb(null,file.originalname+ "-"+Date.now()+ext)
@@ -45,7 +46,7 @@ console.log("hello  data is comming to multer")
 
  // Assuming data is the array structure you provided
  const data = req.body;
-
+console.log("incoming imagedata",data.size)
  for (let index = 0; index < data.length; index++) {
      const item = data[index];
 

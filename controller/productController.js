@@ -6,7 +6,7 @@ const categData=require("../model/categorySchema")
 const addproduct=async(req,res)=>{
 
 
-    console.log("test test")
+    console.log("test incoming images::::",req.files)
     try{
         const filePath=[]
         req.files.forEach(element => {
@@ -16,7 +16,7 @@ const addproduct=async(req,res)=>{
             console.log("bodyData in addproduct:::",req.body);//has all the datas of upload, including image.
 
 
-            console.log(JSON.stringify(req.files));
+            console.log("image files",JSON.stringify(req.files));
 
          const productImageObject = {
             image1: `/${filePath[0]}`,
@@ -25,7 +25,7 @@ const addproduct=async(req,res)=>{
             image4: `/${filePath[3]}`,
             image5: `/${filePath[4]}`,
         };
-
+console.log("fffrfrfrrf",productImageObject)
 
             const vari={
                 productsize:req.body.productsize,
@@ -34,6 +34,7 @@ const addproduct=async(req,res)=>{
         // console.log("incoming:",req.body.productCategory)
         const category = await categData.findOne({ _id: req.body.productCategory });
             console.log("category data in addproduct::::",category)
+
 
         const addproductDetails=new productData({
             productName:req.body.productName,
@@ -87,8 +88,9 @@ const edit=async(req,res)=>{
         const catego = await categData.findOne({ _id: req.body.productCategory });
         const dbd=req.params.id
         // console.log(dbd)
-        const y=await categData.find({})
+        const y=await categData.find({Categorystatus:true})
         const x =await productData.findById(dbd);
+        console.log("X",x)
         let r="EDIT ADDED PRODUCT"
         const urlData={
             proData:x,
@@ -193,18 +195,20 @@ const saveedit = async (req, res) => {
     try {
         let index=[]
         let pid = req.params.id;
-        let ind =req.body.imageIndexes ;
-        ind.forEach((x)=>{
-            index.push(Number(x))
-        })
-console.log(index)
+      
+        if (req.files && req.files.length > 0) {
+            let ind = req.body.imageIndexes;
+            ind.forEach((x) => {
+                index.push(Number(x));
+            });
+
 
         const alreadyAdded = await productData.findOne({ _id: pid });
         let existingImage = alreadyAdded.productImage;
 
         let incoming = [];
         req.files.forEach((x) => {
-            console.log(x.filename);
+            console.log(">><<<",x.filename);
             let filepath = `/${x.filename}`;
             incoming.push(filepath);
         });
@@ -284,7 +288,51 @@ console.log(index)
         );
 
         res.redirect("/admin/listProduct");
-    } catch (error) {
+    } else{
+        const alreadyAdded = await productData.findOne({ _id: pid });
+        let existingImage = alreadyAdded.productImage;
+        let imgarr = [];
+        imgarr.push(existingImage[0].image1);
+        imgarr.push(existingImage[0].image2);
+        imgarr.push(existingImage[0].image3);
+        imgarr.push(existingImage[0].image4);
+        imgarr.push(existingImage[0].image5);
+        let editarry = [];
+        
+        const productImageObject1 = {
+            image1: imgarr[0],
+            image2: imgarr[1],
+            image3: imgarr[2],
+            image4: imgarr[3],
+            image5: imgarr[4],
+        };
+
+        const varii = {
+            productsize: req.body.productsize,
+            productcolour: req.body.productcolour,
+        };
+
+        const category = await categData.findOne({ _id: req.body.productCategory });
+
+        const updatedata = await productData.updateOne(
+            { _id: pid },
+            {
+                $set: {
+                    productName: req.body.productName,
+                    productDescription: req.body.productDescription,
+                    productCategory: category._id,
+                    productPrice: req.body.productPrice,
+                    variant: varii,
+                    productImage: productImageObject1,
+                    stockCount: req.body.stockCount,
+                },
+            }
+        );
+
+        res.redirect("/admin/listProduct");
+    }
+
+}catch (error) {
         console.log(error.message);
     }
 };

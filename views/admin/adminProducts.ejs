@@ -89,7 +89,7 @@
             </div>
 
 
-            <button type="button" class="btn btn-primary" onclick="submitForm(),successmessage()">Submit</button>
+            <button type="button" class="btn btn-primary" onclick="submitForm()">Submit</button>
 
 
     </div>
@@ -159,12 +159,13 @@
 //...........form submit...............
 
             function submitForm() {
-
+               
 
                 if (!addProVlidation()) {
+                    
                     return;
                 }
-
+                successmessage()
                 // Create a FormData object to store form data, including files
                 const formData = new FormData();
 
@@ -181,14 +182,16 @@
                
              
             
-
-               imgArry.forEach((image, index) => {
-                    formData.append('productImages[]', image.file);
-                });
-
-                
+if(imgArry.length>0){
+    imgArry.forEach((image, index) => {
+        formData.append('productImages[]', image.file);
+    });
+}else{
+    images.forEach((image, index) => {
+        formData.append('productImages[]', image.file);
+    });
+}
               
-
                 //fetch request to submit the form data to backend.
                 fetch("/admin/products", {
                     method: 'POST',
@@ -201,13 +204,8 @@
                         return response.json();
                     })
                     .then(data => {
-                        console.log('Form submitted successfully:', data);
-
-
-
-
-                        
-
+                        console.log('Form submitted successfully:', data);    
+                       
                     })
                     .catch(error => console.error('Error submitting form:', error.message));
             }
@@ -324,7 +322,7 @@ let imgArry=[]
                 const selectedImage = images[index];
                 modalImage.src = selectedImage.url;
             
-                // Create a new Cropper instance when the modal is shown
+                // Create a new Cropper instance when the moda
                 modal.on('shown.bs.modal', function () {
                     cropper = new Cropper(modalImage, {
                         aspectRatio: 0,
@@ -350,7 +348,7 @@ let imgArry=[]
                         // Update the display
                         document.getElementById("container").innerHTML = image_show();
                 
-                        // You can use the 'blob' variable for further processing or uploading
+                        // the 'blob' variable for further processing or uploading
                         console.log("Cropped Image Blob:", blob);
                     }, 'image/png');
                 });
@@ -358,7 +356,7 @@ let imgArry=[]
             
                 // Event listener for the "SAVE" button
                 saveButton.addEventListener("click", function () {
-                    // Your existing code...
+                   
             
                     // Hide the modal
                     modal.modal('hide');
@@ -370,6 +368,7 @@ let imgArry=[]
             
 
 //validation 
+
 function addProVlidation() {
     let productName = document.getElementById('productName').value;
     let productDescription = document.getElementById('productDescription').value;
@@ -379,6 +378,8 @@ function addProVlidation() {
     let productsize = document.getElementById("productsize").value;
     let productcolour = document.getElementById("productcolour").value;
     let stockCount = document.getElementById("stockCount").value;
+    const fileInput = document.getElementById('image');
+
 
     let productNameMessage = document.getElementById('productNameMessage');
     let productDescriptionMessage = document.getElementById('productDescriptionMessage');
@@ -391,21 +392,26 @@ function addProVlidation() {
 
     let isValid = true;
 
-    if (productName === "") {
+    if (productName.trim() === "") {
         productNameMessage.innerHTML = "Product name cannot be empty";
+        isValid = false;
+    } else if (!/^[a-zA-Z\s]+$/.test(productName)) {
+        productNameMessage.innerHTML = "Product name should only contain alphabets and spaces";
         isValid = false;
     } else {
         productNameMessage.innerHTML = "";
     }
+    
+    
 
-    if (productCategory === "") {
+    if (productCategory.trim() === "") {
         productCategoryMessage.innerHTML = "Product category cannot be empty";
         isValid = false;
     } else {
         productCategoryMessage.innerHTML = "";
     }
 
-    if (productDescription === "") {
+    if (productDescription.trim() === "") {
         productDescriptionMessage.innerHTML = "Product description cannot be empty";
         isValid = false;
     } else {
@@ -419,7 +425,7 @@ function addProVlidation() {
         addedDateMessage.innerHTML = "";
     }
 
-    if (productsize === "") {
+    if (productsize.trim() === "") {
         productsizeMessage.innerHTML = "Product size cannot be empty";
         isValid = false;
     } else {
@@ -433,12 +439,16 @@ function addProVlidation() {
         productPriceMessage.innerHTML = "";
     }
 
-    if (productcolour === "") {
+    if (productcolour.trim() === "") {
         productcolourMessage.innerHTML = "Product colour cannot be empty";
+        isValid = false;
+    } else if (!/^[a-zA-Z]+$/.test(productcolour)) {
+        productcolourMessage.innerHTML = "Product colour should only contain alphabets";
         isValid = false;
     } else {
         productcolourMessage.innerHTML = "";
     }
+    
 
     if (stockCount === "") {
         stockCountMessage.innerHTML = "Product stock cannot be empty";
@@ -450,6 +460,11 @@ function addProVlidation() {
         stockCountMessage.innerHTML = "";
     }
 
+
+
+    
+    
+    
     return isValid;
 }
 

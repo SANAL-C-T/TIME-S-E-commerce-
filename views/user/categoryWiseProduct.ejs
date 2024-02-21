@@ -98,13 +98,13 @@
             }
 
 
-            /*image height of the card in the non categried section in the catergiswise page*/
+            
             #proimg { 
                 
                 height: 250px;
               }
 
-              /*text height of the card in the non categried section in the catergiswise page*/
+              
               #txtcrd {
                 height: 50px;
               }
@@ -124,7 +124,7 @@
             categoryName%></strong></h4>
 
             <form class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" type="search" placeholder="Search" name="ser" aria-label="Search">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" name="ser" id="serh" aria-label="Search">
                 <button class="btn btn-success my-4" type="submit">Search</button>
               </form>
 
@@ -177,7 +177,7 @@
 <script>
 
     let re;
-    document.addEventListener('DOMContentLoaded', async function () {
+  document.addEventListener('DOMContentLoaded', async function () {
         const filters = document.querySelectorAll('input[name=productType]');
         const sorts = document.querySelectorAll('input[name=pricesort]');
         const discounts = document.querySelectorAll('input[name=discounted]');
@@ -201,13 +201,14 @@
 
     });
 
+    
             async function newProductlist(page){
                 
                 const productType=document.querySelector('input[name=productType]:checked');
                 const discounted=document.querySelector('input[name=discounted]:checked');
                 const pricesort=document.querySelector('input[name=pricesort]:checked');
                 const ser = document.querySelector('input[name=ser]').value; 
-              re=ser;
+                re=ser;
                 
                 try{
                   //posting the user input to backend.
@@ -260,11 +261,12 @@
 
             function updateProductHTML(data) {
                 const contain = document.querySelector(".pdlist");
-    console.log("qqqq",data)
-    console.log("re",re)
-                // Clear existing content 
+                const productType=document.querySelector('input[name=productType]:checked');
+                console.log("update product data in ui",data)
+ 
                if(lock!=1){
                     contain.innerHTML = '';
+                  
                 }
                 let cards=[] 
                 
@@ -301,9 +303,9 @@
                     paginations.innerHTML = generatePagination(data.docCount, data.a);
                    
             
-                } else  {
+                } else if(re==""||re!=""&&productType!=null) {
                
-                   /* console.log('Search Results:', data.serc);*/
+                 
                     data.serc.forEach(product => {
                         const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
                             <div class="card h-100">

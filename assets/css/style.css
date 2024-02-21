@@ -99,10 +99,10 @@ width: auto;
 
 @keyframes colorChangeAnimation {
   0% {
-    color: #0099ff;
+    color: #0bceff;
   }
   25% {
-    color: #ff05f3;
+    color: #ff05e6;
   }
   50% {
     color: #12c25c;

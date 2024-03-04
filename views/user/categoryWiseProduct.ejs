@@ -8,18 +8,7 @@
             
                 <ul class="nav flex-column">
                     <h6 class="text-center mt-3  "> CATEGORY</h6>
-                <!--     <li class="nav-item">
-                        <label class="nav-link" for="newlaunch">
-                            <input type="radio" id="newlaunch" name="productType" class="form-check-input">
-                            NEW LAUNCH
-                        </label>
-                    </li>
-                    <li class="nav-item">
-                        <label class="nav-link" for="allproducts">
-                            <input type="radio" id="allproducts" name="productType" class="form-check-input">
-                            ALL PRODUCTS
-                        </label>
-                    </li> -->
+              
 
                     <li class="nav-item">
                         <label class="nav-link" for="APPLE">
@@ -42,7 +31,7 @@
                         </label>
                     </li>
 
-                <!-- <h6 class="text-center mt-3 "> PRICE</h6>
+                <h6 class="text-center mt-3 "> PRICE</h6>
 
                     <li class="nav-item">
                         <label class="nav-link" for="Hightolow">
@@ -56,7 +45,7 @@
                             <input type="radio" id="lowtohigh" name="pricesort" class="form-check-input">
                             Low to High
                         </label>
-                    </li> -->
+                    </li> 
                    
            <h6 class="text-center mt-3 "> DISCOUNTED</h6>
                     <li class="nav-item">
@@ -328,7 +317,9 @@
                     });
                   
                     contain.innerHTML = cards.join("");
-                    
+                    const paginations=document.querySelector('.pagination')
+     
+                    paginations.innerHTML = generatePagination(data.docCount, data.a);
             }
             
 

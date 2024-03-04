@@ -6,6 +6,7 @@ const middleman=require("../middleware/userSideMiddleware")
 const otpOptions=require("../controller/otpController")
 const jwtauth=require("../middleware/userJWTmiddleware")
 const userBlock=require("../middleware/blocked")
+const multer=require("../middleware/uploadImage")
 
 userUrlRouter.get("/home.",jwtauth.userhaveToken,user.homeNotLog)//for general home
 
@@ -45,22 +46,37 @@ userUrlRouter.get("/buyproduct",jwtauth.userhaveToken1,user.buyProduct)
 
 userUrlRouter.get("/product/:proid",jwtauth.userhaveToken1,user.categoryWiseProduct)
 
-userUrlRouter.get("/cart/:prodid",cart.cartadd)
 // userUrlRouter.get("/cart/:prodid",cart.cartadd)
 
 userUrlRouter.get("/logout",user.logout)
 
-userUrlRouter.get("/profileEdit",user.editprofile)
 
+//profile links
 userUrlRouter.get("/Myprofile",user.profile)
+userUrlRouter.get("/profileEdits",user.editprofile)
+userUrlRouter.post("/profileEdit",multer.profileimageupload,user.saveEditProfile)
+userUrlRouter.get("/changepassword",user.changepassword)
+userUrlRouter.post("/changepassword",user.changesavedpassword)
+userUrlRouter.get("/savedaddress",cart.savedAddress)
+userUrlRouter.post("/savedaddress",cart.deleteAddress)
 
+//user cart related
 
+userUrlRouter.get("/cart",cart.showcart)
+userUrlRouter.get("/cart/:prodid",cart.cartadd)
+userUrlRouter.post("/quantityUpdate",cart.qyt)
 
+userUrlRouter.post("/itemdelete",cart.itemdel)
 
+userUrlRouter.get("/paynow",cart.proceedToaddress)
+userUrlRouter.post("/paynow",cart.addAddressToPurchase)
+userUrlRouter.get("/orderHistory",cart.history)
+userUrlRouter.post("/orderCancel/:id",cart.cancelOrder)
+userUrlRouter.get("/review/:id",user.addReview)
+userUrlRouter.get("/review/:id",user.viewReview)
+userUrlRouter.post("/saveReview/:id",user.saveReview)
 
-
-
-
+//universal route for 404
 userUrlRouter.get("/*",user.notfound)
 
 module.exports={

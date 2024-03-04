@@ -4,6 +4,7 @@ const productData = require("../model/productSchema")
 const categoryData = require("../model/categorySchema")
 const bannerData = require("../model/bannerSchema")
 const userDatas = require("../model/userSchema")
+const orderData=require("../model/orderhistoryschema")
 const bcrypt = require("bcrypt")
 require('dotenv').config();
 const jwt = require("jsonwebtoken");
@@ -36,7 +37,7 @@ const hashpass = async (pass) => {
 
 
 //logic to add extradetails of admin,connection to schema
-
+/* ---------------------------------------------------- */
 const adminDataStore = async (req, res) => {
 
     console.log(req.body)
@@ -180,6 +181,8 @@ const showcategory = async (req, res) => {
     }
 }
 
+
+/* ---------------------------------------------------- */
 const addcategory = async (req, res) => {
 
     let cateN = req.body.categoryName
@@ -244,7 +247,7 @@ const addbanner = async (req, res) => {
     }
 }
 
-
+/* ---------------------------------------------------- */
 const logout = async (req, res) => {
     try {
         console.log(req.cookie)
@@ -257,6 +260,8 @@ const logout = async (req, res) => {
     }
 }
 
+
+/* ---------------------------------------------------- */
 const usermanage = async (req, res) => {
 
     try {
@@ -272,7 +277,7 @@ const usermanage = async (req, res) => {
     }
 }
 
-
+/* ---------------------------------------------------- */
 const usersetting = async (req, res) => {
     console.log("Entering usersetting function");
     const userId = req.params.id;
@@ -295,7 +300,7 @@ const usersetting = async (req, res) => {
 
 };
 
-
+/* ---------------------------------------------------- */
 const usersetting1 = async (req, res) => {
     console.log("Entering usersetting function");
     try {
@@ -309,6 +314,8 @@ const usersetting1 = async (req, res) => {
     }
 };
 
+
+/* ---------------------------------------------------- */
 const deleCategory=async(req,res)=>{
 try{
     console.log("cat delete")
@@ -324,6 +331,7 @@ catch(error){
 }
 }
 
+/* ---------------------------------------------------- */
 const restoreCategory=async(req,res)=>{
     try{
 const cats=req.params.id;
@@ -337,10 +345,7 @@ const cats=req.params.id;
     }
 }
 
-
-
-
-
+/* ---------------------------------------------------- */
 
 const editorCategory=async(req,res)=>{
     try{
@@ -360,6 +365,8 @@ res.render("admin/admineditcategory.ejs",{toEjs})
     }
 }
 
+
+/* ---------------------------------------------------- */
 const editedCategory=async(req,res)=>{
 try{
 let newcategoryname=req.body.categoryName;
@@ -373,10 +380,65 @@ catch(error){
 }
 }
 
+/* ---------------------------------------------------- */
+const orderManagement=async(req,res)=>{
+    try{
+
+        const urlData = {
+            pageTitle: 'ORDER MANAGEMENT',
+        }
+
+let userOrder=await orderData.find({})
+// console.log("lllk",userOrder)
+res.render("admin/ordermanagement.ejs",{urlData, userOrder})
+    }
+    catch(error){
+        console.log(error.message)
+    }
+}
+
+/* ---------------------------------------------------- */
+
+
+const orderStatusUpdate=async(req,res)=>{
+    console.log("status")
+    try{
+        let orderId = req.params.id;
+        let index = req.body.index;
+        let status = req.body.status;
+
+        console.log("rrr", orderId, index, status);
+        await orderData.updateOne(
+            { _id: orderId },
+            { $set: { Status: status } }
+        );
+
+        // if (status === "Cancel") {
+        //     let productItems = await orderData.findOne({ _id: orderId }).select('items');
+
+        //     for (const element of productItems.items) {
+        //         console.log(element.quantity, element.products);
+        //         await productData.updateOne({ _id: element.products }, { $inc: { stockCount: element.quantity } });
+        //     }
+        // }
+
+
+
+res.redirect("/admin/orders")
+    }
+    catch(error){
+        console.log(error.message)
+    }
+}
 
 
 
 
+
+
+
+
+/* ---------------------------------------------------- */
 
 module.exports = {
     adminlogin,
@@ -395,7 +457,11 @@ module.exports = {
     deleCategory,
     editorCategory,
     restoreCategory,
-    editedCategory
+    editedCategory,
+    orderManagement,
+    orderStatusUpdate,
+  
 
 
 }
+/* ---------------------------------------------------- */

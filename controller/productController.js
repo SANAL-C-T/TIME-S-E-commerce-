@@ -58,7 +58,7 @@ console.log("fffrfrfrrf",productImageObject)
             }
 }
 
-
+/* ---------------------------------------------------- */
 //listing of product
 const listProducts = async (req, res) => {
     try {
@@ -81,7 +81,7 @@ const listProducts = async (req, res) => {
     }
 };
 
-
+/* ---------------------------------------------------- */
 //for editing of the added product, listing to the edit field.
 const edit=async(req,res)=>{
     try{
@@ -186,7 +186,7 @@ const edit=async(req,res)=>{
 //         console.log(error.message)
 //     }
 // }
-
+/* ---------------------------------------------------- */
 const saveedit = async (req, res) => {
     console.log("product edit data coming");
     console.log("product id:", req.params.id);
@@ -337,6 +337,8 @@ const saveedit = async (req, res) => {
     }
 };
 
+
+/* ---------------------------------------------------- */
 const Deleteproduct = async (req, res) => {
     try {
         const item = req.params.id;
@@ -350,6 +352,7 @@ const Deleteproduct = async (req, res) => {
     }
 };
 
+/* ---------------------------------------------------- */
 const restoreproduct=async(req,res)=>{
     try{
         let id=req.params.id;
@@ -360,12 +363,12 @@ res.redirect("/admin/listProduct")
         console.log(error.message)
     }
 }
+/* ---------------------------------------------------- */
 
 
 
 
-
-
+/* ---------------------------------------------------- */
 module.exports={
     addproduct,
     listProducts,
@@ -375,3 +378,4 @@ module.exports={
     restoreproduct
     
 }
+/* ---------------------------------------------------- */

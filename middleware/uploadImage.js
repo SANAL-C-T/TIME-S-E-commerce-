@@ -8,7 +8,7 @@ const storage=multer.diskStorage({
         callback(null,"upload") //this is the destiontion to which pic is stored
     },
     filename: function (req, file, cb) {//remnaming function
-        console.log("incoming image to multer",file)
+        
         var ext=file.originalname.substring(file.originalname.lastIndexOf("."))
 
         cb(null,file.originalname+ "-"+Date.now()+ext)
@@ -29,13 +29,9 @@ const singleUpload = (req, res, next) => {
             console.log("image not uploaded")
         }{
             console.log("image upload success")
-            
         }
         next();
-        
     })
-   
-    
 };
 
 
@@ -76,13 +72,26 @@ console.log("incoming imagedata",data.size)
 
 
 
-
-
-
+const profileimageupload = (req, res, next) => {
+    upload.single("profilepic")(req, res, function(err) {
+        if (err) {
+            console.log("Image not uploaded");
+        } else {
+            console.log(":::::Image upload success from multer:::::");
+            if (req.file) {
+                console.log("File details:", req.file);
+            } else {
+                console.log("-------No file received to multer----------");
+            }
+        }
+        next();
+    });
+};
 
 
 
 module.exports={
     singleUpload,
-    multiUpload
+    multiUpload,
+    profileimageupload
 }

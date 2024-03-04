@@ -50,8 +50,8 @@ adminUrlRouter.get("/editCategory/:id",jwtAuth. haveToken3,adminin.editorCategor
 adminUrlRouter.post("/editedcategory/:id",jwtAuth. haveToken3,adminin.editedCategory)
 adminUrlRouter.post("/category",adminin.addcategory)
 
-
-
+adminUrlRouter.get("/orders",adminin.orderManagement)
+adminUrlRouter.post("/statusUpdate/:id",adminin.orderStatusUpdate)
 
 adminUrlRouter.get("/logout",adminin.logout)
 

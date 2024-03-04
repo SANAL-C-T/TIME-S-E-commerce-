@@ -8,7 +8,7 @@ const userSchema=mongoose.Schema({
         type:String,
         
     },
-    second_name:{
+    Last_name:{
         type:String,
     },
     email:{
@@ -42,7 +42,18 @@ const userSchema=mongoose.Schema({
     },
     verified:{
         type:Boolean
-    }
+    },
+    Address:[{
+        phoneNo:Number,
+        houseNo:String,
+        street:String,
+        location:String,
+        landmark:String,
+        city:String,
+        state:String,
+        country:String,
+        pincode:Number
+    }]
 });
 
 const userData=mongoose.model("user",userSchema);

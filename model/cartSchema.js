@@ -11,11 +11,16 @@ const cartSchema = mongoose.Schema({
         {
             products: { type: mongoose.Schema.Types.ObjectId, ref: 'products' },
             quantity: Number,
+            price:Number
 
 
         }
     ],
-    TotalPrice: Number
+
+    Address:String,
+    OrderTotalPrice: Number,
+    tax:Number,
+    Discounted:Number
 })
 
 const cartData = mongoose.model("carts", cartSchema)

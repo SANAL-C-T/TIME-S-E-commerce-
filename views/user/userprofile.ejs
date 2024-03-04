@@ -7,63 +7,62 @@
 <div class="container-fluid  d-flex ">
     <div class=" row">
         <nav class="sidebar">
-                <ul>
-                    <li><i class="fa-solid fa-address-card mx-2" style="color: #fefefe;"> </i> My profile</li>
-                    <li><i class="fa-solid fa-user-pen mx-2" style="color: #fefefe;"> </i> Edit profile</li>
-                    <li><i class="fa-solid fa-key mx-2" style="color: #fefefe;"> </i>Change password</li>
-                    <li><i class="fa-solid fa-wallet mx-2" style="color: #fefefe;"> </i>Wallet</li>
-                    <li><i class="fa-solid fa-clock-rotate-left mx-2" style="color: #fefefe;"> </i>Order history</li>
-                    <li><i class="fa-solid fa-address-book mx-2" style="color: #fefefe;"> </i>Saved address</li>
-
-                </ul>
+            <ul>
+                <li><a href="/Myprofile"><i class="fa-solid fa-address-card mx-3 " style="color: #fefefe;"> </i><span class="d-none d-sm-inline">My profile</span></a></li>
+                <li><a href="/profileEdits"> <i class="fa-solid fa-user-pen mx-3" style="color: #fefefe;"> </i><span class="d-none d-sm-inline"> Edit profile</span></a></li>
+                <li><a href="/changepassword"><i class="fa-solid fa-key mx-3" style="color: #fefefe;"> </i><span class="d-none d-sm-inline">set password</span></a></li>
+                <li><a href="/wallet"><i class="fa-solid fa-wallet mx-3" style="color: #fefefe;"> </i><span class="d-none d-sm-inline">Wallet</span></a></li>
+                <li><a href="/orderHistory"><i class="fa-solid fa-clock-rotate-left mx-3" style="color: #fefefe;"> </i><span class="d-none d-sm-inline">Order history</span></a></li>
+                <li><a href="/savedaddress"><i class="fa-solid fa-address-book mx-3" style="color: #fefefe;"> </i><span class="d-none d-sm-inline">Saved address</span></a></li>
+        
+            </ul>
         </nav>
     </div>
 
-<main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4 d-flex flex-column  mx-3 ">
-
-  
-    
-
-        <!-- first line  -->
-    <div class="d-flex  justify-content-between my-4 " id="firstline">
-        <div class="mb-3 mx-4 ">
-           <h6>NAME</h6>
-        </div>
-     
-
-    <div>
-        <img src="#">
-       
-    </div>
-    
-</div>
-<!-- ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; -->
-
-<!-- second line -->
-<h3 class="mx-4 mb-5 ">Address details</h3>
-
-
-    <div class="d-flex my-4 " id="secondline">
-        <div class="mb-3 mx-4 ">
-        <label for="phonenumber" class="form-label ">Contact Number:</label>
-     
-    </div>
-  
-
-    </div>
-    
-<!-- ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; -->
-    
-            <div class="d-flex my-4 " id="thirdline">
-                <div class="mb-3 mx-4 ">
-                    <h6>Address</h6>
-                    
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4 d-flex flex-column mx-3">
+        <!-- First line -->
+        <div class="d-flex justify-content-between my-4" id="firstline">
+            <div class="mb-3 mx-4">
+                <h4>NAME: <%= udata.first_name %> <%=udata.Last_name%></h4>
             </div>
-            
-
-      
+            <div>
+                <img src="<%= udata.profileImage %>" style="width: 150px;" alt="Profile Image">
+            </div>
+        </div>
     
-</main>
+        <!-- Second line - Contact details -->
+        <h3 class="mx-4 mb-5">Contact details</h3>
+        <div class="d-flex my-4" id="secondline">
+            <div class="mb-3 mx-4">
+                <h5>PHONE NUMBER: <%= udata.phone %></h5>
+            </div>
+            <div class="mb-3 mx-4">
+                <h5>Email: <%= udata.email %></h5>
+            </div>
+        </div>
+    
+        <!-- Third line - Address details -->
+        <h3 class="mx-4 mb-5">Address details</h3>
+        <div class="d-flex my-4" id="thirdline">
+            <div class="mb-3 mx-4">
+                <ul>
+                    <li><strong>House:</strong> <%= udata.Address[0].houseNo %> </li>
+                    <li><strong>Street:</strong> <%= udata.Address[0].street %> </li>
+                    <li><strong>Location:</strong> <%= udata.Address[0].location %> </li>
+                    <li><strong>Landmark:</strong> <%= udata.Address[0].landmark %> </li>
+                </ul>
+            </div>
+            <div class="ml-4">
+                <ul>
+                    <li><strong>City:</strong> <%= udata.Address[0].city %> </li>
+                    <li><strong>State:</strong> <%= udata.Address[0].state %> </li>
+                    <li><strong>Country:</strong> <%= udata.Address[0].country %> </li>
+                    <li><strong>Pincode:</strong> <%= udata.Address[0].pincode %> </li>
+                </ul>
+            </div>
+        </div>
+    </main>
+    
 
 
 
@@ -95,7 +94,7 @@
     
         body {
             font-family: 'Arial', sans-serif;
-            background-color: rgb(239, 234, 231);
+            background-color: rgb(242, 239, 239);
         }
 
         .sidebar {
@@ -124,7 +123,17 @@
         .sidebar li:hover {
             background-color: #555;
         }
-
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+    
+        .sidebar ul li a {
+            text-decoration: none; 
+            color: #fff;
+            display: block;
+        }
 @media (max-width: 768px) {
     #firstline, #secondline, #thirdline, #fourthline {
         width: 100%; 
@@ -132,6 +141,48 @@
     }
 }
 
+@media (max-width: 768px) {
+    .sidebar{
+        width:100%;
+        padding:0px;
+    }
+}
+
+
+
+
+
+    main {
+        padding: 20px;
+        background-color: #f8f9fa;
+        flex-grow: 1;
+    }
+
+    #firstline {
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+
+    h4 {
+        color: #4875a6;
+        margin-bottom: 0;
+    }
+
+
+    #secondline, #thirdline {
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+
+    h3 {
+        color: #4875a6;
+    }
+
+    h5 {
+        margin-bottom: 10px;
+    }
 
 
     </style>

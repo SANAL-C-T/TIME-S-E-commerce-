@@ -1,6 +1,7 @@
 const userData = require("../model/userSchema")
 const productDatas = require("../model/productSchema")
 const categData = require("../model/categorySchema")
+const reviewData=require("../model/reviewschema")
 const bcrypt = require("bcrypt")
 const { render } = require("ejs")
 // const session = require("express-session")
@@ -354,13 +355,20 @@ const productdetail = async (req, res) => {
             
             return res.status(404).send('Product not found');
         }
+{
+    
+}
 
-        res.render("user/productdetail.ejs", { pdetail });
-    } catch (error) {
-        console.log(error.message);
-        res.status(500).send('Internal Server Error');
-    }
-};
+
+
+
+
+    res.render("user/productdetail.ejs", { pdetail});
+}  catch (error) {
+console.log(error.message);
+res.status(500).send('Internal Server Error');
+}
+}
 
 
 const buyProduct = async (req, res) => {
@@ -569,6 +577,7 @@ const filter = async (req, res) => {
         let docCount;
         let serc;
         let hightolow;
+        let lowtohigh;
 
         try {
             const category = await categData.findOne({ categoryName: productType });
@@ -596,6 +605,10 @@ const filter = async (req, res) => {
                 .exec();
 
         
+                hightolow = await productDatas.find({isDeleted: false}).sort({ productPrice: 1 });
+                lowtohigh = await productDatas.find({isDeleted: false}).sort({ productPrice: -1 });
+
+
             serc = await productDatas
                 .find({ ...searching, isDeleted: false,'productCategory': category._id, })
                 .populate({
@@ -624,6 +637,8 @@ const filter = async (req, res) => {
             docCount,
             productType,
             serc,
+            hightolow,
+            lowtohigh
            
         });
     } catch (error) {
@@ -634,17 +649,210 @@ const filter = async (req, res) => {
 
 
 const editprofile=async(req,res)=>{
-    try{
-        res.render("user/userprofileedit")
+    try{  
+     
+
+        res.render("user/userprofileedit.ejs")
     }
     catch(error){
         console.log(error.message)
     }
 }
 
+
+//...............................................
+const saveEditProfile=async(req,res)=>{
+    try{let user;
+        console.log("::::",req.body)
+
+        let token=req.cookies.usertoken;
+        JWTtoken.verify(token,jwtcode,(err,decoded)=>{
+        if(err){
+              console.log("user not verified")
+        }else{
+        const usersdetail=decoded._id;
+        user=usersdetail
+        console.log(user)
+       }
+    })
+    
+
+    let pImage = `/${req.file.filename}`;
+
+
+console.log("eeeeeeeee::::",pImage)
+
+
+let address={
+    houseNo:req.body.house,
+    street:req.body.street,
+    location:req.body.location,
+    landmark:req.body.landmark,
+    city:req.body.city,
+    state:req.body.state,
+    country:req.body.Country,
+    pincode:req.body.pincode,
+}
+
+let userdatadetails=await userData.updateOne({_id:user},{$set:{
+    first_name:req.body.username1,
+    Last_name:req.body.username2,
+    phone:req.body.phonenumber,
+    profileImage:pImage,
+    Address:address
+
+}})
+
+
+
+
+    }
+    catch(error){
+        console.log(error.message)
+    }
+}
+
+
+
+//.........................................................
+
 const profile=async(req,res)=>{
     try{
-        res.render("user/userprofile")
+
+        let user;
+        console.log("::::",req.body)
+
+        let token=req.cookies.usertoken;
+        JWTtoken.verify(token,jwtcode,(err,decoded)=>{
+        if(err){
+              console.log("user not verified")
+        }else{
+        const usersdetail=decoded._id;
+        user=usersdetail
+        console.log(user)
+       }
+    })
+        let udata=await userData.findOne({_id:user})
+
+        console.log(udata)
+
+
+
+        res.render("user/userprofile",{udata})
+    }
+    catch(error){
+        console.log(error.message)
+    }
+}
+
+const changepassword=async(req,res)=>{
+    try{
+res.render("user/changepassword.ejs")
+    }
+    catch(error){
+        console.log(error.message)
+    }
+}
+
+
+const changesavedpassword=async(req,res)=>{
+    try{
+let existingpass=req.body.existingpassword;
+let newPass=req.body.newpassword;
+let confirmPsaa=req.body.confrmpassword;
+console.log("ep,ip",existingpass,newPass,confirmPsaa)
+
+const usersid = await new Promise((resolve, reject) => {
+    const usertoken = req.cookies.usertoken;
+    JWTtoken.verify(usertoken, jwtcode, (err, decoded) => {
+        if (err) {
+            console.error('JWT verification failed:', err.message);
+            reject(err);
+        } else {
+            const userdetail = decoded._id;
+            resolve(userdetail);
+        }
+    });
+});
+
+
+if(newPass===confirmPsaa){
+    console.log("rrrr")
+
+let userdet=await userData.findOne({_id:usersid})
+console.log( userdet)
+const isPasswordValid = await bcrypt.compare(existingpass, userdet.password);
+console.log("kl",isPasswordValid)
+
+
+const passwordCode=await secretPass(req.body.newpassword);
+await userData.updateOne(
+    { _id: usersid },
+    { $set: { 
+        password: passwordCode } }
+  );
+
+}
+
+res.locals.errorMessage = 'Invalid password';
+res.render("user/changepassword.ejs")
+    }
+    catch(error){
+        console.log(error.message)
+    }
+}
+
+
+
+const addReview=async(req,res)=>{
+    try{
+        let product=req.params.id;
+       
+        let reviewProduct=await productDatas.findOne({_id:product})
+        res.render("user/writereview.ejs",{reviewProduct})
+    }
+    catch(error){
+        console.log(error.message)
+    }
+}
+
+const saveReview=async(req,res)=>{
+    try{
+        const usersid = await new Promise((resolve, reject) => {
+            const usertoken = req.cookies.usertoken;
+            JWTtoken.verify(usertoken, jwtcode, (err, decoded) => {
+                if (err) {
+                    console.error('JWT verification failed:', err.message);
+                    reject(err);
+                } else {
+                    const userdetail = decoded._id;
+                    resolve(userdetail);
+                }
+            });
+        });
+
+
+    const saveRev=new reviewData({
+        comment:req.body.reviewDescription,
+        rating:req.body.rating,
+        user:usersid,
+        product:req.params.id,
+        Time:Date.now()
+      })
+      saveRev.save()
+
+    }
+    catch(error){
+        console.log(error.message)
+    }
+}
+
+
+
+
+const viewReview=async(req,res)=>{
+    try{
+        
     }
     catch(error){
         console.log(error.message)
@@ -674,6 +882,13 @@ module.exports = {
     aboutb,
     filter,
     editprofile,
-    profile
+    profile,
+    saveEditProfile,
+    changepassword,
+    changesavedpassword,
+    addReview,
+    saveReview,
+    viewReview
+  
 
 }

@@ -16,7 +16,8 @@ const productCollection=mangoose.Schema({
         type:String,
         required:true
     },
-            variant:[{
+           
+    variant:[{
                 productsize:{
                     type:String,
                    

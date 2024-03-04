@@ -7,22 +7,22 @@
 <div class="container-fluid  d-flex ">
     <div class=" row">
         <nav class="sidebar">
-                <ul>
-                    <li><i class="fa-solid fa-address-card mx-2" style="color: #fefefe;"> </i> My profile</li>
-                    <li><i class="fa-solid fa-user-pen mx-2" style="color: #fefefe;"> </i> Edit profile</li>
-                    <li><i class="fa-solid fa-key mx-2" style="color: #fefefe;"> </i>Change password</li>
-                    <li><i class="fa-solid fa-wallet mx-2" style="color: #fefefe;"> </i>Wallet</li>
-                    <li><i class="fa-solid fa-clock-rotate-left mx-2" style="color: #fefefe;"> </i>Order history</li>
-                    <li><i class="fa-solid fa-address-book mx-2" style="color: #fefefe;"> </i>Saved address</li>
-
-                </ul>
+            <ul>
+                <li><a href="/Myprofile"><i class="fa-solid fa-address-card mx-3 " style="color: #fefefe;"> </i><span class="d-none d-sm-inline">My profile</span></a></li>
+                <li><a href="/profileEdits"> <i class="fa-solid fa-user-pen mx-3" style="color: #fefefe;"> </i><span class="d-none d-sm-inline"> Edit profile</span></a></li>
+                <li><a href="/changepassword"><i class="fa-solid fa-key mx-3" style="color: #fefefe;"> </i><span class="d-none d-sm-inline">set password</span></a></li>
+                <li><a href="/wallet"><i class="fa-solid fa-wallet mx-3" style="color: #fefefe;"> </i><span class="d-none d-sm-inline">Wallet</span></a></li>
+                <li><a href="/orderHistory"><i class="fa-solid fa-clock-rotate-left mx-3" style="color: #fefefe;"> </i><span class="d-none d-sm-inline">Order history</span></a></li>
+                <li><a href="/savedaddress"><i class="fa-solid fa-address-book mx-3" style="color: #fefefe;"> </i><span class="d-none d-sm-inline">Saved address</span></a></li>
+        
+            </ul>
         </nav>
     </div>
 
 <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4 d-flex flex-column  mx-3 ">
 
   
-    <form  > <!-- form -->
+    <form  method="post" action="/profileEdit"  enctype="multipart/form-data" > <!-- form -->
 
         <!-- first line  -->
     <div class="d-flex  justify-content-between my-4 " id="firstline">
@@ -35,11 +35,17 @@
             <input type="text" id="username2"  name="username2"  class="form-control" placeholder ="Enter last name">
     </div>
 
-    <div>
-        <img src="#">
-        <input type="file" id="profilepic" name="profilepic" >
+   
+    <div class="justify-content-end  mx-4 ">
+        <img id="selectedImage" src="#" >
+        
     </div>
     
+    
+</div>
+<div class="m-4">
+    <p>Add profile image</p>
+    <input type="file" id="profilepic" name="profilepic" onchange="displaySelectedImage()">
 </div>
 <!-- ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; -->
 
@@ -87,6 +93,14 @@
             
             <label for="state" class="form-label ">State:</label>
             <select id="state"  name="state" class="form-control">
+                <option value="andaman_and_nicobar_islands">Andaman and Nicobar Islands</option>
+                <option value="chandigarh">Chandigarh</option>
+                <option value="dadra_and_nagar_haveli_and_daman_and_diu">Dadra and Nagar Haveli and Daman & Diu</option>
+                <option value="delhi">Delhi</option>
+                <option value="jammu_and_kashmir">Jammu & Kashmir</option>
+                <option value="ladakh">Ladakh</option>
+                <option value="lakshadweep">Lakshadweep</option>
+                <option value="puducherry">Puducherry</option>
                 <option value="andhra_pradesh">Andhra Pradesh</option>
                 <option value="arunachal_pradesh">Arunachal Pradesh</option>
                 <option value="assam">Assam</option>
@@ -118,12 +132,12 @@
                 <option value="west_bengal">West Bengal</option>
             </select>
         </div>
-            <div class="mb-3 mx-5 px-4 ">
+            <div class="mb-3  px-4 ">
                 <label for="Country "class="form-label ">Country:</label>
                 <input type="Country"  id="Country" name="Country" class="form-control" value="India">
             </div>
 
-            <div class="mb-3 ">
+            <div class="mb-3 mx-4 ">
                 <label for="pincode "class="form-label ">Pincode:</label>
                 <input type="tel" id="pincode"  name="pincode" class="form-control">
             </div>
@@ -163,7 +177,7 @@
     
         body {
             font-family: 'Arial', sans-serif;
-            background-color: rgb(239, 234, 231);
+            background-color: rgb(242, 239, 239);
         }
 
         .sidebar {
@@ -192,7 +206,17 @@
         .sidebar li:hover {
             background-color: #555;
         }
-
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+    
+        .sidebar ul li a {
+            text-decoration: none; 
+            color: #fff;
+            display: block;
+        }
 @media (max-width: 768px) {
     #firstline, #secondline, #thirdline, #fourthline {
         width: 100%; 
@@ -202,9 +226,50 @@
 
 
 
+@media (max-width: 768px) {
+    .sidebar{
+        width:100%;
+        padding: 0%;
+    }
+}
+
+
+
+
+img {
+    width: 100px;
+    margin-top: 10px;
+}
+
     </style>
 
     <script>
+        function displaySelectedImage() {
+            // Get the input element
+            var inputElement = document.getElementById('profilepic');
 
+            // Get the selected file from the input
+            var file = inputElement.files[0];
 
+            // Check if a file is selected
+            if (file) {
+                // Create a FileReader
+                var reader = new FileReader();
+
+                // Set the callback function to run when the file is loaded
+                reader.onload = function(e) {
+                    // Get the image element
+                    var imageElement = document.getElementById('selectedImage');
+
+                    // Set the source of the image to the loaded data URL
+                    imageElement.src = e.target.result;
+                };
+
+                // Read the file as a data URL
+                reader.readAsDataURL(file);
+            } else {
+                // If no file is selected, reset the image source
+                document.getElementById('selectedImage').src = "#";
+            }
+        }
     </script>

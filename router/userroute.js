@@ -58,7 +58,7 @@ userUrlRouter.post("/profileEdit",multer.profileimageupload,user.saveEditProfile
 userUrlRouter.get("/changepassword",user.changepassword)
 userUrlRouter.post("/changepassword",user.changesavedpassword)
 userUrlRouter.get("/savedaddress",cart.savedAddress)
-userUrlRouter.post("/savedaddress",cart.deleteAddress)
+userUrlRouter.post("/deleteAddress/:index",cart.deleteAddress)
 
 //user cart related
 
@@ -75,7 +75,7 @@ userUrlRouter.post("/orderCancel/:id",cart.cancelOrder)
 userUrlRouter.get("/review/:id",user.addReview)
 userUrlRouter.get("/review/:id",user.viewReview)
 userUrlRouter.post("/saveReview/:id",user.saveReview)
-
+userUrlRouter.get("/wallet",user.wallet)
 //universal route for 404
 userUrlRouter.get("/*",user.notfound)
 

@@ -5,10 +5,7 @@ require('../model/config');
 const orderHistorySchema = mongoose.Schema({
     userid: ObjectId,
     orderId: ObjectId,
-    OrderDate: {
-        type: Date,
-        default: Date.now, 
-    },
+    OrderDate:String,
     paymentMethod: String,
     address: String,
     userid: ObjectId,

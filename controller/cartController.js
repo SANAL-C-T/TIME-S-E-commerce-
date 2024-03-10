@@ -1,12 +1,21 @@
 const mongoose = require('mongoose');
-const userData = require("../model/userSchema")
-const orderHistoryData=require("../model/orderhistoryschema")
-const productDatas = require("../model/productSchema")
-const cartData = require("../model/cartSchema")
-const JWTtoken = require("jsonwebtoken")
-require('dotenv').config();
-const secret = process.env.jwt_user_secret
+const userData = require("../model/userSchema");
+const orderHistoryData=require("../model/orderhistoryschema");
+const productDatas = require("../model/productSchema");
+const cartData = require("../model/cartSchema");
+const JWTtoken = require("jsonwebtoken");
+const Razorpay = require("razorpay");
+const moment=require("moment")
 
+require('dotenv').config();
+const razKey=process.env.RAZORPAY_ID_KEY;
+const razSec=process.env.RAZORPAY_SECRET_KEY;
+const secret = process.env.jwt_user_secret;
+
+var instance = new Razorpay({
+    key_id:razKey,
+    key_secret: razSec,
+  });
 //-------------------- logics from here-------------------------------------------
 
 
@@ -32,10 +41,16 @@ const cartadd = async (req, res) => {
         //----------------------------verify user end--------
 
         // Getting the product details
-        let pdata = await productDatas.findById(selectedProduct).select('productPrice');
+        let pdata = await productDatas.findById(selectedProduct);
+
+
+
+        console.log("pdata",pdata)
         let productsadded = {
             products: selectedProduct,
             quantity: 1,
+            productName: pdata.productName ,
+            productImage:pdata.productImage[0].image1  ,
             price: pdata.productPrice
         }
 
@@ -63,12 +78,6 @@ const cartadd = async (req, res) => {
 
             // update total price in the cart
             await cartData.updateOne({ userid: usersid }, { $set: { OrderTotalPrice: totalPrice } });
-
-            console.log("after adding price to cart::", totalPrice);  //true....
-            console.log("1 data coming to if block of cartadd::", itemINcart);
-
-
-
             const INcart = await cartData.findOne({ userid: usersid })
             .populate({
                 path: 'items.products',
@@ -101,8 +110,6 @@ const cartadd = async (req, res) => {
             let cartItem = {
                 cart: itemINcart
             };
-
-            console.log("total price in else block::", totalPrice);
             res.render("user/cart.ejs", { cartItem });
         }
 
@@ -111,20 +118,6 @@ const cartadd = async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //.......logic to show the cart page in direct go...............
 
@@ -149,11 +142,10 @@ const showcart = async (req, res) => {
                 model: 'products', //name of the other collection schema
             });
 
-if(itemINcart==null){
+        if(itemINcart==null){
+            res.render("user/emptcart.ejs");
+            }
 
-    res.render("user/emptcart.ejs");
-    // console.log("nullllll")
-}
         let cartItem = {
             cart: itemINcart
         };
@@ -189,7 +181,7 @@ const qyt=async(req,res)=>{
         let cartGetData=await cartData.findOne({userid:usersid})
 
 let frontendData=req.body
-console.log(frontendData)
+// console.log(frontendData)
 
 await cartData.updateOne(
     { userid: usersid },
@@ -237,9 +229,7 @@ const itemdel = async (req, res) => {
     try {
         const deleteIndex = req.body.deleteIndex;
         const id = req.body.id;
-
-
-        console.log(deleteIndex,id )
+        // console.log(deleteIndex,id )
         // Verify user token and extract user ID
         const usersid = await new Promise((resolve, reject) => {
             const usertoken = req.cookies.usertoken;
@@ -261,10 +251,7 @@ const itemdel = async (req, res) => {
             { new: true } // To get the updated document
         );
 
-        console.log("Updated Cart:", updatedCart);
-
-
-
+        // console.log("Updated Cart:", updatedCart);
 
         const itemINcart = await cartData.findOne({ userid: usersid })
         .populate({
@@ -284,7 +271,7 @@ const itemdel = async (req, res) => {
         return acc + item.price;
       }, 0);
       
-      console.log("del prod::::::::",totalPrice)
+    //   console.log("del prod::::::::",totalPrice)
       await cartData.updateOne({ userid: usersid },{$set: {OrderTotalPrice:totalPrice}});
 
         res.redirect("/cart")
@@ -295,8 +282,6 @@ const itemdel = async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 };
-
-
 
 
 //...........................................
@@ -334,137 +319,191 @@ const proceedToaddress=async(req,res)=>{
 }
 
 
+
 //.................................................
 //storing the incoming data from checkout page
 
 const addAddressToPurchase=async(req,res)=>{
+   
+console.log(".-=-=-= add address to purchase in cart controller is runing now")
+ 
+     
+    
     try{
-        console.log("formdata coming")
-console.log("address incoming body just test::::::",req.body)
+var name;
+var email;
+var mob;
+            const savedAddress = req.body.Value;
+            var paymentMode = req.body.paymentMethod;
+            const tosaveaddressCheckbox=req.body.saveaddressCheckbox;
+       
+          let phoneNumber =req.body.phoneNumber  
+          let house =  req.body.house
+          let street = req.body.street
+          let location = req.body.location
+          let landmark =   req.body.landmark
+          let city =  req.body.city
+          let state =  req.body.state
+          let Country =req.body.Country 
+          let pincode =   req.body.pincode
+    
+      
+        console.log("===savedAddress coming to try block of add address to purchase::",savedAddress)
+        console.log("////paymentMode coming to try block of add address to purchase:::::",paymentMode)
 
 
 let addresssss= {
-
-    phoneNo: req.body.phonenumber,
-    houseNo: req.body.house,
-    street: req.body.street,
-    location: req.body.location,
-    landmark: req.body.landmark,
-    city: req.body.city,
-    state: req.body.state,
-    Country: req.body.Country,
-    pincode: req.body.pincode,
+    phoneNo:  phoneNumber,
+    houseNo: house,
+    street: street,
+    location: location,
+    landmark: landmark,
+    city: city,
+    state: state,
+    Country: Country,
+    pincode: pincode,
    
   }
-// console.log(addresssss)
+            console.log("[][][]the typed address comming to try block of add address to purchase]]",addresssss)//true
 
-let saveaddressCheckbox= req.body.saveaddressCheckbox
+            let saveaddressCheckbox= tosaveaddressCheckbox;
+            console.log("has checked saved address checkbox:::",saveaddressCheckbox) //true
+
+                const usersid = await new Promise((resolve, reject) => {
+                    const usertoken = req.cookies.usertoken;
+                    JWTtoken.verify(usertoken, secret, (err, decoded) => {
+                        if (err) {
+                            console.error('JWT verification failed:', err.message);
+                            reject(err);
+                        } else {
+                            const userdetail = decoded._id;
+                            resolve(userdetail);
+                        }
+                    });
+                });
 
 
-const usersid = await new Promise((resolve, reject) => {
-    const usertoken = req.cookies.usertoken;
-    JWTtoken.verify(usertoken, secret, (err, decoded) => {
-        if (err) {
-            console.error('JWT verification failed:', err.message);
-            reject(err);
-        } else {
-            const userdetail = decoded._id;
-            resolve(userdetail);
-        }
-    });
-});
+const userD=await userData.findOne({_id:usersid})
+name=userD.username;
+email=userD.email;
+mob=userD.phone;
+    if(saveaddressCheckbox==true){
+        const addressFromSaved = req.body.Value;
+        console.log(" >><<<>><<user need to save the address to db, now in saveaddressCheckbox:true")
+        //it is stored in users database.
+        await userData.findOneAndUpdate({_id:usersid},   { $push: { Address: addresssss } },
+            { new: true } // Return the modified document
+        );
 
-
-// const userD=await userData.findOne({_id:usersid})
-//console.log(userD)
-
-if(saveaddressCheckbox==='on'){
-    //it is stored in users database.
-    await userData.findOneAndUpdate({_id:usersid},   { $push: { Address: addresssss } },
-        { new: true } // Return the modified document
-      );
-
-      await cartData.findOneAndUpdate(
-        { userid: usersid },
-        { $set: { Address: addressFromSaved } },
-      );
-
-}
-else if(addresssss.phoneNo === undefined){
-    const addressFromSaved = req.body.fromDbAddressRadio;
-
-    try {
-      const updatedCartData = await cartData.findOneAndUpdate(
-        { userid: usersid },
-        { $set: { Address: addressFromSaved } },
-      );
+        await cartData.findOneAndUpdate(
+            { userid: usersid },
+            { $set: { Address: addressFromSaved } },
+        );
+    }               //below code takes address from the database.
+                   
     
-      console.log("Updated Cart Data:", updatedCartData);
-    } catch (error) {
-      console.error(error);
-    }
     
-}
+    else if(addresssss.phoneNo === undefined){ //this is because, when saved address is used there wont be any data in new address form.
+                       console.log("%%%% user id using saved address from database  , now in else if block of add address to purchase")
+                       
+                        const addressFromSaved = req.body.Value;
 
-else{
-    //we are adding to cart, so it is not stored for future use.
+                        try {
+                        const updatedCartData = await cartData.findOneAndUpdate(
+                            { userid: usersid },
+                            { $set: { Address: addressFromSaved } },
+                        );
+                        
+                        //   console.log("Updated Cart Data:", updatedCartData);
+                        } catch (error) {
+                        console.error(error);
+                        }
+                        
+                    }
 
-    let addresssss= {
+            else{//we are not useing the saved data nor want it to save to saved address...
+                //we are adding to cart, so it is not stored for future use.
+                console.log("***** user is typing the address  , now in else block of save address to purchase")
+                let addresssss= {
 
-        phoneNo: req.body.phonenumber,
-        houseNo: req.body.house,
-        street: req.body.street,
-        location: req.body.location,
-        landmark: req.body.landmark,
-        city: req.body.city,
-        state: req.body.state,
-        Country: req.body.Country,
-        pincode: req.body.pincode,
+                    phoneNo:  phoneNumber,
+                    houseNo: house,
+                    street: street,
+                    location: location,
+                    landmark: landmark,
+                    city: city,
+                    state: state,
+                    Country: Country,
+                    pincode: pincode,
+                
+                }
+                console.log("#### typed address from else block of add address to purchase:::",addresssss)//true
+                let strAddress = `phoneNo:${addresssss.phoneNo} houseNo:${addresssss.houseNo} street:${addresssss.street} location:${addresssss.location} landmark:${addresssss.landmark} city:${addresssss.city} state:${addresssss.state} Country:${addresssss.Country} pincode:${addresssss.pincode}`;
+                console.log("@@@@@ str OF typedAddress:::",strAddress)  //true
+
+
+
+                await cartData.findOneAndUpdate({userid: usersid}, { $set: { Address: strAddress} } ,
+            
+                );
+            }
+
+            console.log("$$$$ paymentMode in else block of add address to purchase:::",paymentMode)
+
+                if(paymentMode=="COD"){
+                    await cartEraseAccording("COD", usersid, req, res);
+                }
+
+                else if(paymentMode=="Razorpay"){
+                
+                    let inCart=await cartData.findOne({userid: usersid})
+
+                    
+                    var instance = new Razorpay({ key_id: razKey, key_secret: razSec })
+                    
+                    var options = {
+                        amount: inCart.OrderTotalPrice*100,  // amount in the smallest currency unit
+                        currency: "INR",
+                        receipt: inCart._id
+                    };
+                    instance.orders.create(options, function(err, order) {
+                        console.log("/...razorpay sending order.../",order);
+                        if(!err){
+                            res.status(200).send({  //yes id is received in frontend.
+                                success:true,
+                                msg:"order created",
+                                order_id:order.id,
+                                amount:inCart.OrderTotalPrice*100,
+                                key_id:razKey,
+                                username:name,
+                                email:email,
+                                phone:mob
+                                
+                            })
+                        }
+                        else{
+                            res.status(400)
+                        }
+                    });
+                    await cartEraseAccording("razorpay", usersid, req, res);
+                }
+
+            else if(paymentMode=="MyWallet"){    
+                await cartEraseAccording("MyWallet", usersid, req, res);
+            }
+
+//here we are adding all the data to the order history collection.
        
-      }
-
-      let strAddress = `phoneNo:${addresssss.phoneNo} houseNo:${addresssss.houseNo} street:${addresssss.street} location:${addresssss.location} landmark:${addresssss.landmark} city:${addresssss.city} state:${addresssss.state} Country:${addresssss.Country} pincode:${addresssss.pincode}`;
-
-
-
-    //console.log(strAddress)
-    await cartData.findOneAndUpdate({userid: usersid}, { $set: { Address: strAddress  } } ,
-  
-      );
-}
-
-
-
-
-let presentCart=await cartData.findOne({userid: usersid})
-
-
-console.log("testttttt:::",presentCart.items)
-
-const purchaseHistory = new orderHistoryData({
-    userid: usersid,
-    OrderDate: Date.now(),
-    paymentMethod: req.body.paymentMethod,
-    address: presentCart.Address,
-    items:presentCart.items,
-    OrderTotalPrice:presentCart.OrderTotalPrice,
-    Status:"pending"
-});
-
-await purchaseHistory.save();
-
-await cartData.deleteOne({userid: usersid})
-
-
-
-
-
-    res.redirect("/home")
     }
     catch(error){
         console.log(error.message)
     }
 }
+
+
+
+
+
 
 
 
@@ -485,7 +524,8 @@ const history=async(req,res)=>{
     });
 
        let cartHistory= await orderHistoryData.find({userid:usersid})
-// console.log("9999",cartHistory)
+
+ console.log("9999",cartHistory)
         res.render("user/trackhistory.ejs",{cartHistory})
     }
     catch(error){
@@ -532,7 +572,27 @@ let statusFromDb=await orderHistoryData.findOne({ _id: orderId }).select("Status
 
 const deleteAddress=async(req,res)=>{
     try{
-
+        let index=parseInt(req.params.index);
+        console.log(index)
+        let UserId=await userExtractionFromJwt(req,res)
+       await userData.updateOne( //this is updating it to null, ad no object id is there
+            { _id: UserId },
+            {
+              $unset: {
+                [`Address.${index}`]: 1
+              },
+              
+            }
+          );
+        await userData.updateOne( //this is deleting the address from array
+            { _id: UserId },
+            {
+              $pull: {
+                Address: null 
+              }
+            }
+          );
+          res.redirect("/savedaddress")
     }
     catch(error){
         console.log(error.message)
@@ -543,13 +603,93 @@ const deleteAddress=async(req,res)=>{
 
 //.....logic to save the address... when the user reaches the checkout page................
 const savedAddress=async(req,res)=>{
-    try{
 
+    try{
+        const usersid = await new Promise((resolve, reject) => {
+            const usertoken = req.cookies.usertoken;
+            JWTtoken.verify(usertoken, secret, (err, decoded) => {
+                if (err) {
+                    console.error('JWT verification failed:', err.message);
+                    reject(err);
+                } else {
+                    const userdetail = decoded._id;
+                    resolve(userdetail);
+                }
+            });
+        });
+
+
+
+        const user=await userData.findOne({_id:usersid})
+        const cart=await cartData.findOne({userid:usersid})
+
+
+        const database={
+            userdata:user,
+            cartdata:cart
+        }
+        res.render("user/savedAddress.ejs",{database})
     }
     catch(error){
         console.log(error.message)
     }
 }
+
+
+
+async function cartEraseAccording(PayMode,usersid,req,res){
+    console.log("in heleper function")
+    let presentCart=await cartData.findOne({userid: usersid})
+    let date=Date.now()
+    var formatedDate=moment(date).format('D-MM-YYYY, dddd, h:mm a')
+    console.log(formatedDate)
+    const purchaseHistory = new orderHistoryData({
+        userid: usersid,
+        OrderDate: formatedDate,
+        orderId: presentCart._id,
+        paymentMethod: PayMode,
+        address: presentCart.Address,
+        items:presentCart.items,
+        OrderTotalPrice:presentCart.OrderTotalPrice,
+        Status:"pending"
+    });
+
+
+
+    await purchaseHistory.save(); //save the data.
+    await cartData.deleteOne({userid: usersid})
+    // res.redirect("/home")
+}
+
+
+
+
+
+
+async function userExtractionFromJwt(req,res){
+
+    try{
+        const usersid = await new Promise((resolve, reject) => {
+            const usertoken = req.cookies.usertoken;
+            JWTtoken.verify(usertoken, secret, (err, decoded) => {
+                if (err) {
+                    console.error('JWT verification failed:', err.message);
+                    reject(err);
+                } else {
+                    const userdetail = decoded._id;
+                    resolve(userdetail);
+                }
+            });
+        });
+        return usersid;
+    }
+    catch(error){
+        console.log(error.message)
+    }
+
+}
+
+
 
 
 

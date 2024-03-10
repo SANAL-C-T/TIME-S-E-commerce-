@@ -63,15 +63,27 @@
 
   <div id="rightside" class="m-3 pt-5">
     <ul>
-      <li id="summary"><h2>SUMMARY</h2></li>
+      <li id="summary"><h4>SUMMARY</h4></li>
       <hr>
-      <li id="subprice"><h5>Sub total: &#8377; <%=cartItem.cart.OrderTotalPrice%></h5></li>
+      <li id="subprice"><h5>Sub Total: &#8377; <%=cartItem.cart.OrderTotalPrice%></h5></li>
       <li><h5>Discount: &#8377; 0</h5></li>
-      <li><h5>Tax: &#8377; 0</h5></li>
+      <li><h5>GST: &#8377; 0</h5></li>
+      <li><h5>Shipping Charges: &#8377; FREE</h5></li>
       <hr>
-      <li id="cartprice"><h4>Order total: &#8377; <%=cartItem.cart.OrderTotalPrice%></h4></li>
+      <li id="cartprice"><h4>Grand Total: &#8377; <%=cartItem.cart.OrderTotalPrice%></h4></li>
+      <hr>
+      <h6>Have a coupon ?</h6>
+      <form>  
+        <input type="text" class="w-100 " id="couponcode" name="couponcode" placeholder="Enter Coupon Code">  
+        <div>
+          <button type="submit" class="btn btn-success w-100 mt-4" onclick="couponSubmit()">APPLY</button>
+        </div>
+        
+      </form>
+
+<hr>
       <form action="/paynow" method="GET">
-        <button type="submit" class="btn btn-primary w-100 mt-4 ">PAY NOW</button>
+        <button type="submit" class="btn btn-warning  w-100 mt-4 ">PAY NOW</button>
       </form>
     </ul>
   </div>
@@ -194,6 +206,22 @@
     });
   }
 
+
+
+function couponSubmit(){
+  fetch("/applyCoupon",
+  {
+    method:"POST",
+    headers:{
+    'Content-Type':"application/json",
+    "Accept":"application/json"
+    },
+    body:JSON.stringify({
+      
+    })
+    
+  })
+}
 
 
 

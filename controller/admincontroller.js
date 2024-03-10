@@ -184,7 +184,7 @@ const showcategory = async (req, res) => {
 
 /* ---------------------------------------------------- */
 const addcategory = async (req, res) => {
-
+   
     let cateN = req.body.categoryName
 
 

@@ -4,11 +4,8 @@
   <div id="leftside" class="" style="width: 80%; min-height: 50vh ">
     <h5 class="text-center mt-4 "><strong>Enter Shipping Address</strong></h5>
     <br>
-    <form id="checkoutForm">
-
-
+    <form id="checkoutForm" >
       <div class="accordion" id="accordionExample">
-
         <div class="accordion-item">
           <h2 class="accordion-header" id="headingOne">
             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" onclick="BlockForm()">
@@ -17,6 +14,7 @@
           </h2>
           <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
             <div class="accordion-body">
+              <br>
               <div id="savedAddress">
                 <% database.userdata.Address.forEach((x, index) => { %>
                 <div class="radio-container">
@@ -30,41 +28,35 @@
             </div>
           </div>
         </div>
-
-
-
-
+      </div>
+      <br>
+      <div class="accordion" id="accordionExample2">
         <div class="accordion-item">
-          <h2 class="accordion-header" id="headingTwo">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" onclick="clearRadioButtons();unBlockForm()">
+          <h2 class="accordion-header" id="headingOne2">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne2" aria-controls="collapseOne2" onclick="clearRadioButtons();unBlockForm()">
               <h5 style="cursor: pointer;">Click to use a new address </h5>
             </button>
           </h2>
-          <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+          <div id="collapseOne2" class="accordion-collapse collapse" aria-labelledby="headingOne2" data-bs-parent="#accordionExample2">
             <div class="accordion-body">
               <div id="newAddressSection">
                 <div class="d-flex my-4 " id="secondline">
-                
                   <div class="mb-3 mx-4 ">
                     <label for="phonenumber" class="form-label">Contact Number:</label>
                     <input type="tel" id="phonenumber" name="phonenumber" class="form-control" placeholder="Phone number">
                     <div id="phonenumberMessage" class="text-danger m-3"></div>
                   </div>
-                  
                   <div class="mb-3 mx-4 ">
                     <label for="house" class="form-label">House NO:</label>
                     <input type="text" id="house" name="house" class="form-control">
                     <div id="houseMessage" class="text-danger m-3"></div>
                   </div>
-                  
                   <div class="mb-3 mx-4 ">
                     <label for="street" class="form-label">Street:</label>
                     <input type="text" id="street" name="street" class="form-control">
                     <div id="streetMessage" class="text-danger m-3"></div>
                   </div>
-                  
                 </div>
-                
                 <div class="d-flex my-4 " id="thirdline">
                   <div class="mb-3 mx-4 ">
                     <label for="location" class="form-label">Location:</label>
@@ -82,7 +74,6 @@
                     <div id="cityMessage" class="text-danger m-3"></div>
                   </div>
                 </div>
-                
                 <div class="d-flex my-4 " id="fourthline">
                   <div class="mb-3 mx-4 ">
                     <label for="state" class="form-label">State:</label>
@@ -126,38 +117,27 @@
                       <option value="west_bengal">West Bengal</option>
                     </select>
                   </div>
-                  
                   <div class="mb-3  px-4 ">
                     <label for="Country" class="form-label">Country:</label>
                     <input type="Country" id="Country" name="Country" class="form-control" value="India">
                   </div>
-                  
                   <div class="mb-3 mx-4 ">
                     <label for="pincode" class="form-label">Pincode:</label>
                     <input type="tel" id="pincode" name="pincode" class="form-control">
                     <div id="pincodeMessage" class="text-danger m-3"></div>
                   </div>
-                  
                 </div>
-                
                 <div class="m-4 text-danger ">
                   <input type="checkbox" id="saveaddressCheckbox" name="saveaddressCheckbox" class="form-check-input">
                   <label for="saveaddressCheckbox" class="form-check-label"><h5>I want to save this address for future use.</h5></label>
                 </div>
-                
               </div>
             </div>
           </div>
         </div>
-
       </div>
-
-  
     </form>
   </div>
-
-
-
 
   <div id="rightside" class="m-3 pt-3 ">
     <h5 class="text-center">PAYMENT OPTIONS</h5>
@@ -206,7 +186,6 @@
 
 
 </div>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <%- include("../partials/footer.ejs") %>
 
 
@@ -217,206 +196,88 @@
 
 
 <script>
-  var selectionCheck=1;
-    function paymentprocess() {  
-      var paymentMethod= document.querySelector('input[name="paymentMethod"]:checked').value;
-      var selectedRadio = document.querySelector('input[name="fromDbAddressRadio"]:checked');
+ 
+
+  var orderId ;
+  $(document).ready(function(){
+      var settings = {
+    "url": "/create/orderId",
+    "method": "POST",
+    "timeout": 0,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "data": JSON.stringify({
+      "amount": "50000"
+    }),
+  };
+  
+  //creates new orderId everytime
+  $.ajax(settings).done(function (response) {
+  
+    orderId=response.orderId;
+    console.log(orderId);
+    $("button").show();
+  });
+  });
 
 
 
-alert("yui" + selectionCheck)
-    
 
 
-      if (selectionCheck==1) {
-        alert(selectionCheck)
-        alert("saved address section");
-        let Value = selectedRadio.value;
-      
-           fetch("/paynow", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json",
-                },
-                body: JSON.stringify({
-                    Value:Value,
-                    paymentMethod:paymentMethod
-                }),
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("paynow fetch in checkout not giving an OK response as intended");
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log("Success 1:", data);
-                    var options = {
-                        "key": data.key_id,
-                        "amount": data.amount,
-                        "currency": "INR",
-                        "name": "TIME S",
-                        "description": "Test Payment",
-                        "image": "/image/TIME S.jpg",
-                        "order_id": data.order_id,
-                        "handler": function (response) {
-                            alert(response.razorpay_payment_id);
-                            alert(response.razorpay_order_id);
-                            alert(response.razorpay_signature);
-                        },
-                        "prefill": {
-                          "name": data.username,
-                          "email": data.email,
-                          "contact": data.phone
-                        },
-                        "notes": {
-                            "address": ""
-                        },
-                        "theme": {
-                            "color": "#735bff" 
-                        },
-
-
-                        config: {
-                          display: {
-                            blocks: {
-                              banks: {
-                                name: 'Pay via UPI',
-                                instruments: [
-                                  {
-                                    method: 'upi'
-                                  }
-                                ],
-                              },
-                            },
-                            sequence: ['block.banks'],
-                            preferences: {
-                              show_default_blocks: true,
-                            },
-                          },
-                        },
-                    
+  function paymentprocess() {
+  
+    const formData = new FormData();
 
 
 
-                    };
+const savedAddress=document.getElementById("headingOne");
+    if(savedAddress)
+    // Append form fields to the FormData object
+    formData.append('productName', document.getElementById('productName').value);
+    formData.append('productDescription', document.getElementById('productDescription').value);
+    formData.append('productPrice', document.getElementById('productPrice').value);
+    formData.append('productCategory', document.getElementById('productCategory').value);
+    formData.append('addedDate', document.getElementById('addedDate').value);
+    formData.append('productsize', document.getElementById('productsize').value);
+    formData.append('productcolour', document.getElementById('productcolour').value);
+    formData.append('stockCount', document.getElementById('stockCount').value);
 
-                    var rzp1 = new Razorpay(options);
-                    rzp1.on('payment.failed', function (response) {
-                        alert(response.error.code);
-                        alert(response.error.description);
-                        alert(response.error.source);
-                        alert(response.error.step);
-                        alert(response.error.reason);
-                        alert(response.error.metadata.order_id);
-                        alert(response.error.metadata.payment_id);
-                    });
 
-                    rzp1.open(); // Open Razorpay after initialization
-                })
-                .catch(error => {
-                    console.error("Error during fetch:", error);
-                });
-        }
-    
-      
-      
-      else if(selectionCheck==2) {
-        alert(selectionCheck)
-        console.log("in typeD address section")
-        alert("IN TYPED address section");
-    
-     
-        var saveaddressCheckbox=document.getElementById('saveaddressCheckbox').checked;
-        var phoneNumber =  document.getElementById('phonenumber').value;
-        var house =  document.getElementById('house').value;
-        var street = document.getElementById('street').value;
-        var location = document.getElementById('location').value;
-        var landmark =  document.getElementById('landmark').value;
-        var city =  document.getElementById('city').value;
-        var state =  document.getElementById('state').value;
-        var Country =  document.getElementById('Country').value;
-        var pincode =  document.getElementById('pincode').value;
-        console.log("paymentMode2",paymentMethod) //working
 
-        fetch("/paynow", {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/json",
-              "Accept": "application/json",
-          },
-          body: JSON.stringify({
-            saveaddressCheckbox:saveaddressCheckbox,
-            paymentMethod:paymentMethod,
-            phoneNumber:phoneNumber,
-            house: house,
-            street:street,
-            location:location,
-            landmark:landmark,
-            city:city,
-            state:state,
-            Country:Country,
-            pincode:pincode
-          }),
-      })
-          .then(response => {
-              if (!response.ok) {
-                  throw new Error("paynow fetch in checkout not giving an OK response as intended");
-              }
-              return response.json();
-          })
-          .then(data => {
-              console.log("Success 2:", data);
-        
-              var options = {
-                  "key": data.key_id,
-                  "amount": data.amount,
-                  "currency": "INR",
-                  "name": "TIME S",
-                  "description": "Test Transaction",
-                  "image": "/image/TIME S.jpg",
-                  "order_id": data.order_id,
-                  "handler": function (response) {
-                      alert(response.razorpay_payment_id);
-                      alert(response.razorpay_order_id);
-                      alert(response.razorpay_signature);
-                  },
-                  "prefill": {
-                    "name": data.username,
-                    "email": data.email,
-                    "contact": data.phone
-                  },
-                  "notes": {
-                      "address": ""
-                  },
-                  "theme": {
-                      "color": "#735bff"
-                  }
-              };
 
-              var rzp1 = new Razorpay(options);
-              rzp1.on('payment.failed', function (response) {
-                  alert(response.error.code);
-                  alert(response.error.description);
-                  alert(response.error.source);
-                  alert(response.error.step);
-                  alert(response.error.reason);
-                  alert(response.error.metadata.order_id);
-                  alert(response.error.metadata.payment_id);
-              });
 
-              rzp1.open(); // Open Razorpay after initialization
-          })
-          .catch(error => {
-              console.error("Error during fetch:", error);
-          });
-       
+
+
+    fetch("/paynow", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+      body: JSON.stringify({
+      data:formData
+      }),
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
+      return response.json();
+    })
+    .then(data => {
+      console.log("Success:", data);
     
-      
-    }
+  
+  })
+    .catch(error => {
+      console.error("Error:", error);
+    });
 
+
+   
+  }
+  
 
 
 
@@ -434,33 +295,54 @@ function unhide(){
   arrowIconUp
 }
 
+/* function clearForm(){
+  let formElemnts=document.querySelectorAll('#newAddressSection input, #newAddressSection select');
+  formElemnts.forEach(function(element){
+    if(element.type==='checkbox'){
+      element.checked=false;
+    }else{
+      element.value="";
+    }
+  })
+
+} */
 
 
 function BlockForm(){
-  selectionCheck=1;
   let formElemnts=document.querySelectorAll('#newAddressSection input, #newAddressSection select');
   formElemnts.forEach(function (element) {
     element.disabled = true;
   });
 
- 
+  let accordionElement2 = document.getElementById('collapseOne2');
+  let accordion = new bootstrap.Collapse(accordionElement2, { toggle: false });
+  accordion.toggle();
+
+
+  let accordionElement = document.getElementById('collapseOne');
+  let accordion1 = new bootstrap.Collapse(accordionElement, { toggle: true });
+  accordion1.toggle();
 }
 
 
 
 function unBlockForm(){
-  selectionCheck=2;
   let formElemnts=document.querySelectorAll('#newAddressSection input, #newAddressSection select');
   formElemnts.forEach(function (element) {
     element.disabled = false;
   });
 
+  let accordionElement = document.getElementById('collapseOne');
+  let accordion = new bootstrap.Collapse(accordionElement, { toggle: false });
+  accordion.toggle();
 
+  let accordionElement2 = document.getElementById('collapseOne2');
+  let accordion2= new bootstrap.Collapse(accordionElement2, { toggle: true });
+  accordion2.toggle();
 }
 
 
 function fieldValidation(){
-
   let phonenumber=document.getElementById("phonenumber").value;
   let house=document.getElementById("house").value;
   let street=document.getElementById("street").value;

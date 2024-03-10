@@ -1,4 +1,5 @@
 
+const { ObjectId } = require("mongodb");
 const mongoose=require("mongoose");
 
 require("../model/config")
@@ -53,6 +54,13 @@ const userSchema=mongoose.Schema({
         state:String,
         country:String,
         pincode:Number
+    }],
+    coupon:[{
+        id:ObjectId,
+        couponCode:String,
+        OneTimeUsed:Boolean,
+        appliedOnDate:String,
+        expiryDate:String
     }]
 });
 

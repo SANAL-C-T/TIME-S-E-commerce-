@@ -1,17 +1,17 @@
 <%-include("../partials/userloggedHeder.ejs")%>
 
-<div  class="d-flex bg-light ">
+<div  class="d-flex  gradient-sidebar ">
   
     <div class=" row">
           
-            <div class="sideMenu mt-3 mx-3">
+            <div class="sideMenu mt-3 mx-3  ">
             
                 <ul class="nav flex-column">
-                    <h6 class="text-center mt-3  "> CATEGORY</h6>
+                    <h6 class="text-center mt-3  text-light">FILTER</h6>
               
 
-                    <li class="nav-item">
-                        <label class="nav-link" for="APPLE">
+                    <li class="nav-item  ">
+                            <label class="nav-link" for="APPLE">
                             <input type="radio" id="APPLE" name="productType" class="form-check-input">
                             APPLE
                         </label>
@@ -97,7 +97,11 @@
               #txtcrd {
                 height: 50px;
               }
+
               
+              .gradient-sidebar {
+                background: linear-gradient(to bottom , #080707, #290129); /* Adjust colors as needed */
+            } 
 
 
 </style>
@@ -107,14 +111,15 @@
 <main class="col-md-9 ms-sm-auto col-lg-10 md-4">
 
 
-<section style="background-color: #f0f0f0;">
+<section style="background-color: #fbf9f9;">
         <div class="text-center container py-5  ">
         <h4 class="mt-4 mb-5  nam"><strong><%=catwise.productCategory.
             categoryName%></strong></h4>
 
             <form class="form-inline my-2 my-lg-0">
                 <input class="form-control mr-sm-2" type="search" placeholder="Search" name="ser" id="serh" aria-label="Search">
-                <button class="btn btn-success my-4" type="submit">Search</button>
+               <!--  <button class="btn btn-success my-4" type="submit">Search</button> -->
+               <br>
               </form>
 
 <div class="row pdlist">

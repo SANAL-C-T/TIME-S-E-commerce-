@@ -1,5 +1,5 @@
 <%- include("../partials/userloggedHeder.ejs") %>
-
+  
 
 <div class="container-fluid  d-flex ">
     <div class=" row">
@@ -22,11 +22,12 @@
 <br>
             <div class="text-center "><h5>ORDER HISTORY</h5></div>
             
-                    <table id="example" class="table table-striped">
+                    <table id="example" class="table table-striped ">
                         <thead>
                             <tr>
-                                <th style="width: 5%;">SL NO</th>
+                                <th style="width: 5%;">NO</th>
                                 <th style="width: 20%;">ORDER ID</th>
+                                <th style="width: 15%;">INFO</th>
                                 <th style="width: 15%;">ORDER DATE</th>
                                 <th style="width: 15%;">TOTAL PRICE</th>
                                 <th style="width: 10%;">STATUS</th>
@@ -34,37 +35,69 @@
                                 <th style="width: 10%;">ACTION</th>
                             </tr>
                         </thead>
-                     <!--    <tbody>
-                            <% cartHistory.forEach((order, orderIndex) => { %>
-                                <% order.items.forEach((item, itemIndex) => { %>
-                                    <tr>
-                                        <td><%= orderIndex + 1 %></td>
-                                        <td> <%=order._id%></td> 
-                                        <td><%= order.OrderDate %></td>
-                                        <td><%= item.price%></td>
-                                        <td><%= order.Status %></td>
-                                        <% if (order.Status !== "Shipped" && order.Status !== "Delivered") { %>
-                                            <td>
-                                                <form action="/orderCancel/<%= order.userid %>" method="POST">
-                                                    <input type="hidden" name="index" value="<%= orderIndex%>">
-                                                    <button type="submit" class="btn btn-danger" name="action" value="cancel">Cancel</button>
-                                                </form>
-                                            </td>
-                                        <% } else { %>
-                                            <td></td> <!-- Empty cell if status is Shipped or Delivered -->
-                                        <% } %>
-                                        
-                                    </tr>
-                                <% }); %>
-                            <% }); %>
-                        </tbody> -->
+                 
                         
                         <tbody>
                             <% cartHistory.forEach((order, orderIndex) => { %>
                                 <tr>
                                     <td><%= orderIndex + 1 %></td>
                                     <td><%= order._id %></td>
-                                    <td><%= order.OrderDate %></td>
+                                    <td>
+                                        <!-- Button trigger modal -->
+                                        <button
+                                            type="button"
+                                            class="btn btn-primary"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalId<%= orderIndex %>"
+                                        >
+                                        View orders
+                                        </button>
+                        
+                                        <!-- Modal -->
+                                        <div
+                                            class="modal fade"
+                                            id="modalId<%= orderIndex %>"
+                                            tabindex="-1"
+                                            role="dialog"
+                                            aria-labelledby="modalTitleId"
+                                            aria-hidden="true"
+                                        >
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="modalTitleId">
+                                                            Details of order
+                                                        </h5>
+                                                        <button
+                                                            type="button"
+                                                            class="btn-close"
+                                                            data-bs-dismiss="modal"
+                                                            aria-label="Close"
+                                                        ></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="container-fluid">
+                                                            <ul>
+                                                                <% cartHistory[orderIndex].items.forEach((item) => { %>
+                                                                   <div class="d-flex  justify-content-between ">
+                                                                    <div class="p-3 w-50 "><%= item.productName %></div>
+                                                                    <div class="p-3 text-danger  ">&#8377;<%= item.price %> </div>
+                                                                    <div class="p-3 "><img src="<%= item.productImage %>" style="width:70px; height:70px;"></div>
+                                                                   </div>
+                                                                 
+                                                                <% }); %>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- End Modal -->
+                                    </td>
+                                    <td id="orderDateCell"><%= order.OrderDate %></td>
+                        
                                     <td>&#8377; <%= order.OrderTotalPrice %></td>
                                     <td><%= order.Status %></td>
                                     <% if (order.Status !== "shipped" && order.Status !== "delivered" && order.Status !== "Cancel"&& order.Status !== "User cancelled" ) { %>
@@ -75,7 +108,7 @@
                                             </form>
                                         </td>
                                     <% } else { %>
-                                        <td></td> 
+                                        <td></td>
                                     <% } %>
                                 </tr>
                             <% }); %>
@@ -92,7 +125,6 @@
                                         confirmButtonText: 'Yes, cancel it!'
                                     }).then((result) => {
                                         if (result.isConfirmed) {
-                                            
                                             document.getElementById(`cancelForm${orderIndex}`).submit();
                                         }
                                     });
@@ -118,7 +150,7 @@
 
 
 
-                   
+               
 
 
 <%-include("../partials/footer.ejs")%>
@@ -206,5 +238,8 @@
 
 <script>
     new DataTable("#example");
+
+  
+    
 </script>
 

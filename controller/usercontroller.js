@@ -464,11 +464,15 @@ const contactb = async (req, res) => {
 //         console.log(error.message)
 //     }
 // }
+//...........................................................................................................
 
+
+//need to add pagination logics.... to this section,  based on product category, i will have to paginate 
+//this page is rendered when the buy product is clicked ,
 const categoryWiseProduct = async (req, res) => {
     try {
 
-        console.log("rete")
+        console.log("in categoryWise Product")
         const qid = req.params.proid;
         console.log("id",qid)
 
@@ -509,7 +513,7 @@ const categoryWiseProduct = async (req, res) => {
     }
 };
 
-
+//..............forgot password........................
 const forgotpassword = async (req, res) => {
     try {
         res.render("user/forgotPassword.ejs")
@@ -554,11 +558,15 @@ const resetpassword = async (req, res) => {
     }
 }
 
+//.........categorywise filter.....................................
 const filter = async (req, res) => {
     try {
-        const productType = req.body.productType;
+        const productType = req.body.productType;//radio button data of selected category.
         const discounted = req.body.discounted;
         const pricesort = req.body.pricesort;
+
+
+        console.log("kkkkkn",pricesort)
         const pages = req.body.page;
         const ser = req.body.ser;
 
@@ -576,12 +584,10 @@ const filter = async (req, res) => {
         let products;
         let docCount;
         let serc;
-        let hightolow;
-        let lowtohigh;
+        let SortByPrice
 
         try {
             const category = await categData.findOne({ categoryName: productType });
-
             // Taking the count of documents excluding deleted products
             docCount = products = await productDatas
                 .find({ 'productCategory': category._id, isDeleted: false })
@@ -605,8 +611,18 @@ const filter = async (req, res) => {
                 .exec();
 
         
-                hightolow = await productDatas.find({isDeleted: false}).sort({ productPrice: 1 });
-                lowtohigh = await productDatas.find({isDeleted: false}).sort({ productPrice: -1 });
+                
+                if(pricesort==="Hightolow"){
+                    console.log("lolo::::::::::::::::::::::::::::::::::::::")
+                    SortByPrice = await productDatas.find({isDeleted: false}).sort({ productPrice: 1 });
+
+                }else{
+                    SortByPrice = await productDatas.find({isDeleted: false}).sort({ productPrice: -1 }); 
+                }
+
+
+console.log("sort data::",SortByPrice)
+
 
 
             serc = await productDatas
@@ -637,8 +653,7 @@ const filter = async (req, res) => {
             docCount,
             productType,
             serc,
-            hightolow,
-            lowtohigh
+            SortByPrice
            
         });
     } catch (error) {
@@ -648,10 +663,10 @@ const filter = async (req, res) => {
 };
 
 
+
+//.............edit profile...............................
 const editprofile=async(req,res)=>{
     try{  
-     
-
         res.render("user/userprofileedit.ejs")
     }
     catch(error){
@@ -680,7 +695,7 @@ const saveEditProfile=async(req,res)=>{
     let pImage = `/${req.file.filename}`;
 
 
-console.log("eeeeeeeee::::",pImage)
+//console.log("eeeeeeeee::::",pImage)
 
 
 let address={
@@ -745,6 +760,8 @@ const profile=async(req,res)=>{
     }
 }
 
+
+//....change passwword..........
 const changepassword=async(req,res)=>{
     try{
 res.render("user/changepassword.ejs")
@@ -803,7 +820,7 @@ res.render("user/changepassword.ejs")
 }
 
 
-
+//..........review by user...................
 const addReview=async(req,res)=>{
     try{
         let product=req.params.id;
@@ -848,7 +865,7 @@ const saveReview=async(req,res)=>{
 }
 
 
-
+//.........view review.....................
 
 const viewReview=async(req,res)=>{
     try{
@@ -859,8 +876,26 @@ const viewReview=async(req,res)=>{
     }
 }
 
+//.........wallet..........
+
+const wallet=async(req,res)=>{
+    try{
+        res.render("user/wallet.ejs")
+    }
+    catch(error){
+        console.log(error.message)
+    }
+}
 
 
+
+
+
+
+
+
+
+//...........exports..................................................................................................
 module.exports = {
     home,
     notfound,
@@ -888,7 +923,8 @@ module.exports = {
     changesavedpassword,
     addReview,
     saveReview,
-    viewReview
+    viewReview,
+    wallet
   
 
 }

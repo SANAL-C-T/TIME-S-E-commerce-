@@ -5,7 +5,7 @@ const categData=require("../model/categorySchema")
 //adding product to database.
 const addproduct=async(req,res)=>{
 
-
+console.log('ooooooooooooooooi');
     console.log("test incoming images::::",req.files)
     try{
         const filePath=[]

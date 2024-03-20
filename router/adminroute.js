@@ -52,8 +52,38 @@ adminUrlRouter.post("/category",adminin.addcategory)
 
 adminUrlRouter.get("/orders",adminin.orderManagement)
 adminUrlRouter.post("/statusUpdate/:id",adminin.orderStatusUpdate)
+adminUrlRouter.get("/coupon",adminin.coupons)
+adminUrlRouter.get("/listCoupon",adminin.listcoupons)
+adminUrlRouter.post("/couponAdd",adminin.addcoupons)
 
+adminUrlRouter.get("/editcoupon/:id",adminin.editcoupons)
+adminUrlRouter.post("/editcoupon/:id",adminin.changecoupons)
+adminUrlRouter.post("/deletecoupon/:id",adminin.deletecoupons)
 adminUrlRouter.get("/logout",adminin.logout)
+adminUrlRouter.post("/reportbydate",adminin.daywisereport)
+adminUrlRouter.get("/downloadrevenue",adminin.downloadrevenue)
+adminUrlRouter.get("/downloadrevenuepdf",adminin.downloadrevenuepdf)
+
+
+adminUrlRouter.get("/addOffer",adminin.addofferproduct)
+
+
+
+adminUrlRouter.get("/Offercategory",adminin.addoffercategory)
+adminUrlRouter.post("/Offercategory",adminin.offercategorywise)
+adminUrlRouter.get("/Offerproduct",adminin.addofferproduct)
+adminUrlRouter.post("/Offerproduct",adminin.offerproductwise)
+adminUrlRouter.get("/offerreferral",adminin.offerreferal)
+
+adminUrlRouter.post("/removeOffer",adminin.removeOffer)
+adminUrlRouter.post("/removeProductOffer",adminin.removeproductOffer)
+
+
+adminUrlRouter.get("/download",adminin.downloadoption)
+adminUrlRouter.get("/reportbydate",adminin.bydate)
+
+
+
 
 module.exports={
     adminUrlRouter

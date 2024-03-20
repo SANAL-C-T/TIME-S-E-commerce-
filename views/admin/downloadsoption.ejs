@@ -1,0 +1,151 @@
+<%- include("../partials/adminheader.ejs") %>
+
+<div class="container  m-3 ">
+  <div class="row">
+      <div class="d flex-column ">
+          <a href="/admin/reportbydate">
+              <button>By DATE</button>
+            </a>
+            
+          
+            
+      </div>
+
+
+
+
+      <div class="table-responsive mt-3 ">
+      
+
+        <h5 class="text-center ">SOLD AND NON RETURNED ITEMS</h5>
+          <table id="example" class="table table-striped" style="width:100%">
+              <thead>
+                  <tr>
+                    
+                      <th>SL No</th>
+                      <th>USERNAME</th>
+                
+                      <th>INVOICE DATE</th>
+                      <th>INVOICE AMOUNT</th>
+                      <th>PAYMENT METHOD</th>
+                      
+                  
+                  </tr>
+              </thead>
+              <tbody>
+                  <% urlData.salesData.forEach((order, index) => { %>
+                      <tr>
+                          <td><%= index + 1 %></td>
+                          <td><%= order.userid. username %></td>
+                        
+                          <td><%= order.OrderDate %></td>
+                          <td>&#8377; <%= order.OrderTotalPrice %></td>
+                          <td><%= order.paymentMethod %></td>
+                    
+                        
+                          
+                         
+                  <% }); %>
+              </tbody>
+          </table>
+      
+  </div>
+
+  </div>
+ 
+  <br>
+
+<hr>
+
+  <div class="table-responsive mt-3 ">
+      <h5 class="text-center ">REVENUE DETAILS</h5>
+      <table id="example2"  style="width:100%">
+      <thead>
+          <tr>
+        
+          
+              <th>GENERATED AMOUNT</th>
+            <TH> ACTUAL AMOUNT TO ACCOUNT </TH>
+              <th>CASH ON DELIVERY</th>
+              <th>ONLINE PAYMENT</th>
+              <th>AMOUNT RETURNED</th>
+              
+        
+    
+              <th>AMOUNT DISCOUNTED</th>
+          </tr>
+      </thead>
+      <tbody>
+          
+              <tr> 
+             
+                  <td>&#8377; <%= urlData.total %></td>
+                  <td>&#8377; <%= urlData.CODtotal.total %></td>
+              
+                  <td>&#8377; <%= urlData.razorpayTotal.total %></td>
+                  <td>&#8377; <%= urlData.returned.total %></td>
+                  <td>&#8377; <%= urlData.returned.total %></td>
+                  <td>&#8377; <%= urlData.returned.total %></td>
+                  
+                 
+       
+      </tbody>
+  </table>
+ 
+<br>
+
+
+</div>
+
+<br>
+
+<div class="table-responsive mt-3 ">
+    <h5 class="text-center ">COUNT DETAILS</h5>
+    <table id="example2"  style="width:100%">
+    <thead>
+        <tr>
+      
+        
+
+            <th>SALE COUNT</th>
+            <th>RETURN COUNT</th>
+            <th>DELIVERED COUNT</th>
+            <th>DISCOUNTED COUNT</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+            <tr> 
+           
+             
+                <td><%= urlData.count %></td>
+                <td><%= urlData.count %></td>
+                <td><%= urlData.count %></td>
+                <td><%= urlData.count %></td>
+            
+                
+               
+     
+    </tbody>
+</table>
+<br>
+<div class="d-flex justify-content-between ">
+    <a href="/admin/downloadrevenue"><button>DOWNLOAD REVENUE DETAILS IN EXCEL FILE</button></a>
+    <br>
+    <br>
+   <a href="/admin/downloadrevenuepdf"> <button>DOWNLOAD REVENUE DETAILS IN PDF</button></a>
+
+</div>
+
+<br>
+<br>
+
+</div>
+
+
+
+<%- include("../partials/adminfooter.ejs") %>
+
+  
+
+

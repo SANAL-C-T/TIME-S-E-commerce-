@@ -55,7 +55,7 @@
         <td><%=ca.categoryName%></td>
         <td><%=ca.Categorystatus%></td>
         <td>
-          <a href="/admin/editCategory/<%=ca.id%>" class="btn btn-primary px-4"
+          <a href="/admin/editCategory/<%=ca.id%>" class="btn btn-primary btn-sm px-4"
             >EDIT</a
           >
 
@@ -64,7 +64,7 @@
           <%if(ca.Categorystatus === false) {%>
           <button
             type="button"
-            class="btn btn-success restore-button"
+            class="btn btn-success btn-sm restore-button"
             data-bs-toggle="modal"
             data-bs-target="#modalId1"
             data-category-id1="<%= ca.id %>"
@@ -80,7 +80,7 @@
 
           <button
             type="button"
-            class="btn btn-danger delete-button"
+            class="btn btn-danger btn-sm delete-button"
             data-bs-toggle="modal"
             data-bs-target="#modalId"
             data-category-id="<%= ca.id %>"

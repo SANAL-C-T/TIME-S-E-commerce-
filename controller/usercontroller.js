@@ -2,10 +2,15 @@ const userData = require("../model/userSchema")
 const productDatas = require("../model/productSchema")
 const categData = require("../model/categorySchema")
 const reviewData=require("../model/reviewschema")
+const wishData=require("../model/wishlist")
+const productData=require("../model/productSchema")
+
 const bcrypt = require("bcrypt")
 const { render } = require("ejs")
 // const session = require("express-session")
 const JWTtoken = require("jsonwebtoken")
+const walletData = require("../model/walletSchema")
+
 require('dotenv').config();
 const jwtcode = process.env.jwt_user_secret
 
@@ -92,6 +97,9 @@ const home = async (req, res) => {
             match: { Categorystatus: true } // Only include categories with Categorystatus set to true
         })
         .exec();
+        
+console.log("samsungProduct::::",samsungProduct)
+
         
         if (samsungProduct[0].productCategory && samsungProduct[0].productCategory.Categorystatus === true) {
             console.log("Samsung product loaded");
@@ -301,11 +309,27 @@ const storeData = async (req, res) => {
 
         }
         
+
+
+        const userdetails=await userData.findOne({email:userEmail})
+// console.log("rrrrrrrrr",userdetails._id)
+
+const wishlist= new wishData({
+    userId:userdetails._id
+}) 
+
+wishlist.save()
+
     }
     catch (error) {
         console.log("test", error.message)
     }
 }
+
+
+
+
+
 
 
 const allproductPage = async (req, res) => {
@@ -358,11 +382,6 @@ const productdetail = async (req, res) => {
 {
     
 }
-
-
-
-
-
     res.render("user/productdetail.ejs", { pdetail});
 }  catch (error) {
 console.log(error.message);
@@ -475,7 +494,8 @@ const categoryWiseProduct = async (req, res) => {
         console.log("in categoryWise Product")
         const qid = req.params.proid;
         console.log("id",qid)
-
+        const pageNumber =  1;
+        const itemsPerPage = 4;
         const catwise = await productDatas.findOne({ _id: qid, isDeleted: false })
             .populate({
                 path: 'productCategory',
@@ -484,8 +504,8 @@ const categoryWiseProduct = async (req, res) => {
             })
             .exec();
 
-
-            console.log(catwise)
+let comingCategory=catwise.productCategory.categoryName;
+            // console.log("ef",catwise.productCategory.categoryName)
         if (!catwise) {
            
             return res.status(404).send('Category-wise product not found');
@@ -498,14 +518,16 @@ const categoryWiseProduct = async (req, res) => {
                 model: 'category',
                 select: 'categoryName',
             })
+            .skip((pageNumber - 1) * itemsPerPage)
+            .limit(itemsPerPage)
             .exec();
 
-
             const docCount = await productDatas.countDocuments({ productCategory: catwise.productCategory, isDeleted: false });
-            console.log(":D:d:d", docCount);
+            console.log("in categorywise product in usercontroller ", docCount);
             
+            let pageStartindex = (pageNumber - 1) * itemsPerPage;
 
-        res.render("user/categoryWiseProduct.ejs", { catlist, catwise ,docCount});
+        res.render("user/categoryWiseProduct.ejs", { catlist, catwise ,docCount,pageStartindex,comingCategory});
 
     } catch (error) {
         console.log(error.message);
@@ -561,25 +583,21 @@ const resetpassword = async (req, res) => {
 //.........categorywise filter.....................................
 const filter = async (req, res) => {
     try {
+
         const productType = req.body.productType;//radio button data of selected category.
         const discounted = req.body.discounted;
         const pricesort = req.body.pricesort;
-
-
-        console.log("kkkkkn",pricesort)
         const pages = req.body.page;
-        const ser = req.body.ser;
-
+        const usersearch = req.body.ser;
         const pageNumber = parseInt(pages) || 1;
         const itemsPerPage = 4;
         let searching;
 
-        if (ser) {
-            searching = { productName: { $regex: `^${ser}`, $options: 'i' } };
+
+
+        if (usersearch) {
+            searching = { productName: { $regex: `^${usersearch}`, $options: 'i' } };
         }
-
-
-        // console.log("qqqq",pricesort)
 
         let products;
         let docCount;
@@ -587,57 +605,172 @@ const filter = async (req, res) => {
         let SortByPrice
 
         try {
-            const category = await categData.findOne({ categoryName: productType });
-            // Taking the count of documents excluding deleted products
-            docCount = products = await productDatas
-                .find({ 'productCategory': category._id, isDeleted: false })
-                .populate({
-                    path: 'productCategory',
-                    model: 'category',
-                    select: 'categoryName',
-                })
-                .countDocuments();
 
-            // Finding the products based on selection excluding deleted products
-            products = await productDatas
-                .find({ 'productCategory': category._id, isDeleted: false })
-                .populate({
-                    path: 'productCategory',
-                    model: 'category',
-                    select: 'categoryName',
-                })
-                .skip((pageNumber - 1) * itemsPerPage)
-                .limit(itemsPerPage)
-                .exec();
+                        if(productType=="allproducts"){
+                            const pages = req.body.page;
 
-        
-                
-                if(pricesort==="Hightolow"){
-                    console.log("lolo::::::::::::::::::::::::::::::::::::::")
-                    SortByPrice = await productDatas.find({isDeleted: false}).sort({ productPrice: 1 });
+                            const pageNumber = parseInt(pages) || 1;
+                            const itemsPerPage = 4;
 
-                }else{
-                    SortByPrice = await productDatas.find({isDeleted: false}).sort({ productPrice: -1 }); 
-                }
+                            docCount = await productDatas
+                            .find({ isDeleted: false })
+                            .populate({
+                                path: 'productCategory',
+                                model: 'category',
+                                select: 'categoryName',
+                            })
+                            .countDocuments();
+
+//111111111111111111111111111111111111111111111111111111111111111111111111
+
+if(productType=="allproducts"){
+    products = await productDatas
+    .find({  isDeleted: false })
+    .populate({
+        path: 'productCategory',
+        model: 'category',
+        select: 'categoryName',
+    })
+    .skip((pageNumber - 1) * itemsPerPage)
+    .limit(itemsPerPage)
+    .exec();
+}
+
+                           
+
+                          
+else if(productType=="allproducts"&& usersearch!=""){
+    serc = await productDatas
+    .find({ ...searching, isDeleted: false })
+    .populate({
+        path: 'productCategory',
+        model: 'category',
+        select: 'categoryName',
+    })
+    .skip((pageNumber - 1) * itemsPerPage)
+    .limit(itemsPerPage)
+    .exec();
+}
+                           
 
 
-console.log("sort data::",SortByPrice)
+
+
+                            let pageStartindex = (pageNumber - 1) * itemsPerPage;
+
+                            if(pricesort==="Hightolow"){
+                                products=undefined;
+                                console.log("Hightolow::::::")
+                                console.log("price sort in user route  Hightolow::::")
+                                SortByPrice = await productDatas
+                                .find({ isDeleted: false })
+                                .populate({
+                                    path: 'productCategory',
+                                    model: 'category',
+                                    select: 'categoryName',
+                                })
+                                .sort({ productPrice: -1 });
+
+                            }else if(pricesort==="lowtohigh"){
+                                products=undefined;
+                                console.log("Hightolow2222::::::")
+                                SortByPrice =  console.log("price sort in user route: low to high:::")
+                                SortByPrice = await productDatas
+                                .find({ isDeleted: false })
+                                .populate({
+                                    path: 'productCategory',
+                                    model: 'category',
+                                    select: 'categoryName',
+                                }).sort({ productPrice: 1 }); 
+                            }
+
+                            console.log("pageStartindex::::",pageStartindex)
+
+                            console.log("///////////////////////////////////////////////////////////")
+                        }
+else{
+ console.log("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+
+                        // should work when the category id is present, but not if selected all products
+
+                                    const category = await categData.findOne({ categoryName: productType });
+                                    // Taking the count of documents excluding deleted products
+                                                docCount = await productDatas
+                                                .find({ 'productCategory': category._id, isDeleted: false })
+                                                .populate({
+                                                    path: 'productCategory',
+                                                    model: 'category',
+                                                    select: 'categoryName',
+                                                })
+                                                .countDocuments();
+
+                                    // Finding the products based on selection excluding deleted products
+                                                products = await productDatas
+                                                    .find({ 'productCategory': category._id, isDeleted: false })
+                                                    .populate({
+                                                        path: 'productCategory',
+                                                        model: 'category',
+                                                        select: 'categoryName',
+                                                    })
+                                                    .skip((pageNumber - 1) * itemsPerPage)
+                                                    .limit(itemsPerPage)
+                                                    .exec();
+
+                                
+                                        
+                                        if(pricesort==="Hightolow"){
+                                            console.log("666666666666::::")
+                                            products=undefined;
+                                            SortByPrice = await productDatas
+                                            .find({ 'productCategory': category._id, isDeleted: false })
+                                            .populate({
+                                                path: 'productCategory',
+                                                model: 'category',
+                                                select: 'categoryName',
+                                            })
+                                            .sort({ productPrice: -1 });
+
+                                        }else if(pricesort==="lowtohigh"){
+                                            console.log("pri555555555555 low to high:::")
+                                            products=undefined;
+                                            SortByPrice = await productDatas
+                                            .find({ 'productCategory': category._id, isDeleted: false })
+                                            .populate({
+                                                path: 'productCategory',
+                                                model: 'category',
+                                                select: 'categoryName',
+                                            }).sort({ productPrice: 1 }); 
+                                        }
+
+
+                                        console.log("sort data::",SortByPrice)
+
+
+                        console.log("user searche222558:",usersearch)
+
+                        if(usersearch!=""){
+                            serc = await productDatas
+                            .find({ ...searching, isDeleted: false,'productCategory': category._id, })
+                            .populate({
+                                path: 'productCategory',
+                                model: 'category',
+                                select: 'categoryName',
+                            })
+                            .skip((pageNumber - 1) * itemsPerPage)
+                            .limit(itemsPerPage)
+                            .exec();
+
+                        console.log('search QueryHGJHGJ:', serc);//is working and getting data.
 
 
 
-            serc = await productDatas
-                .find({ ...searching, isDeleted: false,'productCategory': category._id, })
-                .populate({
-                    path: 'productCategory',
-                    model: 'category',
-                    select: 'categoryName',
-                })
-                .skip((pageNumber - 1) * itemsPerPage)
-                .limit(itemsPerPage)
-                .exec();
-
-            console.log('search Query:', serc);//is working and getting data.
-        } catch (error) {
+                        }
+}
+                       
+    
+}
+          catch (error) {
+            console.log("try inside")
             console.error('Error fetching products:', error);
         }
 
@@ -645,18 +778,37 @@ console.log("sort data::",SortByPrice)
             return res.json(products);
         }
 
-        let a = (pageNumber - 1) * itemsPerPage;
+        let pageStartindex = (pageNumber - 1) * itemsPerPage;
         //sending a response body to the frontend as a part of post fetch.
+        console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+console.log("data 1", products)
+console.log("data 2",pageStartindex)
+console.log("data 3",docCount)
+console.log("data 4",productType)
+console.log("data 5",serc)
+console.log("data 6",SortByPrice)
+console.log("data ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+
+
+
+
+
+
+
+
+
         res.json({
             products,
-            a,
+            pageStartindex,
             docCount,
             productType,
             serc,
             SortByPrice
            
         });
+
     } catch (error) {
+        console.log("try outside")
         console.log(error.message);
     
     }
@@ -772,6 +924,53 @@ res.render("user/changepassword.ejs")
 }
 
 
+
+const showWishlist=async(req,res)=>{
+    try{
+
+        const usersid = await new Promise((resolve, reject) => {
+            const usertoken = req.cookies.usertoken;
+            JWTtoken.verify(usertoken, jwtcode, (err, decoded) => {
+                if (err) {
+                    console.error('JWT verification failed:', err.message);
+                    reject(err);
+                } else {
+                    const userdetail = decoded._id;
+                    resolve(userdetail);
+                }
+            });
+        });
+        
+        const wis = await wishData.findOne({ userId: usersid })
+        .populate({
+            path: "list",
+            model: "products" 
+        });
+
+
+        let counts=await wishData.findOne({ userId: usersid })
+        let wishPerPage=counts.list.length
+        console.log("counts",wishPerPage)
+
+        const wish={
+            wish:wis,
+            page:wishPerPage
+        }
+        // console.log("wish::",wish.list[0].productName)
+
+
+
+        res.render("user/wishlist.ejs",wis)
+    }
+    catch(error){
+        console.log(error.message)
+    }
+}
+
+
+
+
+
 const changesavedpassword=async(req,res)=>{
     try{
 let existingpass=req.body.existingpassword;
@@ -794,7 +993,7 @@ const usersid = await new Promise((resolve, reject) => {
 
 
 if(newPass===confirmPsaa){
-    console.log("rrrr")
+    console.log("inside change password.....usercontroller")
 
 let userdet=await userData.findOne({_id:usersid})
 console.log( userdet)
@@ -880,7 +1079,35 @@ const viewReview=async(req,res)=>{
 
 const wallet=async(req,res)=>{
     try{
-        res.render("user/wallet.ejs")
+
+        const usersid = await new Promise((resolve, reject) => {
+            const usertoken = req.cookies.usertoken;
+            JWTtoken.verify(usertoken, jwtcode, (err, decoded) => {
+                if (err) {
+                    console.error('JWT verification failed:', err.message);
+                    reject(err);
+                } else {
+                    const userdetail = decoded._id;
+                    resolve(userdetail);
+                }
+            });
+        });
+        let getWWallet=await walletData.findOne({userId:usersid})
+
+if(getWWallet==null){
+    res.render("user/emptywallet.ejs")
+}
+
+
+        console.log("getWWallet",getWWallet)
+const data ={
+    amount:getWWallet.avaliable,
+    creditedOn:getWWallet.creditedOnDate,
+    credited:getWWallet.creditAmount,
+    debited:getWWallet.debitedAmount
+}
+
+        res.render("user/wallet.ejs",{data})
     }
     catch(error){
         console.log(error.message)
@@ -888,7 +1115,60 @@ const wallet=async(req,res)=>{
 }
 
 
+const wishtoadd = async (req, res) => {
+    try {
+        // Extract productId from the request body
+        const productId = req.body.productId;
+        console.log("Product ID:", productId);
 
+        // Extract userId from the JWT token
+        const usersid = await new Promise((resolve, reject) => {
+            const usertoken = req.cookies.usertoken;
+            JWTtoken.verify(usertoken, jwtcode, (err, decoded) => {
+                if (err) {
+                    console.error('JWT verification failed:', err.message);
+                    reject(err);
+                } else {
+                    const userId = decoded._id; // Assuming the user ID is stored in _id field
+                    resolve(userId);
+                }
+            });
+        });
+
+        // Find the selected product from the product collection
+        const selectedProduct = await productData.findById(productId);
+
+        if (!selectedProduct) {
+            console.log("Selected product not found");
+            return res.status(404).json({ error: "Selected product not found" });
+        }
+
+        // Push the ObjectId of the selected product to the list array in the wishlist collection
+        const updatedWishlist = await wishData.findOneAndUpdate(
+            { userId: usersid },
+            { $push: { list: selectedProduct._id } }, // Push only the ObjectId of the selected product
+            { new: true }
+        );
+
+        console.log("Updated wishlist:", updatedWishlist);
+        res.status(200).json({ message: "Product added to wishlist successfully" });
+    } catch (error) {
+        console.error("Error adding product to wishlist:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
+
+
+const wishtoremove=async(req,res)=>{
+    try{
+        let productId = req.body.productId;
+        console.log("Product ID to remove:", productId);
+    }
+    catch(error){
+        console.log(error.message)
+    }
+}
 
 
 
@@ -924,7 +1204,10 @@ module.exports = {
     addReview,
     saveReview,
     viewReview,
-    wallet
+    wallet,
+    wishtoadd,
+    wishtoremove,
+    showWishlist
   
 
 }

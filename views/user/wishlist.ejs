@@ -1,9 +1,4 @@
-
-
 <%-include("../partials/userloggedHeder.ejs")%>
-
-
-
 
 
 <div class="container-fluid  d-flex ">
@@ -21,51 +16,46 @@
             </ul>
         </nav>
     </div>
-
-
-<div class=" container   justify-content-between  mt-5 m-3     ">
-                <div class="d-flex mx-5  justify-content-between mb-5  balance">
-
-                    <div>
-                        <h3>Available Balance</h3>
-                    </div>
-                    <div>
-                        <h3>&#8377; <%=data.amount%></h3>
-                    </div>
-
-
-            </div>
-
-
-
+  
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4 d-flex flex-column mx-3">
+        <h5 class="text-center mt-2">Wishlist</h5>
+        <div id="wishContainer">
     
-                <table id="example" class="table table-striped " style="width: 100%">
-                    <thead>
-                      <tr>
-                     
-                        <th>DATE</th>
-                        <th>CREDIT</th>
-                        <th>DEBIT</th>
-                      
-                      </tr>
-                    </thead>
-                    <tbody>
-                  
-                      <tr>
-                        <td><%=data. creditedOn%></td>
-                        <td>&#8377; <%=data. credited%></td>
-                        <td>&#8377; <%=data. debited%></td>
-                       
-                     
-                    </tbody>
-                  </table>
-           
+            <% list.forEach(wishItem => { %>
+    
+                <div class="wish-item d-flex justify-content-between mt-3 mb-3  p-3 " style="border: 1px solid #324d6a">
+
+                    <div>
+                        <img src="<%= wishItem.productImage[0].image1 %>" style="width: 90px; height: 80px;">
+                    </div>
+                    <div style="width: 150px;" ><%= wishItem.productName %></div>
+                    <div>₹ <%= wishItem.productPrice %></div>
+                    <div><h6 class="text-success ">In stock</h6></div>
+                    <div><button class="btn btn-warning btn-sm">ADD TO CART</button></div>
+                    <div><button class="btn btn-danger btn-sm ">REMOVE</button></div>
+                </div>
+    
+            <% }) %>
+    
+        </div>
+
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center ">
+              <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+              <li class="page-item"><a class="page-link" href="#">1</a></li>
+              <li class="page-item"><a class="page-link" href="#">2</a></li>
+              <li class="page-item"><a class="page-link" href="#">3</a></li>
+              <li class="page-item"><a class="page-link" href="#">Next</a></li>
+            </ul>
+          </nav>
+    </main>
+    
 
 
 
+
+<!-- .......... -->
 </div>
-
-
 </div>
 <%-include("../partials/footer.ejs")%>
 
@@ -107,6 +97,7 @@
         .sidebar li:hover {
             background-color: #555;
         }
+
         .sidebar ul {
             list-style: none;
             padding: 0;
@@ -118,63 +109,19 @@
             color: #fff;
             display: block;
         }
-@media (max-width: 768px) {
-    #firstline, #secondline, #thirdline, #fourthline {
-        width: 100%; 
-        flex-direction: column;
-    }
-}
-
-
 
 @media (max-width: 768px) {
     .sidebar{
         width:100%;
-        padding: 0%;
+        padding:0px;
     }
 }
 
 
-#example thead th {
-    background-color: #333; 
-    color: #fff; 
-}
-
-
-#example tbody td {
-    background-color: #fff; 
-    color: #333;
-}
-
-#example_filter {
-    float: right;
-}
 
 
 
-.balance{
-    background-color: rgb(245, 245, 250);
-    height: 100PX;
-    padding:30px;
-   
-  box-shadow: 0 0 15px rgb(140, 139, 139);
-
-
-
-
-}
 
     </style>
 
-
-
-
-
-<script>
-    new DataTable("#example");
-
-
-
-</script>
-
-
+  

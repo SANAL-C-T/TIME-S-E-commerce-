@@ -6,6 +6,7 @@ const orderHistorySchema = mongoose.Schema({
     userid: ObjectId,
     orderId: ObjectId,
     OrderDate:String,
+    DeliveredDate:String,
     paymentMethod: String,
     address: String,
     userid: ObjectId,

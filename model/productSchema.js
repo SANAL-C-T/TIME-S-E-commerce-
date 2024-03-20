@@ -140,7 +140,16 @@ const productCollection=mangoose.Schema({
     isDeleted:{
         type:Boolean,
         default: false,
-    }
+    },
+    isdiscount:{
+        type:Boolean,
+        default: false,
+    },
+    offer:[{
+        Discountvalue:Number,
+        StartDate:String,
+        endDate:String
+    }]
 
 })
 const productData=mongoose.model("products",productCollection);

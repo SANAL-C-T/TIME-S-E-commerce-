@@ -63,17 +63,49 @@
 <!-- ---------------------------------------------------------------------------------------------- -->
 <% for (let i = 0; i < 4 && i < loadProduct.length; i++) { %>
   <div class="col-lg-3 col-md-12 mb-4" >
+    
+    
     <div class="card h-100" id="cd">
-      <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+   
+      <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light " data-mdb-ripple-color="light">
+        <% let highestDiscount = 0; %>
+
+        <% if (loadProduct[i].offer) { %>
+          <% loadProduct[i].offer.forEach(offer => { %>
+            <% if (offer.Discountvalue > highestDiscount) { %>
+              <% highestDiscount = offer.Discountvalue; %>
+            <% } %>
+          <% }); %>
+        <% } %>
+        
+        <% if (loadProduct[i].productCategory && loadProduct[i].productCategory.catOffer) { %>
+          <% loadProduct[i].productCategory.catOffer.forEach(offer => { %>
+            <% if (offer.catDiscountValue > highestDiscount) { %>
+              <% highestDiscount = offer.catDiscountValue; %>
+            <% } %>
+          <% }); %>
+        <% } %>
+        
+        <% if (highestDiscount > 0) { %>
+          <div id="discount">
+            <%= highestDiscount %>% OFF
+          </div>
+        <% } %>
         
           <img src="<%= loadProduct[i].productImage[0].image1 %>" class="w-100" id="proimg" />
-      
+         
       </div>
       <div class="card-body bodyimg">
        
           <div><h5 class="card-title mb-3"id="txtcrd"><%= loadProduct[i].productName %></h5></div>
         
-        <h6 class="mb-3 text-danger">&#8377; <%= loadProduct[i].productPrice %></h6>
+          <h6 class="mb-3" style="text-decoration: line-through;">&#8377; <%= loadProduct[i].productPrice %></h6>
+
+          <div class="d-flex justify-content-between m-3">
+            <h6 class="mb-3 text-danger">&#8377; <%= loadProduct[i].productPrice %></h6>
+            <div id="stock" class="mb-3 text-success ">in stock</div>
+          </div>
+       
         <a href="/product/<%= loadProduct[i]._id %> " class="text-reset">
           <button class="m-2 " id="btBYNOW">BUY NOW</button>
         </a>
@@ -197,7 +229,15 @@ Imagine effortlessly handling your Apple Watch with simple gestures, making it i
   <div class="col-lg-3 col-md-12 mb-4">
     <div class="card h-100" id="cd" >
       <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
-        
+        <% if (loadProductA[i].offer) { %>
+         
+          <% loadProductA[i].offer.forEach(offer => { %>
+            <div id="discount">
+              <%= offer.Discountvalue %>% OFF
+            </div>
+          <% }); %>
+     
+    <% } %>
           <img src="<%= loadProductA[i].productImage[0].image1 %>" class="w-100" id="proimg"  />
       
       </div>
@@ -205,7 +245,8 @@ Imagine effortlessly handling your Apple Watch with simple gestures, making it i
         
           <div><h5 class="card-title mb-3"id="txtcrd"><%= loadProductA[i].productName %></h5></div>
         
-        <h6 class="mb-3 text-danger">&#8377; <%= loadProductA[i].productPrice %></h6>
+        <h6 class="mb-3 text-danger" >&#8377; <%= loadProductA[i].productPrice %></h6>
+      
         <a href="/product/<%= loadProductA[i]._id %> " class="text-reset">
           <button class="m-2 " id="btBYNOW">BUY NOW</button>
         </a>
@@ -269,7 +310,15 @@ Imagine effortlessly handling your Apple Watch with simple gestures, making it i
   <div class="col-lg-3 col-md-12 mb-4" >
     <div class="card h-100" id="cd">
       <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
-        
+        <% if (loadProductG[i].offer) { %>
+         
+          <% loadProductG[i].offer.forEach(offer => { %>
+            <div id="discount">
+              <%= offer.Discountvalue %>% OFF
+            </div>
+          <% }); %>
+     
+    <% } %>
           <img src="<%= loadProductG[i].productImage[0].image1 %>" class="w-100" id="proimg" />
       
       </div>
@@ -300,3 +349,14 @@ Imagine effortlessly handling your Apple Watch with simple gestures, making it i
    
 
 
+<style>
+  #discount {
+    background-color: rgb(248, 224, 3);
+    width: 45px;
+    height: 45px;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+    border-radius:0  0 100% 100%  ;
+    overflow: hidden;
+}
+
+</style>

@@ -5,7 +5,10 @@ require("../model/config")
 
 const cartSchema = mongoose.Schema({
     couponCode: String,
-
+    couponApplied: {
+        type: Boolean,
+        default: false,
+      },
     userid: ObjectId,
     items: [
         {
@@ -14,8 +17,6 @@ const cartSchema = mongoose.Schema({
             productImage:String,
             quantity: Number,
             price:Number
-
-
         }
     ],
 

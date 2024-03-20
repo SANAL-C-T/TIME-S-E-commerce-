@@ -9,27 +9,37 @@
                 <ul class="nav flex-column">
                     <h6 class="text-center mt-3  text-light">FILTER</h6>
               
+                    <li class="nav-item  ">
+                        <label class="nav-link" for="allproducts">
+                        <input type="radio" id="allproducts" name="productType" class="form-check-input">
+                        ALL PRODUCT
+                    </label>
+                </li>
+
+
+
 
                     <li class="nav-item  ">
                             <label class="nav-link" for="APPLE">
-                            <input type="radio" id="APPLE" name="productType" class="form-check-input">
+                            <input type="radio" id="APPLE" name="productType" class="form-check-input" <%= comingCategory === "APPLE" ? 'checked' : '' %>>
                             APPLE
                         </label>
                     </li>
 
                     <li class="nav-item">
                         <label class="nav-link" for="GARMIN">
-                            <input type="radio" id="GARMIN" name="productType" class="form-check-input">
+                            <input type="radio" id="GARMIN" name="productType" class="form-check-input" <%= comingCategory === "GARMIN" ? 'checked' : '' %>>
                             GARMIN
                         </label>
                     </li>
 
                     <li class="nav-item">
                         <label class="nav-link" for="SAMSUNG">
-                            <input type="radio" id="SAMSUNG" name="productType" class="form-check-input">
+                            <input type="radio" id="SAMSUNG" name="productType" class="form-check-input" <%= comingCategory === "SAMSUNG" ? 'checked' : '' %>>
                             SAMSUNG
                         </label>
                     </li>
+                    
 
                 <h6 class="text-center mt-3 "> PRICE</h6>
 
@@ -70,47 +80,20 @@
 
 
 <style>
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-top: 5px;
-            }
-    
-            th, td {
-                border: 1px solid #000000;
-                padding: 3px;
-                text-align: left;
-            }
-    
-            th {
-                background-color: #f9c001;
-            }
-
-
-            
             #proimg { 
-                
                 height: 250px;
               }
-
-              
               #txtcrd {
                 height: 50px;
               }
-
-              
               .gradient-sidebar {
                 background: linear-gradient(to bottom , #080707, #290129); /* Adjust colors as needed */
             } 
-
-
 </style>
 
 
 
 <main class="col-md-9 ms-sm-auto col-lg-10 md-4">
-
-
 <section style="background-color: #fbf9f9;">
         <div class="text-center container py-5  ">
         <h4 class="mt-4 mb-5  nam"><strong><%=catwise.productCategory.
@@ -123,34 +106,43 @@
               </form>
 
 <div class="row pdlist">
+
+
+ 
 <!-- ---------------------------------------------------------------------------------------------- -->
-    <% catlist.forEach(product => { %>
-    
-        <div class="col-lg-3 col-md-12 mb-4">
-            <div class="card h-100">
-                <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
-                    <img src="<%= product.productImage[0].image1%>" class="w-100" id="proimg"/>
-                </div>
-                <div class="card-body">
-                   
-                        <div><h5 class="card-title mb-3" id="txtcrd"><%= product.productName %></h5></div>
-                  
-                    <a href="/productpage/<%= product._id %>" class="text-reset">
-                        <button class="m-2 bg-warning px-4 ">BUY NOW</button>
-                    </a>
-                    <h6 class="mb-3">₹ <%= product.productPrice %></h6>
-                </div>
+<% catlist.forEach(product => { %>
+   
+    <div class="col-lg-3 col-md-12 mb-4">
+        <div class="card h-100">
+           
+           
+            <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                <img src="<%= product.productImage[0].image1%>" class="w-100" id="proimg"/>
+            </div>
+            <div class="card-body">   
+                <button class="btn btn-link position-absolute start-0 top-0" onclick="addToWishlist('<%= product._id %>')">
+                    <i class="fas fa-heart" style="color: #63E6BE;"></i>
+                </button>
+                <div><h5 class="card-title mb-3" id="txtcrd"><%= product.productName %></h5></div>                  
+                <a href="/productpage/<%= product._id %>" class="text-reset">
+                    <button class="m-2 bg-warning px-4">BUY NOW</button>
+                </a>
+                <h6 class="mb-3">₹ <%= product.productPrice %></h6>
             </div>
         </div>
-    <% }) %>
+    </div>
+<% }) %>
+
+
 
     <!--  --------------------------------------------------------------------------------------- -->
 </div>  <!-- row closing -->
-<div class="pagination_div w-100  d-flex justify-content-center">
+
+<div class="pagination_div w-100 mt-4  d-flex justify-content-center  b ">
     <nav aria-label="Page navigation example">
         <ul class="pagination d-flex">
             <% for (let i = 1; i <= Math.ceil(docCount / 4); i++) { %>
-                <li class="page-item <%= i === i ? 'active' : '' %>">
+                <li class="page-item <%= i === 1 ? 'active' : '' %>">
                     <a class="page-link" onclick="newProductlist(i)"><%= i %></a>
                 </li>
             <% } %>
@@ -163,14 +155,23 @@
 </main>
 
 </div>
-
-
-
 <%-include("../partials/footer.ejs")%>
+
+
+<style>
+    .pagination .page-item.active .page-link {
+        background-color: #04fa6f;
+        color: #000000; 
+    }
+</style>
+
+
+
 
 <script>
 
-    let re;
+let usersearch;
+
   document.addEventListener('DOMContentLoaded', async function () {
         const filters = document.querySelectorAll('input[name=productType]');
         const sorts = document.querySelectorAll('input[name=pricesort]');
@@ -195,14 +196,14 @@
 
     });
 
-    
+    //this will work if pagination is clicked, filtered, serched
             async function newProductlist(page){
                 
                 const productType=document.querySelector('input[name=productType]:checked');
                 const discounted=document.querySelector('input[name=discounted]:checked');
                 const pricesort=document.querySelector('input[name=pricesort]:checked');
                 const ser = document.querySelector('input[name=ser]').value; 
-                re=ser;
+                usersearch=ser;
                 
                 try{
                   //posting the user input to backend.
@@ -220,13 +221,9 @@
                     }),
                     
                 })
-               
                     const data=await responseData.json() //incoming data from backend is here.
-
                     console.log("frontend",data)
-
                     updateTitle(data);//updating the page title
-
                     updateProductHTML(data);//updating the page content.
                    
                 }
@@ -249,84 +246,230 @@
             }
             
             
+        
             
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
 //...................product card..........................
 
             function updateProductHTML(data) {
                 const contain = document.querySelector(".pdlist");
                 const productType=document.querySelector('input[name=productType]:checked');
-                console.log("update product data in ui",data)
+                console.log("update product data in userside in categorywise page",data)
  
                if(lock!=1){
                     contain.innerHTML = '';
                   
                 }
                 let cards=[] 
-                
-                if (re=="") {
-                  
-                    data.products.forEach(product => {
-                        const cardHTML = `<div class="col-lg-3 col-md-12 mb-4 ">
-                            <div class="card h-100">
-                                <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
-                                    <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
 
-                                </div>
-                                <div class="card-body">
-                                   
-                                        <div><h5 class="card-title mb-3" style="height:50px;">${product.productName}</h5></div>
-                                  
-                                    <a href="/productpage/${product._id}" class="text-reset">
-                                        <button class="m-2 bg-warning px-4">BUY NOW</button>
-                                    </a>
-                                    <h6 class="mb-3">₹ ${product.productPrice}</h6>
-                                </div>
-                            </div>
-                        </div>`
-        
-                        cards.push(cardHTML)
-                    });
-                  
-                    
-                    contain.innerHTML=cards.join("")
+
+
+
+
                 
-                   
-                     const paginations=document.querySelector('.pagination')
-     
-                    paginations.innerHTML = generatePagination(data.docCount, data.a);
-                   
-            
-                } else if(re==""||re!=""&&productType!=null) {
+                if(data.products==undefined) {
                
-                 
-                    data.serc.forEach(product => {
-                        const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
-                            <div class="card h-100">
-                                <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
-                                    <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px/>
-                                </div>
-                                <div class="card-body">
-                                    
-                                        <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
-                                   
-                                    <a href="/productpage/${product._id}" class="text-reset">
-                                        <button class="m-2 bg-warning px-4">BUY NOW</button>
-                                    </a>
-                                    <h6 class="mb-3">₹ ${product.productPrice}</h6>
-                                </div>
-                            </div>
-                        </div>`
-        
-                        cards.push(cardHTML)
-                    });
-                  
-                    contain.innerHTML = cards.join("");
-                    const paginations=document.querySelector('.pagination')
-     
-                    paginations.innerHTML = generatePagination(data.docCount, data.a);
-            }
+                    console.log("product is undefined  so used price sort")
             
+
+                                if (usersearch=="") {
+                                    data.SortByPrice.forEach(product => {
+                                        const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
+                                            <div class="card h-100">
+                                                <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                                                    <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
+                                                </div>
+                                                <div class="card-body">
+                                                    <!-- Icon for wish list -->
+                                                    <button class="btn btn-link position-absolute start-0 top-0" onclick="toggleWishlist('${product._id}', this)">
+                                                        <i class="fas fa-heart" style="color: #63E6BE;"></i>
+                                                    </button>
+                                                    <div>
+                                                        <h5 class="card-title mb-3" style="height:50px;">${product.productName}</h5>
+                                                    </div>
+                                                    <a href="/productpage/${product._id}" class="text-reset">
+                                                        <button class="m-2 bg-warning px-4">BUY NOW</button>
+                                                    </a>
+                                                    <h6 class="mb-3">₹ ${product.productPrice}</h6>
+                                                </div>
+                                            </div>
+                                        </div>`;
+                                    
+                                        cards.push(cardHTML);
+                                    });
+                                    
+                                    
+                                    contain.innerHTML=cards.join("")
+                                    const paginations=document.querySelector('.pagination')
+                                    paginations.innerHTML = generatePagination(data.docCount, data.pageStartindex);
+                   
+            
+                                    } else if(usersearch==""||usersearch!=""&&productType!=undefined) {
+                                        data.serc.forEach(product => {
+                                            const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
+                                                <div class="card h-100">
+                                                    <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                                                        <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px/>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        
+                                                            <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
+                                                    
+                                                        <a href="/productpage/${product._id}" class="text-reset">
+                                                            <button class="m-2 bg-warning px-4">BUY NOW</button>
+                                                        </a>
+                                                        <h6 class="mb-3">₹ ${product.productPrice}</h6>
+                                                    </div>
+                                                </div>
+                                            </div>`
+                            
+                                            cards.push(cardHTML)
+                                        });
+                                        contain.innerHTML = cards.join("");
+                                        const paginations=document.querySelector('.pagination')
+                                        paginations.innerHTML = generatePagination(data.docCount, data.pageStartindex);
+                                }
+
+                                else if(usersearch==""||usersearch!=""&& productType==undefined) {
+                                    data.serc.forEach(product => {
+                                        const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
+                                            <div class="card h-100">
+                                                <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                                                    <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px/>
+                                                </div>
+                                                <div class="card-body">
+                                                    
+                                                        <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
+                                                
+                                                    <a href="/productpage/${product._id}" class="text-reset">
+                                                        <button class="m-2 bg-warning px-4">BUY NOW</button>
+                                                    </a>
+                                                    <h6 class="mb-3">₹ ${product.productPrice}</h6>
+                                                </div>
+                                            </div>
+                                        </div>`
+                        
+                                        cards.push(cardHTML)
+                                    });
+                                    contain.innerHTML = cards.join("");
+                                    const paginations=document.querySelector('.pagination')
+                                    paginations.innerHTML = generatePagination(data.docCount, data.pageStartindex);
+                            }
+                                
+          
+        }
+        else if(data.products!=undefined &&  data.SortByPrice==undefined)  {
+                        console.log("ALLPPPP22")
+                        data.products.forEach(product => {
+                            const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
+                                <div class="card h-100">
+                                    <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                                        <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px/>
+                                    </div>
+                                    <div class="card-body">
+                                            <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
+                                        <a href="/productpage/${product._id}" class="text-reset">
+                                            <button class="m-2 bg-warning px-4">BUY NOW</button>
+                                        </a>
+                                        <h6 class="mb-3">₹ ${product.productPrice}</h6>
+                                    </div>
+                                </div>
+                            </div>`
+
+                            cards.push(cardHTML)
+                        });
+                    
+                        contain.innerHTML = cards.join("");
+                        const paginations=document.querySelector('.pagination')
+                        paginations.innerHTML = generatePagination(data.docCount, data.pageStartindex);
+
+            
+   
+                if(usersearch==""|| usersearch!="" && productType!=undefined) {
+                            data.serc.forEach(product => {
+                                const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
+                                    <div class="card h-100">
+                                        <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                                            <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px/>
+                                        </div>
+                                        <div class="card-body">
+                                            
+                                                <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
+                                        
+                                            <a href="/productpage/${product._id}" class="text-reset">
+                                                <button class="m-2 bg-warning px-4">BUY NOW</button>
+                                            </a>
+                                            <h6 class="mb-3">₹ ${product.productPrice}</h6>
+                                        </div>
+                                    </div>
+                                </div>`
+                
+                                cards.push(cardHTML)
+                            });
+                            contain.innerHTML = cards.join("");
+                            const paginations=document.querySelector('.pagination')
+                            paginations.innerHTML = generatePagination(data.docCount, data.pageStartindex);
+                    }
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
  //......pagination section..........................................
  function generatePagination(totalProducts, currentPage) {
@@ -334,8 +477,12 @@
     let paginationHTML = `<nav aria-label="Page navigation example"><ul class="pagination">`;
 
     for (let i = 1; i <= totalPages; i++) {
-        paginationHTML += `<li class="page-item ${i === currentPage ? 'active' : ''}">
-                            <a class="page-link" onclick="newProductlist(${i})">${i}</a>
+        let activeClass = '';
+        if (i === currentPage) {
+            activeClass = 'active';
+        }
+        paginationHTML += `<li class="page-item ${activeClass}">
+                            <a class="page-link" onclick="newProductlist(${i})" style="${activeClass ? 'background-color: #007bff; color: #fff;' : ''}">${i}</a>
                           </li>`;
     }
 
@@ -343,7 +490,84 @@
     return paginationHTML;
 }
 
+
         }
+
+
+        function toggleWishlist(productId, button) {
+            const icon = button.querySelector('i.fa-heart');
+            // Check if the icon's color is the default color or the wishlist color
+            if (icon.style.color === 'rgb(99, 230, 190)') {
+                // If it's the default color, change it to the wishlist color
+                icon.style.color = '#FF0000'; // Change to your desired color for wishlist
+
+                const data = { productId: productId };
+
+                // Make a POST request to the backend route
+                fetch('/wishlistadd', {
+                    method: 'POST', // Specify the HTTP method
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json' // Specify the Accept header for JSON response
+                    },
+                    body: JSON.stringify(data) // Convert data to JSON format
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text(); // Convert response to text format
+                })
+                .then(responseText => {
+                    console.log('Success:', responseText); // Log success message
+                    // Handle successful response from the server
+                })
+                .catch(error => {
+                    console.error('Error:', error); // Log error message
+                    // Handle error occurred during fetch request
+                });
+
+
+
+            } else {
+
+                icon.style.color = '#63E6BE';
+
+                const data = { productId: productId };
+                fetch('/wishlistremove', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json' // Specify the Accept header for JSON response
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text(); // Convert response to text format
+                })
+                .then(responseText => {
+                    console.log('Success:', responseText); // Log success message
+                    // Handle successful response from the server
+                })
+                .catch(error => {
+                    console.error('Error:', error); // Log error message
+                    // Handle error occurred during fetch request
+                });
+                // If it's the wishlist color, change it back to the default color
+                 // Change to your default icon color
+            }
+        
+            // Here you can add the logic to actually add/remove the product from the wishlist
+            // This function is just for changing the color of the icon
+        }
+        
+        
+
+
+
 
 
 </script>

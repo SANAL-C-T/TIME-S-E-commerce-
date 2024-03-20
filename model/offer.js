@@ -1,15 +1,15 @@
 const mongoose=require("mongoose");
 require("../model/config")
-const couponSchema=mongoose.Schema({
-couponCode:String,
+const offerSchema=mongoose.Schema({
 offerType:String,
 OfferDescription:String,
 discount:Number,
 expiryDate:String,
 createdDate:String,
 validTime:String,
-productCategory:String
+productCategoryOffer:String,
+productOffer
 })
-const couponData=mongoose.model("coupon",couponSchema)
+const offerData=mongoose.model("offer",offerSchema)
 
 module.exports=couponData;

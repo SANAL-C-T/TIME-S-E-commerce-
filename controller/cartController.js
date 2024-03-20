@@ -2,7 +2,9 @@ const mongoose = require('mongoose');
 const userData = require("../model/userSchema");
 const orderHistoryData=require("../model/orderhistoryschema");
 const productDatas = require("../model/productSchema");
+const walletData=require("../model/walletSchema")
 const cartData = require("../model/cartSchema");
+const couponData=require("../model/couponSchema")
 const JWTtoken = require("jsonwebtoken");
 const Razorpay = require("razorpay");
 const moment=require("moment")
@@ -42,10 +44,8 @@ const cartadd = async (req, res) => {
 
         // Getting the product details
         let pdata = await productDatas.findById(selectedProduct);
-
-
-
-        console.log("pdata",pdata)
+        let qyt=pdata.stockCount
+        // console.log("pdata",pdata)
         let productsadded = {
             products: selectedProduct,
             quantity: 1,
@@ -53,7 +53,6 @@ const cartadd = async (req, res) => {
             productImage:pdata.productImage[0].image1  ,
             price: pdata.productPrice
         }
-
         // checking if the cart has the product or not
         const already = await cartData.findOne({ userid: usersid, 'items.products': selectedProduct })
 
@@ -86,9 +85,11 @@ const cartadd = async (req, res) => {
             let cartItem = {
                 cart: INcart
             };
-
+            await productDatas.findOneAndUpdate(
+                { _id: selectedProduct },
+                { $set: { stockCount: qyt - 1 } }
+              );
             res.render("user/cart.ejs", { cartItem });
-
         } else {
             // if it already exists, show an alert
             res.locals.errorMessage = 'Product exists in the cart, so increase the QTY.';
@@ -112,7 +113,6 @@ const cartadd = async (req, res) => {
             };
             res.render("user/cart.ejs", { cartItem });
         }
-
     } catch (error) {
         console.log(error.message)
         res.status(500).send("Internal Server Error");
@@ -164,10 +164,8 @@ const showcart = async (req, res) => {
 
 const qyt=async(req,res)=>{
     try{
-
         let usersid;
         const usertoken = req.cookies.usertoken;
-       
         JWTtoken.verify(usertoken, secret, (err, decoded) => {
             if (err) {
                 console.error('JWT verification failed:', err.message);
@@ -176,13 +174,9 @@ const qyt=async(req,res)=>{
                 usersid = userdetail;
             }
         });
-       
-       
         let cartGetData=await cartData.findOne({userid:usersid})
-
 let frontendData=req.body
 // console.log(frontendData)
-
 await cartData.updateOne(
     { userid: usersid },
     {
@@ -192,8 +186,6 @@ await cartData.updateOne(
       }
     }
   );
-
-
   const itemINcart = await cartData.findOne({ userid: usersid })
   .populate({
       path:'items.products',  //field in current schema
@@ -205,16 +197,11 @@ await cartData.updateOne(
           cart: itemINcart
       }
 // console.log("Product Name:", cartItem.cart.items[1].products.productName);
-
-
 //calculating the total price in the cart
 const totalPrice = itemINcart.items.reduce((acc, item) => {
   return acc + item.price;
 }, 0);
-
-
 await cartData.updateOne({ userid: usersid },{$set: {OrderTotalPrice:totalPrice}});
-
 res.status(200).json({ success: true, totalPrice: totalPrice, message: "Total price updated successfully" });
     }
     catch(error){
@@ -222,15 +209,49 @@ res.status(200).json({ success: true, totalPrice: totalPrice, message: "Total pr
     }
 }
 
-
 //----------------------------------------------------------------------------
+
+//stock update,, up
+const stockup=async (req,res)=>{
+    try{
+console.log("received up")
+let UserId=await userExtractionFromJwt(req,res)
+let cart = await cartData.findOne({ userid: UserId });
+let frontendData=req.body
+  let updatedItem = cart.items[frontendData.index];
+    let productID = updatedItem.products; 
+    await productDatas.updateOne({_id:productID},{$inc:{stockCount:-1}}) 
+    }
+    catch(error){
+        console.log(error.message)
+    }
+}
+//stock down when quantity is reduces
+const stockdown =async (req,res)=>{
+    try{
+        console.log("received down")
+        let UserId=await userExtractionFromJwt(req,res)
+        let cart = await cartData.findOne({ userid: UserId });
+        let frontendData=req.body
+        let updatedItem = cart.items[frontendData.index];
+          let productID = updatedItem.products; 
+          await productDatas.updateOne({_id:productID},{$inc:{stockCount:1}}) 
+    }
+    catch(error){
+        console.log(error.message)
+    }
+}
+
+
+
 //cart item delete.........................................
 const itemdel = async (req, res) => {
     try {
         const deleteIndex = req.body.deleteIndex;
         const id = req.body.id;
-        // console.log(deleteIndex,id )
-        // Verify user token and extract user ID
+        const qyt=parseInt(req.body.currentQyt);
+        //  console.log(deleteIndex,id,qyt)
+        
         const usersid = await new Promise((resolve, reject) => {
             const usertoken = req.cookies.usertoken;
             JWTtoken.verify(usertoken, secret, (err, decoded) => {
@@ -243,6 +264,27 @@ const itemdel = async (req, res) => {
                 }
             });
         });
+
+        const getQuantity = await cartData.findOne(
+            { userid: usersid, "items.products": new mongoose.Types.ObjectId(id) },
+            { "items.$": 1, _id: 0 }
+          );
+          
+
+          if (getQuantity && getQuantity.items && getQuantity.items.length > 0) {
+            var quantityy = getQuantity.items[0].quantity;
+            console.log("Quantity:", quantityy);
+          } else {
+            console.log("Product not found in the cart");
+          }
+
+
+let stockFromDb = await productDatas.findOne({_id:id}) 
+
+          let restoreFORDeletedStockCount=stockFromDb.stockCount + quantityy;
+          console.log("upstock",restoreFORDeletedStockCount)
+ await productDatas.findOneAndUpdate({_id:id },{$set:{stockCount:restoreFORDeletedStockCount}})
+
 
         // Update the cart and get the updated document
         const updatedCart = await cartData.findOneAndUpdate(
@@ -264,8 +306,7 @@ const itemdel = async (req, res) => {
                 cart: itemINcart
             }
       // console.log("Product Name:", cartItem.cart.items[1].products.productName);
-      
-      
+
       //calculating the total price in the cart
       const totalPrice = itemINcart.items.reduce((acc, item) => {
         return acc + item.price;
@@ -489,7 +530,19 @@ mob=userD.phone;
                 }
 
             else if(paymentMode=="MyWallet"){    
-                await cartEraseAccording("MyWallet", usersid, req, res);
+
+const balance=await walletData.findOne({userId:usersid},{avaliable:1})
+let inCart=await cartData.findOne({userid: usersid})
+let amount= inCart.OrderTotalPrice;
+
+if(balance>=amount){
+    let newNalance=balance-amount;
+    await walletData.findOneAndUpdate({userId:usersid},{$set:{avaliable:newNalance}})
+}
+else{
+
+}
+await cartEraseAccording("MyWallet", usersid, req, res);
             }
 
 //here we are adding all the data to the order history collection.
@@ -525,7 +578,7 @@ const history=async(req,res)=>{
 
        let cartHistory= await orderHistoryData.find({userid:usersid})
 
- console.log("9999",cartHistory)
+//  console.log("show orderHistory",cartHistory)
         res.render("user/trackhistory.ejs",{cartHistory})
     }
     catch(error){
@@ -538,17 +591,43 @@ const history=async(req,res)=>{
 //..........logic to cancel the order by the user.......................
 const cancelOrder=async(req,res)=>{
     try{
-let orderId=req.params.id;
-let index=req.body.index;
+        let orderId=req.params.id;
+        let index=req.body.index;
 
-console.log("in userside",orderId,index)
+        // console.log("in userside",orderId,index)
 
 await orderHistoryData.updateOne(
     { _id: orderId },
     { $set: { Status: "User cancelled" } }
   );
 
-let statusFromDb=await orderHistoryData.findOne({ _id: orderId }).select("Status")
+
+const ForupdationOfQyt=await orderHistoryData.findOne({ _id: orderId },{items:1,_id:0})
+
+// console.log(ForupdationOfQyt.items[].products)
+const updatePromises = [];
+ForupdationOfQyt.items.forEach((x) => {
+  const pids = x.products;
+  const qyt = x.quantity;
+//   console.log(x.products);
+//   console.log(x.quantity);
+  
+  // Push each promise into the array
+  updatePromises.push(productDatas.findOneAndUpdate({ _id: pids }, { $inc: { stockCount: qyt } }));
+});
+
+// Use Promise.all to wait for all promises to resolve
+Promise.all(updatePromises)
+  .then((results) => {
+    console.log("All updates completed successfully");
+   
+  })
+  .catch((error) => {
+    console.error("Error updating stock counts:", error);
+  });
+
+
+// let statusFromDb=await orderHistoryData.findOne({ _id: orderId }).select("Status")
 
 //   if(statusFromDb.Status=="User cancelled"){
 //     let productItems = await orderData.findOne({ _id: orderId }).select('items');
@@ -566,6 +645,104 @@ let statusFromDb=await orderHistoryData.findOne({ _id: orderId }).select("Status
         console.log(error.message)
     }
 }
+
+
+
+const ReturnOrder=async(req,res)=>{
+    try{
+        let orderId=req.params.id;
+        let index=req.body.index;
+    const deliveredDate=await orderHistoryData.findOne({_id:orderId},{DeliveredDate:1})
+    let deliveryedDATE=parseInt(moment(deliveredDate).format("DD"))
+    let returnPeriod=deliveryedDATE+7;
+    let TodaysDate=parseInt(moment(Date.now()).format("DD"))
+
+
+if(returnPeriod>=TodaysDate){
+    console.log("can return")
+
+//  const ForupdationOfQyt=await orderHistoryData.findOne({ _id: orderId },{items:1,OrderTotalPrice:1,_id:0})
+// console.log("hhh",ForupdationOfQyt.OrderTotalPrice)
+// let amount=ForupdationOfQyt.OrderTotalPrice;
+// let UserId=await userExtractionFromJwt(req,res)
+// const dateOn = moment().format("DD-MM-YYYY");
+// const addWallet=new walletData({
+//     userId:UserId,
+// })
+// addWallet.save();
+// await walletData.findOneAndUpdate({userId:UserId},{$set:{creditedOnDate:dateOn},$inc:{avaliable:amount}})
+const ForupdationOfQyt = await orderHistoryData.findOne({ _id: orderId }, { items: 1, OrderTotalPrice: 1, _id: 0 });
+
+const UserId = await userExtractionFromJwt(req, res);
+
+const dateOn = moment().format('D-MM-YYYY, h:mm a');
+
+const amount = ForupdationOfQyt.OrderTotalPrice;
+
+
+let wallet = await walletData.findOne({ userId: UserId });
+
+if (!wallet) {
+  wallet = new walletData({
+    userId: UserId,
+  });
+  await wallet.save();
+}
+
+
+await walletData.findOneAndUpdate(
+  { userId: UserId },
+  {
+    $set: { creditedOnDate: dateOn,creditAmount: amount,debitedAmount: 0},
+    $inc: { avaliable: amount } 
+  },
+  { new: true } 
+);
+
+
+
+
+    // console.log(ForupdationOfQyt.items[].products)
+    const updatePromises = [];
+    ForupdationOfQyt.items.forEach((x) => {
+      const pids = x.products;
+      const qyt = x.quantity;
+     console.log(x.products);
+    console.log(x.quantity);
+      
+      // Push each promise into the array
+      updatePromises.push(productDatas.findOneAndUpdate({ _id: pids }, { $inc: { stockCount: qyt } }));
+    });
+    
+    // Use Promise.all to wait for all promises to resolve
+    Promise.all(updatePromises)
+      .then((results) => {
+        console.log("All updates completed successfully");
+       
+      })
+      .catch((error) => {
+        console.error("Error updating stock counts:", error);
+      });
+
+      await orderHistoryData.updateOne(
+        { _id: orderId },
+        { $set: { Status: "Returned" } }
+      );
+
+      res.redirect("/orderHistory")
+
+}else{
+    console.log("cannot return, return period is over")
+    res.redirect("/orderHistory")
+}
+
+        
+    }
+    catch(error){
+        console.log(error.message)
+    }
+}
+
 
 
 //..........logic to delete the previously saved address.......................
@@ -635,6 +812,83 @@ const savedAddress=async(req,res)=>{
     }
 }
 
+var amount;
+//COUPON APPLYING.....
+const couponAdd=async(req,res)=>{
+    try{
+   
+let code=req.body.code
+ console.log(code)
+
+ const usersid = await new Promise((resolve, reject) => {
+    const usertoken = req.cookies.usertoken;
+    JWTtoken.verify(usertoken, secret, (err, decoded) => {
+        if (err) {
+            console.error('JWT verification failed:', err.message);
+            reject(err);
+        } else {
+            const userdetail = decoded._id;
+            resolve(userdetail);
+        }
+    });
+});
+
+
+//  res.status(200)
+
+let couponInDb=await couponData.findOne({couponCode:code})
+
+console.log(couponInDb)
+
+let inCart=await cartData.findOne({userid: usersid})
+amount= inCart.OrderTotalPrice;
+
+if(couponInDb!=null){
+let newAmount=amount-100;
+await cartData.updateOne({ userid: usersid },{$set: {OrderTotalPrice:newAmount,Discounted:100,couponApplied:true}});
+
+}else{
+    console.log("coupon dont exist")
+}
+
+res.redirect("/cart")
+
+    }
+    catch(error){
+        console.log(error.message)
+    }
+}
+
+//coupon removal.....
+const couponremove=async(req,res)=>{
+    try{
+//         console.log("code......................")
+// let code=req.body.code
+// console.log(code)
+
+
+const usersid = await new Promise((resolve, reject) => {
+    const usertoken = req.cookies.usertoken;
+    JWTtoken.verify(usertoken, secret, (err, decoded) => {
+        if (err) {
+            console.error('JWT verification failed:', err.message);
+            reject(err);
+        } else {
+            const userdetail = decoded._id;
+            resolve(userdetail);
+        }
+    });
+});
+
+
+await cartData.updateOne({ userid: usersid },{$set: {OrderTotalPrice:amount,Discounted:0,couponApplied:true}});
+res.status(200)
+    }
+    catch(error){
+        console.log(error.message)
+    }
+}
+
 
 
 async function cartEraseAccording(PayMode,usersid,req,res){
@@ -660,6 +914,7 @@ async function cartEraseAccording(PayMode,usersid,req,res){
     await cartData.deleteOne({userid: usersid})
     // res.redirect("/home")
 }
+
 
 
 
@@ -695,7 +950,6 @@ async function userExtractionFromJwt(req,res){
 
 
 
-
 //.................. exports ...........................................................................
 module.exports = {
     cartadd,
@@ -707,6 +961,11 @@ module.exports = {
     addAddressToPurchase,
     cancelOrder,
     deleteAddress,
-    savedAddress
+    savedAddress,
+    stockdown,
+    stockup,
+    ReturnOrder,
+    couponAdd,
+    couponremove
 
 }

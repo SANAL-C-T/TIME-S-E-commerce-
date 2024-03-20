@@ -7,7 +7,15 @@ categoryName:{
 Categorystatus:{
     type:Boolean
 },
-
+isDiscounted:{
+    type:Boolean,
+    default: false,
+},
+catOffer:[{
+    catDiscountValue:Number,
+    startDate:String,
+    endDate:String
+}]
 })
 
 const categoryData=mongoose.model("category",categoryCollection);

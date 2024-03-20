@@ -36,6 +36,7 @@
           <td id="totalPrice_<%= index %>">&#8377; <%= x.price %></td>
           <td>
             <form id="deleteForm" action="/itemdelete" method="post">
+              <input type="hidden" name="currentQyt" value="<%= x.quantity %>">
               <input type="hidden" name="deleteIndex" value="<%= index %>">
               <input type="hidden" name="id" value="<%= x.products._id %>">
               <button type="button" onclick="confirmDelete()" style="background-color: transparent; border: none; color: #df1919;">
@@ -73,13 +74,25 @@
       <li id="cartprice"><h4>Grand Total: &#8377; <%=cartItem.cart.OrderTotalPrice%></h4></li>
       <hr>
       <h6>Have a coupon ?</h6>
-      <form>  
-        <input type="text" class="w-100 " id="couponcode" name="couponcode" placeholder="Enter Coupon Code">  
+       
+
+
+
+      <% if (cartItem.cart.couponApplied == false) { %>
         <div>
-          <button type="submit" class="btn btn-success w-100 mt-4" onclick="couponSubmit()">APPLY</button>
+          <input type="text" class="w-100" id="couponcode" name="couponcode" placeholder="Enter Coupon Code">
+          <button class="btn btn-success w-100 mt-4" onclick="couponSubmit()">APPLY</button>
         </div>
+      <% } else { %>
+        <div>
+          <input type="text" class="w-100" id="removecode" name="removecode" placeholder="Enter Coupon Code">
+          <button class="btn btn-warning w-100 mt-4" onclick="removeCoupon()">REMOVE</button>
+        </div>
+      <% } %>
+      
+       
         
-      </form>
+      
 
 <hr>
       <form action="/paynow" method="GET">
@@ -99,6 +112,7 @@
   var currentQty;
   var priceOfItem;
   var price;
+  
 
 
 
@@ -163,6 +177,22 @@
       document.getElementById(`displayqty_${index}`).textContent = currentQty;
       document.getElementById(`limit_${index}`).innerHTML = "";
       priceCalculation(index);
+
+      fetch("/stockup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify({
+          index: index,
+          quantity: currentQty,
+          
+        }),
+      })
+
+
+
     } else {
       document.getElementById(`limit_${index}`).innerHTML = "Reached the max limit";
     }
@@ -181,6 +211,20 @@
       document.getElementById(`displayqty_${index}`).textContent = currentQty;
       document.getElementById(`limit_${index}`).innerHTML = "";
       priceCalculation(index);
+      fetch("/stockDown", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify({
+          index: index,
+          quantity: currentQty,
+          
+        }),
+      })
+
+
     } else {
       document.getElementById(`limit_${index}`).innerHTML = "Reached the min limit";
     }
@@ -209,7 +253,42 @@
 
 
 function couponSubmit(){
+  const couponCode = document.getElementById('couponcode').value;
+
+  alert(couponCode)
   fetch("/applyCoupon",
+  {
+    method:"POST",
+    headers:{
+    'Content-Type':"application/json",
+    "Accept":"application/json"
+    },
+    body:JSON.stringify({
+      code:couponCode
+    })
+    
+  })
+  .then(response=>response.json())
+  .then(data=>{
+    console.log('Success:', data);
+  })
+  .catch(error=>{
+    console.error('Error submitting data:', error);
+  })
+}
+
+
+
+
+
+
+
+
+function removeCoupon(){
+  const couponCode = document.getElementById('removecode').value;
+
+  alert(couponCode)
+  fetch("/removeCoupon",
   {
     method:"POST",
     headers:{
@@ -221,95 +300,22 @@ function couponSubmit(){
     })
     
   })
+  .then(response=>response.json())
+  .then(data=>{
+    console.log('Success:', data);
+  })
+  .catch(error=>{
+    console.error('Error submitting data:', error);
+  })
 }
 
 
 
 //.........script for data table...................
-  
+
   new DataTable("#example");
 </script>
 
-<!-- <style>
-  #example {
-    width: 100%;
-  }
-
-  #example_filter {
-    text-align: right;
-  }
-
-  #rightside {
-    width: 20%;
-    border-radius: 8px;
-  }
-
-  @media (max-width: 768px) {
-    .cartpage {
-      flex-direction: column;
-    }
-
-    #example_filter {
-      padding-top: 20px;
-      text-align: left;
-    }
-
-    #example_paginate {
-      padding-top: 30px;
-    }
-
-    #rightside {
-      width: auto;
-      margin: 0;
-      white-space: nowrap;
-      border-radius: 8px;
-    }
-  }
-
-  ul {
-    list-style: none;
-    padding: 0;
-  }
-
-  li {
-    text-decoration: none;
-  }
-
-  #rightside {
-    background-color: #333333;
-    padding: 5px;
-    color: #ffffff;
-  }
-
-  #summary {
-    text-align: center;
-  }
-
-  .quantity-cell {
-    display: flex;
-    align-items: center;
-  }
-
-  .quantity-button {
-    background-color: #df1919;
-    color: #ffffff;
-    cursor: pointer;
-    margin: 0 5px;
-  }
-
-  .quantity-button i {
-    font-size: 18px;
-  }
-
-  .quantity-display {
-    font-size: 16px;
-  }
-
-  #qtybox {
-    border: solid 1px black;
-    padding: 8px;
-  }
-</style> -->
 
 
 

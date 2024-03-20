@@ -59,23 +59,38 @@ userUrlRouter.get("/changepassword",user.changepassword)
 userUrlRouter.post("/changepassword",user.changesavedpassword)
 userUrlRouter.get("/savedaddress",cart.savedAddress)
 userUrlRouter.post("/deleteAddress/:index",cart.deleteAddress)
-
+userUrlRouter.get("/wishlist",user.showWishlist)
+userUrlRouter.post("/wishlistadd",user.wishtoadd)
+userUrlRouter.post("/wishlistremove",user.wishtoremove)
 //user cart related
 
 userUrlRouter.get("/cart",cart.showcart)
 userUrlRouter.get("/cart/:prodid",cart.cartadd)
 userUrlRouter.post("/quantityUpdate",cart.qyt)
-
+userUrlRouter.post("/stockup",cart.stockup)
+userUrlRouter.post("/stockDown",cart.stockdown)
 userUrlRouter.post("/itemdelete",cart.itemdel)
 
 userUrlRouter.get("/paynow",cart.proceedToaddress)
 userUrlRouter.post("/paynow",cart.addAddressToPurchase)
 userUrlRouter.get("/orderHistory",cart.history)
 userUrlRouter.post("/orderCancel/:id",cart.cancelOrder)
+userUrlRouter.post("/orderReturn/:id",cart.ReturnOrder)
+
 userUrlRouter.get("/review/:id",user.addReview)
 userUrlRouter.get("/review/:id",user.viewReview)
 userUrlRouter.post("/saveReview/:id",user.saveReview)
 userUrlRouter.get("/wallet",user.wallet)
+
+
+
+userUrlRouter.post("/applyCoupon",cart.couponAdd)
+userUrlRouter.post("/removeCoupon",cart.couponremove)
+
+
+
+
+
 //universal route for 404
 userUrlRouter.get("/*",user.notfound)
 

@@ -1,15 +1,17 @@
 <%- include("../partials/adminheader.ejs") %>
 <div class="container mt-5">
-    <div class="table-responsive">
+
+    <br>
+    <div class="table-responsive mt-3 ">
         
             <table id="example" class="table table-striped" style="width:100%">
                 <thead>
                     <tr>
-                        <th>SL No</th>
+                     
                         <th>USER ID</th>
                         <th>ORDER TRACK</th>
                         <th>ORDER DATE</th>
-                        <th>PAID AMOUNT</th>
+                        <th>INVOICE AMOUNT</th>
                         <th>PAYMENT MODE</th>
                         <th>CURRENT STATUS</th>
                         <th>STATUS CONTROL</th>
@@ -19,7 +21,7 @@
                 <tbody>
                     <% userOrder.forEach((order, index) => { %>
                         <tr>
-                            <td><%= index + 1 %></td>
+                          
                             <td><%= order.userid %></td>
                             <td><%= order._id %></td>
                             <td><%= order.OrderDate %></td>
@@ -36,7 +38,7 @@
                                         <option value="delivered" <%= order.status === "delivered" ? "selected" : "" %>>Delivered</option>
                                         <option value="Cancel" <%= order.status === "Cancel" ? "selected" : "" %>>Cancel</option>
                                     </select>
-                                    <button type="submit" class="btn btn-primary mt-4">Update</button>
+                                    <button type="submit" class="btn btn-primary btn-sm  mt-4">Update</button>
                                 </form>
                             </td>
                             
@@ -55,4 +57,7 @@
 </script>
 
 
+<style>
 
+    
+</style>

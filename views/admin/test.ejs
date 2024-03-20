@@ -1,0 +1,215 @@
+
+function updateProductHTML(data) {
+    const contain = document.querySelector(".pdlist");
+    const productType=document.querySelector('input[name=productType]:checked');
+    console.log("update product data in ui",data)
+
+   if(lock!=1){
+        contain.innerHTML = '';
+      
+    }
+    let cards=[] 
+    
+    if(data.products==undefined) {
+   
+        console.log("ALLPPPP")
+       data.SortByPrice.forEach(product => {
+          
+           const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
+               <div class="card h-100">
+                   <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                       <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px/>
+                   </div>
+                   <div class="card-body">
+                       
+                           <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
+                      
+                       <a href="/productpage/${product._id}" class="text-reset">
+                           <button class="m-2 bg-warning px-4">BUY NOW</button>
+                       </a>
+                       <h6 class="mb-3">₹ ${product.productPrice}</h6>
+                   </div>
+               </div>
+           </div>`
+
+           cards.push(cardHTML)
+       });
+     
+       contain.innerHTML = cards.join("");
+       const paginations=document.querySelector('.pagination')
+
+       paginations.innerHTML = generatePagination(data.docCount, data.pageStartindex);
+
+
+
+
+
+
+
+
+
+
+    if (usersearch=="") {
+        data.products.forEach(product => {
+            const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
+                <div class="card h-100">
+                    <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                        <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
+                    </div>
+                    <div class="card-body">
+                        <!-- Icon for wish list -->
+                        <button class="btn btn-link position-absolute start-0 top-0" onclick="toggleWishlist('${product._id}', this)">
+                            <i class="fas fa-heart" style="color: #63E6BE;"></i>
+                        </button>
+                        <div>
+                            <h5 class="card-title mb-3" style="height:50px;">${product.productName}</h5>
+                        </div>
+                        <a href="/productpage/${product._id}" class="text-reset">
+                            <button class="m-2 bg-warning px-4">BUY NOW</button>
+                        </a>
+                        <h6 class="mb-3">₹ ${product.productPrice}</h6>
+                    </div>
+                </div>
+            </div>`;
+        
+            cards.push(cardHTML);
+        });
+        
+        
+        contain.innerHTML=cards.join("")
+    
+       
+         const paginations=document.querySelector('.pagination')
+
+        paginations.innerHTML = generatePagination(data.docCount, data.pageStartindex);
+       
+
+    } else if(usersearch==""||usersearch!=""&&productType!=null) {
+   
+     
+        data.serc.forEach(product => {
+            const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
+                <div class="card h-100">
+                    <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                        <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px/>
+                    </div>
+                    <div class="card-body">
+                        
+                            <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
+                       
+                        <a href="/productpage/${product._id}" class="text-reset">
+                            <button class="m-2 bg-warning px-4">BUY NOW</button>
+                        </a>
+                        <h6 class="mb-3">₹ ${product.productPrice}</h6>
+                    </div>
+                </div>
+            </div>`
+
+            cards.push(cardHTML)
+        });
+      
+        contain.innerHTML = cards.join("");
+        const paginations=document.querySelector('.pagination')
+
+        paginations.innerHTML = generatePagination(data.docCount, data.pageStartindex);
+}
+
+
+}
+else{
+console.log("ALLPPPP")
+data.SortByPrice.forEach(product => {
+   
+    const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
+        <div class="card h-100">
+            <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px/>
+            </div>
+            <div class="card-body">
+                
+                    <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
+               
+                <a href="/productpage/${product._id}" class="text-reset">
+                    <button class="m-2 bg-warning px-4">BUY NOW</button>
+                </a>
+                <h6 class="mb-3">₹ ${product.productPrice}</h6>
+            </div>
+        </div>
+    </div>`
+
+    cards.push(cardHTML)
+});
+
+contain.innerHTML = cards.join("");
+const paginations=document.querySelector('.pagination')
+
+paginations.innerHTML = generatePagination(data.docCount, data.pageStartindex);
+
+if (usersearch=="") {
+ data.products.forEach(product => {
+     const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
+         <div class="card h-100">
+             <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                 <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
+             </div>
+             <div class="card-body">
+                 <!-- Icon for wish list -->
+                 <button class="btn btn-link position-absolute start-0 top-0" onclick="toggleWishlist('${product._id}', this)">
+                     <i class="fas fa-heart" style="color: #63E6BE;"></i>
+                 </button>
+                 <div>
+                     <h5 class="card-title mb-3" style="height:50px;">${product.productName}</h5>
+                 </div>
+                 <a href="/productpage/${product._id}" class="text-reset">
+                     <button class="m-2 bg-warning px-4">BUY NOW</button>
+                 </a>
+                 <h6 class="mb-3">₹ ${product.productPrice}</h6>
+             </div>
+         </div>
+     </div>`;
+ 
+     cards.push(cardHTML);
+ });
+ 
+ 
+ contain.innerHTML=cards.join("")
+
+
+  const paginations=document.querySelector('.pagination')
+
+ paginations.innerHTML = generatePagination(data.docCount, data.pageStartindex);
+
+
+} else if(usersearch==""||usersearch!=""&&productType!=null) {
+
+
+ data.serc.forEach(product => {
+     const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
+         <div class="card h-100">
+             <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                 <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px/>
+             </div>
+             <div class="card-body">
+                 
+                     <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
+                
+                 <a href="/productpage/${product._id}" class="text-reset">
+                     <button class="m-2 bg-warning px-4">BUY NOW</button>
+                 </a>
+                 <h6 class="mb-3">₹ ${product.productPrice}</h6>
+             </div>
+         </div>
+     </div>`
+
+     cards.push(cardHTML)
+ });
+
+ contain.innerHTML = cards.join("");
+ const paginations=document.querySelector('.pagination')
+
+ paginations.innerHTML = generatePagination(data.docCount, data.pageStartindex);
+}
+
+
+
+}

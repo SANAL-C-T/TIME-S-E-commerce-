@@ -1,55 +1,52 @@
 <%- include("../partials/adminheader.ejs") %>
 
 <div class="container  m-3 ">
-  <div class="row">
-      <div class="d flex-column  mb-4 mt-2">
-          <a href="/admin/reportbydate">
-              <button>By DATE</button>
-            </a>
-            
+ 
+    <div class="table-responsive mt-3 ">
+      
+
+        <h5 class="text-center ">SALES REPORT</h5>
+          <table id="example" class="table table-striped" style="width:100%">
+              <thead>
+                  <tr>
+                    
+                      <th>SL No</th>
+                      <th>USERNAME</th>
+                      <th>INVOICE DATE</th>
+                      <th>INVOICE AMOUNT</th>
+                      <th>PAYMENT METHOD</th>
+                      
+                  
+                  </tr>
+              </thead>
+              <tbody>
+                <% orders.forEach((order, index) => { %>
+                    <tr>
+                        <td><%= index + 1 %></td>
+                        <td><%= order.userid.username %></td>
+                        <td><%= order.OrderDate %></td>
+                        <td><%= order.OrderTotalPrice %></td>
+                        <td><%= order.paymentMethod %></td>
+                    </tr>
+                <% }); %>
+                
     
-      </div>
+              </tbody>
+          </table>
+      
+  </div>
 
-<br>
+<div class="d-flex  justify-content-between mt-5 ">
+    <button id="downloadBtn">DOWNLOAD EXCEL FILE</button>
 
-<form>
+   <button id="downloadBtnpdf">DOWNLOAD PDF FILE</button>
 
-    <div class=" justify-content-between d-flex mb-3 mt-3 ">
-        <div>
-            <lable for="startDate">START DATE</lable>
-            <input type="date" id="startDate" name="startDate">
-        </div>
+</div>
 
-        <div>
-            <lable for="endDate">END DATE</lable>
-            <input type="date"  id="startDate" name="startDate">
-        </div>
-
-        <div>
-            <button class="btn btn-success btn-sm">SUBMIT</button>
-        </div>
-    </div>
-
-
-</form>
+</div>
 
 
 
-<table>
-<thead>
-
-    <tr>
-        <th>rr</th>
-    </tr>
-</thead>
-<tbody>
-    <tr>
-        <td>rr</td>
-    </tr>
-</tbody>
-
-</table>
-    
 
 
 
@@ -57,4 +54,93 @@
 
   
 
+<script>
+    new DataTable("#example");
 
+
+
+    
+    const table = document.getElementById('example');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    downloadBtn.addEventListener('click', function() {
+        const tableData = [];
+        const rows = table.querySelectorAll('tr');
+        rows.forEach(row => {
+            const rowData = [];
+            const cells = row.querySelectorAll('td');
+            cells.forEach(cell => {
+                rowData.push(cell.innerText);
+            });
+            tableData.push(rowData);
+        });
+
+        // Send tableData to the server
+        fetch('/admin/convertToExcel', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ tableData })
+        })
+        .then(response => response.blob())
+        .then(blob => {
+            const url = window.URL.createObjectURL(new Blob([blob]));
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'table_data.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+
+
+
+
+
+    const downloadBtnpdf = document.getElementById('downloadBtnpdf');
+
+downloadBtnpdf.addEventListener('click', function() {
+    const table = document.getElementById('example');
+    const tableData = [];
+    const rows = table.querySelectorAll('tr');
+    rows.forEach(row => {
+        const rowData = [];
+        const cells = row.querySelectorAll('td');
+        cells.forEach(cell => {
+            rowData.push(cell.innerText);
+        });
+        tableData.push(rowData);
+    });
+
+    // Send tableData to the server
+    fetch('/admin/convertToPDF', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ tableData })
+    })
+    .then(response => response.blob())
+    .then(blob => {
+        const url = window.URL.createObjectURL(new Blob([blob]));
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'table_data.pdf';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    })
+    .catch(error => console.error('Error:', error));
+});
+
+
+
+
+
+
+</script>

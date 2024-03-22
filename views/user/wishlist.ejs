@@ -20,44 +20,102 @@
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4 d-flex flex-column mx-3">
         <h5 class="text-center mt-2">Wishlist</h5>
         <div id="wishContainer">
-    
-            <% list.forEach(wishItem => { %>
-    
-                <div class="wish-item d-flex justify-content-between mt-3 mb-3  p-3 " style="border: 1px solid #324d6a">
+            <table id="example" class="table table-striped table-responsive">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th> 
+                        <th></th> 
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (wishList && wishList.list && wishList.list.length) { %>
+                        <% wishList.list.forEach(wishItem => { %>
+                            <tr>
+                                <td>
+                                    <img src="<%= wishItem.productImage[0].image1 %>" style="width: 90px; height: 80px;">
+                                </td>
+                                <td><%= wishItem.productName %></td>
+                                <td>₹ <%= wishItem.productPrice %></td>
+                                <% if (wishItem.stockCount > 0) { %>
+                                    <td><h6 class="text-success">In stock</h6></td>
+                                <% } else { %>
+                                    <td><h6 class="text-danger">Out of stock</h6></td>
+                                <% } %>
+                               
 
-                    <div>
-                        <img src="<%= wishItem.productImage[0].image1 %>" style="width: 90px; height: 80px;">
-                    </div>
-                    <div style="width: 150px;" ><%= wishItem.productName %></div>
-                    <div>₹ <%= wishItem.productPrice %></div>
-                    <div><h6 class="text-success ">In stock</h6></div>
-                    <div><button class="btn btn-warning btn-sm">ADD TO CART</button></div>
-                    <div><button class="btn btn-danger btn-sm ">REMOVE</button></div>
-                </div>
-    
-            <% }) %>
-    
+                                <% if (wishItem.stockCount > 0) { %>
+                                   
+                                    <td>
+                                        <a href="/cart/<%= wishItem._id %>">
+                                            <button class="btn btn-warning btn-sm" onclick="removeFromWish('<%= wishItem._id %>')">ADD TO CART</button>
+                                        </a>
+                                    </td>
+                                    
+                                <% } else { %>
+                                    <td></td>
+                                <% } %>
+                                <td><button class="btn btn-danger btn-sm" onclick="removeFromWish('<%= wishItem._id %>')">REMOVE</button></td>
+                               
+                            </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="6" class="text-center">No items found in wishlist</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
         </div>
-
-        <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-center ">
-              <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-              <li class="page-item"><a class="page-link" href="#">1</a></li>
-              <li class="page-item"><a class="page-link" href="#">2</a></li>
-              <li class="page-item"><a class="page-link" href="#">3</a></li>
-              <li class="page-item"><a class="page-link" href="#">Next</a></li>
-            </ul>
-          </nav>
     </main>
     
-
-
-
 
 <!-- .......... -->
 </div>
 </div>
 <%-include("../partials/footer.ejs")%>
+
+<script>
+    new DataTable("#example");
+    
+
+
+    function removeFromWish(productId) {
+
+        fetch("/removeFromWishList", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ productId: productId })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('response is not ok');
+            }
+            return response.json(); 
+        })
+        .then(data => {
+           
+            console.log('Product removed from wishlist:', data);
+        
+        })
+        .catch(error => {
+            console.error('Error in removing product from wishlist:', error);
+   
+        });
+    }
+    
+
+
+  </script>
+
+
+
 
 <style>
     * {
@@ -118,10 +176,11 @@
 }
 
 
-
+#example_filter {
+    text-align: right;
+  }
 
 
 
     </style>
 
-  

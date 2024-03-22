@@ -48,39 +48,52 @@ adminUrlRouter.get("/deleteCategory/:id",jwtAuth. haveToken3,adminin.deleCategor
 adminUrlRouter.get("/restoreCategory/:id",jwtAuth. haveToken3,adminin.restoreCategory)
 adminUrlRouter.get("/editCategory/:id",jwtAuth. haveToken3,adminin.editorCategory)
 adminUrlRouter.post("/editedcategory/:id",jwtAuth. haveToken3,adminin.editedCategory)
-adminUrlRouter.post("/category",adminin.addcategory)
+adminUrlRouter.post("/category",jwtAuth. haveToken3,adminin.addcategory)
 
-adminUrlRouter.get("/orders",adminin.orderManagement)
-adminUrlRouter.post("/statusUpdate/:id",adminin.orderStatusUpdate)
-adminUrlRouter.get("/coupon",adminin.coupons)
-adminUrlRouter.get("/listCoupon",adminin.listcoupons)
-adminUrlRouter.post("/couponAdd",adminin.addcoupons)
+adminUrlRouter.get("/orders",jwtAuth. haveToken3,adminin.orderManagement)
+adminUrlRouter.post("/statusUpdate/:id",jwtAuth. haveToken3,adminin.orderStatusUpdate)
+adminUrlRouter.get("/coupon",jwtAuth. haveToken3,adminin.coupons)
+adminUrlRouter.get("/listCoupon",jwtAuth. haveToken3,adminin.listcoupons)
+adminUrlRouter.post("/couponAdd",jwtAuth. haveToken3,adminin.addcoupons)
 
-adminUrlRouter.get("/editcoupon/:id",adminin.editcoupons)
-adminUrlRouter.post("/editcoupon/:id",adminin.changecoupons)
-adminUrlRouter.post("/deletecoupon/:id",adminin.deletecoupons)
+adminUrlRouter.get("/editcoupon/:id",jwtAuth. haveToken3,adminin.editcoupons)
+adminUrlRouter.post("/editcoupon/:id",jwtAuth. haveToken3,adminin.changecoupons)
+adminUrlRouter.post("/deletecoupon/:id",jwtAuth. haveToken3,adminin.deletecoupons)
 adminUrlRouter.get("/logout",adminin.logout)
-adminUrlRouter.post("/reportbydate",adminin.daywisereport)
-adminUrlRouter.get("/downloadrevenue",adminin.downloadrevenue)
-adminUrlRouter.get("/downloadrevenuepdf",adminin.downloadrevenuepdf)
+adminUrlRouter.post("/reportbydate",jwtAuth. haveToken3,adminin.daywisereport)
+adminUrlRouter.get("/downloadrevenue",jwtAuth. haveToken3,adminin.downloadrevenue)
+adminUrlRouter.get("/downloadrevenuepdf",jwtAuth. haveToken3,adminin.downloadrevenuepdf)
 
 
-adminUrlRouter.get("/addOffer",adminin.addofferproduct)
+adminUrlRouter.get("/addOffer",jwtAuth. haveToken3,adminin.addofferproduct)
 
 
 
-adminUrlRouter.get("/Offercategory",adminin.addoffercategory)
-adminUrlRouter.post("/Offercategory",adminin.offercategorywise)
-adminUrlRouter.get("/Offerproduct",adminin.addofferproduct)
-adminUrlRouter.post("/Offerproduct",adminin.offerproductwise)
-adminUrlRouter.get("/offerreferral",adminin.offerreferal)
+adminUrlRouter.get("/Offercategory",jwtAuth. haveToken3,adminin.addoffercategory)
+adminUrlRouter.post("/Offercategory",jwtAuth. haveToken3,adminin.offercategorywise)
+adminUrlRouter.get("/Offerproduct",jwtAuth. haveToken3,adminin.addofferproduct)
+adminUrlRouter.post("/Offerproduct",jwtAuth. haveToken3,adminin.offerproductwise)
+adminUrlRouter.get("/offerreferral",jwtAuth. haveToken3,adminin.offerreferal)
 
-adminUrlRouter.post("/removeOffer",adminin.removeOffer)
-adminUrlRouter.post("/removeProductOffer",adminin.removeproductOffer)
+adminUrlRouter.post("/removeOffer",jwtAuth. haveToken3,adminin.removeOffer)
+adminUrlRouter.post("/removeProductOffer",jwtAuth. haveToken3,adminin.removeproductOffer)
 
 
-adminUrlRouter.get("/download",adminin.downloadoption)
-adminUrlRouter.get("/reportbydate",adminin.bydate)
+adminUrlRouter.get("/download",jwtAuth. haveToken3,adminin.downloadoption)
+
+
+adminUrlRouter.post("/postDate",jwtAuth. haveToken3,adminin.postbydate)
+
+
+
+
+
+adminUrlRouter.get("/reportbydates",jwtAuth. haveToken3,adminin.bydate)
+
+
+
+adminUrlRouter.post("/convertToExcel",adminin.downloadDetailExcel)
+adminUrlRouter.post("/convertToPDF",adminin.downloadDetailPdf)
 
 
 

@@ -16,14 +16,17 @@ const cartSchema = mongoose.Schema({
             productName:String,
             productImage:String,
             quantity: Number,
-            price:Number
+            price:Number,
+            DiscountedAmount:Number,
+            discounted:Boolean
         }
     ],
 
     Address:String,
     OrderTotalPrice: Number,
     tax:Number,
-    Discounted:Number
+    Discounted:Number,
+    CouponCode:String
 })
 
 const cartData = mongoose.model("carts", cartSchema)

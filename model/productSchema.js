@@ -79,7 +79,8 @@ const productCollection=mangoose.Schema({
         enum:["draft","published","outOfStock","lowStock"]
     },
     stockCount:{
-        type:Number
+        type: Number,
+        default: 0 
     },
     uniqueID:{// for checking status
         type:Number
@@ -126,6 +127,9 @@ const productCollection=mangoose.Schema({
         type:Number,
         required:true
     },
+    OfferPrice:{
+        type:Number
+    },
     rating:{
         type:Number
     },
@@ -141,7 +145,7 @@ const productCollection=mangoose.Schema({
         type:Boolean,
         default: false,
     },
-    isdiscount:{
+    haveProductOffer:{
         type:Boolean,
         default: false,
     },
@@ -149,7 +153,10 @@ const productCollection=mangoose.Schema({
         Discountvalue:Number,
         StartDate:String,
         endDate:String
-    }]
+    }],
+    discountedPrice:{
+        type:Number
+    }
 
 })
 const productData=mongoose.model("products",productCollection);

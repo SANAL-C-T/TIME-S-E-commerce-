@@ -52,40 +52,46 @@ userUrlRouter.get("/logout",user.logout)
 
 
 //profile links
-userUrlRouter.get("/Myprofile",user.profile)
-userUrlRouter.get("/profileEdits",user.editprofile)
+userUrlRouter.get("/Myprofile",jwtauth.userhaveToken1,user.profile)
+userUrlRouter.get("/profileEdits",jwtauth.userhaveToken1,user.editprofile)
 userUrlRouter.post("/profileEdit",multer.profileimageupload,user.saveEditProfile)
-userUrlRouter.get("/changepassword",user.changepassword)
-userUrlRouter.post("/changepassword",user.changesavedpassword)
-userUrlRouter.get("/savedaddress",cart.savedAddress)
-userUrlRouter.post("/deleteAddress/:index",cart.deleteAddress)
-userUrlRouter.get("/wishlist",user.showWishlist)
-userUrlRouter.post("/wishlistadd",user.wishtoadd)
-userUrlRouter.post("/wishlistremove",user.wishtoremove)
+userUrlRouter.get("/changepassword",jwtauth.userhaveToken1,user.changepassword)
+userUrlRouter.post("/changepassword",jwtauth.userhaveToken1,user.changesavedpassword)
+userUrlRouter.get("/savedaddress",jwtauth.userhaveToken1,cart.savedAddress)
+userUrlRouter.post("/deleteAddress/:index",jwtauth.userhaveToken1,cart.deleteAddress)
+
+
+//wishlist
+userUrlRouter.get("/wishlist",jwtauth.userhaveToken1,user.showWishlist)
+userUrlRouter.post("/wishlistadd",jwtauth.userhaveToken1,user.wishtoadd)
+userUrlRouter.post("/wishlistremove",jwtauth.userhaveToken1,user.wishtoremove)
+userUrlRouter.post("/removeFromWishList",jwtauth.userhaveToken1,user.addtocartAndDeleteWishlist)
+
+
 //user cart related
 
-userUrlRouter.get("/cart",cart.showcart)
-userUrlRouter.get("/cart/:prodid",cart.cartadd)
-userUrlRouter.post("/quantityUpdate",cart.qyt)
-userUrlRouter.post("/stockup",cart.stockup)
-userUrlRouter.post("/stockDown",cart.stockdown)
-userUrlRouter.post("/itemdelete",cart.itemdel)
+userUrlRouter.get("/cart",jwtauth.userhaveToken1,cart.showcart)
+userUrlRouter.get("/cart/:prodid",jwtauth.userhaveToken1,cart.cartadd)
+userUrlRouter.post("/quantityUpdate",jwtauth.userhaveToken1,cart.qyt)
+userUrlRouter.post("/stockup",jwtauth.userhaveToken1,cart.stockup)
+userUrlRouter.post("/stockDown",jwtauth.userhaveToken1,cart.stockdown)
+userUrlRouter.post("/itemdelete",jwtauth.userhaveToken1,cart.itemdel)
 
-userUrlRouter.get("/paynow",cart.proceedToaddress)
-userUrlRouter.post("/paynow",cart.addAddressToPurchase)
-userUrlRouter.get("/orderHistory",cart.history)
-userUrlRouter.post("/orderCancel/:id",cart.cancelOrder)
-userUrlRouter.post("/orderReturn/:id",cart.ReturnOrder)
+userUrlRouter.get("/paynow",jwtauth.userhaveToken1,cart.proceedToaddress)
+userUrlRouter.post("/paynow",jwtauth.userhaveToken1,cart.addAddressToPurchase)
+userUrlRouter.get("/orderHistory",jwtauth.userhaveToken1,cart.history)
+userUrlRouter.post("/orderCancel/:id",jwtauth.userhaveToken1,cart.cancelOrder)
+userUrlRouter.post("/orderReturn/:id",jwtauth.userhaveToken1,cart.ReturnOrder)
 
-userUrlRouter.get("/review/:id",user.addReview)
-userUrlRouter.get("/review/:id",user.viewReview)
-userUrlRouter.post("/saveReview/:id",user.saveReview)
-userUrlRouter.get("/wallet",user.wallet)
+userUrlRouter.get("/review/:id",jwtauth.userhaveToken1,user.addReview)
+userUrlRouter.get("/review/:id",jwtauth.userhaveToken1,user.viewReview)
+userUrlRouter.post("/saveReview/:id",jwtauth.userhaveToken1,user.saveReview)
+userUrlRouter.get("/wallet",jwtauth.userhaveToken1,user.wallet)
 
 
 
-userUrlRouter.post("/applyCoupon",cart.couponAdd)
-userUrlRouter.post("/removeCoupon",cart.couponremove)
+userUrlRouter.post("/applyCoupon",jwtauth.userhaveToken1,cart.couponAdd)
+userUrlRouter.post("/removeCoupon",jwtauth.userhaveToken1,cart.couponremove)
 
 
 

@@ -63,42 +63,47 @@
   </div>
 
   <div id="rightside" class="m-3 pt-5">
-    <ul>
-      <li id="summary"><h4>SUMMARY</h4></li>
-      <hr>
-      <li id="subprice"><h5>Sub Total: &#8377; <%=cartItem.cart.OrderTotalPrice%></h5></li>
-      <li><h5>Discount: &#8377; 0</h5></li>
-      <li><h5>GST: &#8377; 0</h5></li>
-      <li><h5>Shipping Charges: &#8377; FREE</h5></li>
-      <hr>
-      <li id="cartprice"><h4>Grand Total: &#8377; <%=cartItem.cart.OrderTotalPrice%></h4></li>
-      <hr>
-      <h6>Have a coupon ?</h6>
-       
-
-
-
-      <% if (cartItem.cart.couponApplied == false) { %>
-        <div>
-          <input type="text" class="w-100" id="couponcode" name="couponcode" placeholder="Enter Coupon Code">
-          <button class="btn btn-success w-100 mt-4" onclick="couponSubmit()">APPLY</button>
-        </div>
-      <% } else { %>
-        <div>
-          <input type="text" class="w-100" id="removecode" name="removecode" placeholder="Enter Coupon Code">
-          <button class="btn btn-warning w-100 mt-4" onclick="removeCoupon()">REMOVE</button>
-        </div>
-      <% } %>
-      
-       
+    <% if (cartItem.cart.items.length > 0) { %>
+      <ul>
+          <li id="summary"><h4>SUMMARY</h4></li>
+          <hr>
+          <li id="subprice"><h5>Sub Total: &#8377; <%=cartItem.cart.OrderTotalPrice%></h5></li>
+          <li><h5>Discount: &#8377; 0</h5></li>
+          <li><h5>GST: &#8377; 0</h5></li>
+          <li><h5>Shipping Charges: &#8377; FREE</h5></li>
+          <hr>
+          <li id="cartprice"><h4>Grand Total: &#8377; <%=cartItem.cart.OrderTotalPrice%></h4></li>
+          <hr>
+          <h6>Have a coupon ?</h6>
+  
+          <% if (cartItem.cart.couponApplied == false) { %>
+            <div>
+                <input type="text" class="w-100" id="couponcode" name="couponcode" placeholder="Enter Coupon Code">
+                <button class="btn btn-success w-100 mt-4" onclick="couponSubmit()">APPLY</button>
+            </div>
+        <% } else { %>
+            <div>
+          
+                <script>
+                    var appliedCouponCode = '<%= cartItem.cart.couponCode %>';
+                </script>
+                <input type="text" class="w-100" id="removecode" name="removecode" placeholder="Enter Coupon Code">
+                <button class="btn btn-warning w-100 mt-4" onclick="removeCoupon(appliedCouponCode)">REMOVE</button>
+            </div>
+        <% } %>
         
-      
-
-<hr>
-      <form action="/paynow" method="GET">
-        <button type="submit" class="btn btn-warning  w-100 mt-4 ">PAY NOW</button>
-      </form>
-    </ul>
+          <hr>
+          <form action="/paynow" method="GET">
+              <button type="submit" class="btn btn-warning w-100 mt-4">PAY NOW</button>
+          </form>
+      </ul>
+  <% } else { %>
+    <div class="empty-cart-message">
+      <h4>Your cart is empty!</h4>
+  </div>
+  <% } %>
+  
+  
   </div>
 </div>
 
@@ -296,7 +301,7 @@ function removeCoupon(){
     "Accept":"application/json"
     },
     body:JSON.stringify({
-      
+      couponCode
     })
     
   })
@@ -409,4 +414,13 @@ function removeCoupon(){
     border: solid 1px black;
     padding: 8px;
   }
+
+
+
+  .empty-cart-message {
+    text-align: center;
+    font-size: 24px;
+    color: #555;
+    margin-top: 20px;
+}
 </style>

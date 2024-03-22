@@ -7,7 +7,8 @@ const cartData = require("../model/cartSchema");
 const couponData=require("../model/couponSchema")
 const JWTtoken = require("jsonwebtoken");
 const Razorpay = require("razorpay");
-const moment=require("moment")
+const moment=require("moment");
+const categoryData = require('../model/categorySchema');
 
 require('dotenv').config();
 const razKey=process.env.RAZORPAY_ID_KEY;
@@ -42,8 +43,121 @@ const cartadd = async (req, res) => {
 
         //----------------------------verify user end--------
 
+
+// for checking if the product has offer....
+let hasOffer = await productDatas.findOne(
+    { _id: selectedProduct }, 
+    { haveProductOffer: 1 } 
+);
+console.log("hasOffer", hasOffer ? hasOffer.haveProductOffer : false);
+
+// for checking if the category has offer
+let pdata = await productDatas.findById(selectedProduct);
+let catiDS = pdata.productCategory;
+let haveCategoryOffer = await categoryData.findOne(
+    { _id: catiDS }, 
+    { hasCatOffer: 1 } 
+);
+console.log("hascateOffer", haveCategoryOffer ? haveCategoryOffer.hasCatOffer : false);
+
+
+let productDiscountPercentage = 0;
+let catDiscountpercentage = 0;
+
+// Calculate product discount percentage if the product has an offer
+if (hasOffer && hasOffer.haveProductOffer) {
+    let productOfferPrice = await productDatas.findOne(
+        { _id: selectedProduct }, 
+        { 'offer.Discountvalue': 1 } 
+    );
+    productDiscountPercentage = productOfferPrice && productOfferPrice.offer && productOfferPrice.offer.length > 0 ?
+        (productOfferPrice.offer[0].Discountvalue || 0) : 0;
+}
+
+// Calculate category discount percentage if the category has an offer
+if (haveCategoryOffer && haveCategoryOffer.hasCatOffer) {
+    let categoryOfferValue = await categoryData.findOne(
+        { _id: catiDS }, 
+        { 'catOffer.catDiscountValue': 1 } 
+    );
+    catDiscountpercentage = categoryOfferValue && categoryOfferValue.catOffer && categoryOfferValue.catOffer.length > 0 ?
+        (categoryOfferValue.catOffer[0].catDiscountValue || 0) : 0;
+}
+
+
+let newPrice;
+
+if (hasOffer && !haveCategoryOffer) {
+    newPrice = pdata.productPrice - (pdata.productPrice * (productDiscountPercentage / 100));
+} else if (hasOffer && haveCategoryOffer) {
+    newPrice = Math.min(
+        pdata.productPrice - (pdata.productPrice * (productDiscountPercentage / 100)),
+        pdata.productPrice - (pdata.productPrice * (catDiscountpercentage / 100))
+    );
+} else if (!hasOffer && haveCategoryOffer) {
+    newPrice = pdata.productPrice - (pdata.productPrice * (catDiscountpercentage / 100));
+} else {
+    newPrice = pdata.productPrice;
+}
+
+console.log("New Price:", newPrice);
+
+let Discount=pdata.productPrice-newPrice;
+let hasdiscount=false;
+
+if(Discount>0){
+    hasdiscount=true;
+}
+else{
+    hasdiscount=false;
+}
+console.log("dicountPrice::::",Discount)
+
+await productDatas.findOneAndUpdate(
+    { _id: selectedProduct },
+    { $set: {OfferPrice:newPrice } }
+  );
+
+//         let productOfferPrice = await productDatas.findOne(
+//             { _id: selectedProduct }, 
+//             { 'offer.Discountvalue': 1 } 
+//           );
+
+//           let productDiscountPercentage;
+//           if(productOfferPrice.offer[0].Discountvalue){
+//             productDiscountPercentage=productOfferPrice.offer[0].Discountvalue;
+//           }else{
+//             productDiscountPercentage=0;
+//           }
+
+
+// let pdata = await productDatas.findById(selectedProduct);
+
+// let catiDS=pdata.productCategory;
+
+// let categoryOfferValue=await categoryData.findOne(
+//     { _id: catiDS }, 
+//     { 'catOffer.catDiscountValue': 1 } 
+//   );
+
+//   let  catDiscountpercentage;
+// if(categoryOfferValue.catOffer[0].catDiscountValue){
+//     catDiscountpercentage= categoryOfferValue.catOffer[0].catDiscountValue;
+// }else{
+//     catDiscountpercentage=0;
+// }
+
+
+// let newPrice;
+// if( productDiscountPercentage>catDiscountpercentage){
+//     newPrice=pdata.productPrice-(pdata.productPrice*(productDiscountPercentage/100))}
+// else if(productDiscountPercentage<catDiscountpercentage){
+//     newPrice=pdata.productPrice-(pdata.productPrice*(catDiscountpercentage/100))
+// }
+
+
         // Getting the product details
-        let pdata = await productDatas.findById(selectedProduct);
+       
         let qyt=pdata.stockCount
         // console.log("pdata",pdata)
         let productsadded = {
@@ -51,7 +165,9 @@ const cartadd = async (req, res) => {
             quantity: 1,
             productName: pdata.productName ,
             productImage:pdata.productImage[0].image1  ,
-            price: pdata.productPrice
+            price: newPrice,
+            DiscountedAmount:Discount,
+            discounted:hasdiscount
         }
         // checking if the cart has the product or not
         const already = await cartData.findOne({ userid: usersid, 'items.products': selectedProduct })
@@ -89,24 +205,24 @@ const cartadd = async (req, res) => {
                 { _id: selectedProduct },
                 { $set: { stockCount: qyt - 1 } }
               );
-            res.render("user/cart.ejs", { cartItem });
+            res.render("user/cart.ejs", {cartItem});
         } else {
-            // if it already exists, show an alert
+            // if it already exists in the cart, show an alert, so the user can use increment button
             res.locals.errorMessage = 'Product exists in the cart, so increase the QTY.';
 
-            const itemINcart = await cartData.findOne({ userid: usersid })
+            const itemINcart = await cartData.findOne({userid: usersid})
                 .populate({
                     path: 'items.products',
                     model: 'products',
                 });
 
-            // calculating the total price in the cart
+            // sum up all price in the cart
             const totalPrice = itemINcart.items.reduce((acc, item) => {
                 return acc + item.price;
             }, 0);
 
-            // update total price in the cart
-            await cartData.updateOne({ userid: usersid }, { $set: { OrderTotalPrice: totalPrice } });
+            // adding total price in the cart
+            await cartData.updateOne({userid:usersid},{$set:{OrderTotalPrice:totalPrice}});
 
             let cartItem = {
                 cart: itemINcart
@@ -532,15 +648,17 @@ mob=userD.phone;
             else if(paymentMode=="MyWallet"){    
 
 const balance=await walletData.findOne({userId:usersid},{avaliable:1})
+const netBalance=balance.avaliable;
 let inCart=await cartData.findOne({userid: usersid})
 let amount= inCart.OrderTotalPrice;
-
-if(balance>=amount){
-    let newNalance=balance-amount;
-    await walletData.findOneAndUpdate({userId:usersid},{$set:{avaliable:newNalance}})
+console.log("balance::::",netBalance)
+console.log("paymentamount::::",amount)
+if(netBalance>=amount){
+    let newNalance=netBalance-amount;
+    await walletData.findOneAndUpdate({userId:usersid},{$set:{avaliable:newNalance,remark:"Product purchased"}})
 }
 else{
-
+console.log("no balance")
 }
 await cartEraseAccording("MyWallet", usersid, req, res);
             }
@@ -651,6 +769,9 @@ Promise.all(updatePromises)
 const ReturnOrder=async(req,res)=>{
     try{
         let orderId=req.params.id;
+        const selectOption = req.body.reason;
+
+        console.log("opt::::",selectOption)
         let index=req.body.index;
     const deliveredDate=await orderHistoryData.findOne({_id:orderId},{DeliveredDate:1})
     let deliveryedDATE=parseInt(moment(deliveredDate).format("DD"))
@@ -711,7 +832,10 @@ await walletData.findOneAndUpdate(
     console.log(x.quantity);
       
       // Push each promise into the array
-      updatePromises.push(productDatas.findOneAndUpdate({ _id: pids }, { $inc: { stockCount: qyt } }));
+      if (selectOption !== "Defective product") {
+        // Push each promise into the array
+        updatePromises.push(productDatas.findOneAndUpdate({ _id: pids }, { $inc: { stockCount: qyt } }));
+    }
     });
     
     // Use Promise.all to wait for all promises to resolve
@@ -742,6 +866,7 @@ await walletData.findOneAndUpdate(
         console.log(error.message)
     }
 }
+
 
 
 
@@ -812,6 +937,14 @@ const savedAddress=async(req,res)=>{
     }
 }
 
+
+
+
+
+
+
+
+var discValue;
 var amount;
 //COUPON APPLYING.....
 const couponAdd=async(req,res)=>{
@@ -836,16 +969,22 @@ let code=req.body.code
 
 //  res.status(200)
 
+
+//getting the coupon value...
 let couponInDb=await couponData.findOne({couponCode:code})
 
-console.log(couponInDb)
+console.log("coupon value:::",couponInDb.discount)
+discValue=couponInDb.discount;
 
+//getting price in cart
 let inCart=await cartData.findOne({userid: usersid})
 amount= inCart.OrderTotalPrice;
 
+
+//if coupon exists... we proceed...
 if(couponInDb!=null){
-let newAmount=amount-100;
-await cartData.updateOne({ userid: usersid },{$set: {OrderTotalPrice:newAmount,Discounted:100,couponApplied:true}});
+let newAmount=amount-discValue;
+await cartData.updateOne({ userid: usersid },{$set: {OrderTotalPrice:newAmount, Discounted:discValue, couponApplied:true,CouponCode:code}});
 
 }else{
     console.log("coupon dont exist")
@@ -862,9 +1001,9 @@ res.redirect("/cart")
 //coupon removal.....
 const couponremove=async(req,res)=>{
     try{
-//         console.log("code......................")
-// let code=req.body.code
-// console.log(code)
+
+    
+
 
 
 const usersid = await new Promise((resolve, reject) => {
@@ -881,7 +1020,22 @@ const usersid = await new Promise((resolve, reject) => {
 });
 
 
-await cartData.updateOne({ userid: usersid },{$set: {OrderTotalPrice:amount,Discounted:0,couponApplied:true}});
+
+let inCartcOUPON=await cartData.findOne({userid: usersid})
+let co= inCartcOUPON.CouponCode;
+
+let couponInDb=await couponData.findOne({couponCode:co})
+
+console.log("coupon value:::",couponInDb.discount)
+let coupValue=couponInDb.discount;
+
+let inCart=await cartData.findOne({userid: usersid})
+let cartamount= inCart.OrderTotalPrice;
+
+let couponremovedPrice=cartamount+coupValue;
+
+console.log("couponremovedPrice",couponremovedPrice)
+await cartData.updateOne({ userid: usersid },{$set: {OrderTotalPrice:couponremovedPrice, Discounted:0, couponApplied:false}});
 res.status(200)
     }
     catch(error){
@@ -895,7 +1049,7 @@ async function cartEraseAccording(PayMode,usersid,req,res){
     console.log("in heleper function")
     let presentCart=await cartData.findOne({userid: usersid})
     let date=Date.now()
-    var formatedDate=moment(date).format('D-MM-YYYY, dddd, h:mm a')
+    var formatedDate=moment(date).format('D-MM-YYYY')
     console.log(formatedDate)
     const purchaseHistory = new orderHistoryData({
         userid: usersid,
@@ -905,7 +1059,8 @@ async function cartEraseAccording(PayMode,usersid,req,res){
         address: presentCart.Address,
         items:presentCart.items,
         OrderTotalPrice:presentCart.OrderTotalPrice,
-        Status:"pending"
+        Status:"pending",
+        couponCode:presentCart.CouponCode
     });
 
 

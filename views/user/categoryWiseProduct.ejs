@@ -57,19 +57,8 @@
                         </label>
                     </li> 
                    
-           <h6 class="text-center mt-3 "> DISCOUNTED</h6>
-                    <li class="nav-item">
-                        <label class="nav-link" for="nodiscounted">
-                            <input type="radio" id="nodiscounted" name="discounted" class="form-check-input">
-                            No Discounted
-                        </label>
-
-                        <label class="nav-link" for="discounted">
-                            <input type="radio" id="discounted" name="discounted" class="form-check-input">
-                            Discounted
-                        </label>
-
-                    </li>
+         
+                 
                 </ul>
             
             </div>
@@ -281,10 +270,6 @@ let usersearch;
                 }
                 let cards=[] 
 
-
-
-
-
                 
                 if(data.products==undefined) {
                
@@ -293,29 +278,92 @@ let usersearch;
 
                                 if (usersearch=="") {
                                     data.SortByPrice.forEach(product => {
-                                        const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
-                                            <div class="card h-100">
-                                                <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
-                                                    <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
-                                                </div>
-                                                <div class="card-body">
-                                                    <!-- Icon for wish list -->
-                                                    <button class="btn btn-link position-absolute start-0 top-0" onclick="toggleWishlist('${product._id}', this)">
-                                                        <i class="fas fa-heart" style="color: #63E6BE;"></i>
-                                                    </button>
-                                                    <div>
-                                                        <h5 class="card-title mb-3" style="height:50px;">${product.productName}</h5>
-                                                    </div>
-                                                    <a href="/productpage/${product._id}" class="text-reset">
-                                                        <button class="m-2 bg-warning px-4">BUY NOW</button>
-                                                    </a>
-                                                    <h6 class="mb-3">₹ ${product.productPrice}</h6>
-                                                </div>
-                                            </div>
-                                        </div>`;
+                                        let highestDiscount = 0;
                                     
-                                        cards.push(cardHTML);
+                                       
+                                        if (product.offer) {
+                                            product.offer.forEach(offer => {
+                                                if (offer.Discountvalue > highestDiscount) {
+                                                    highestDiscount = offer.Discountvalue;
+                                                }
+                                            });
+                                        } else {
+                                           
+                                        }
+                                    
+                            
+                                        if (product.productCategory && product.productCategory.catOffer) {
+                                            product.productCategory.catOffer.forEach(offer => {
+                                                if (offer.catDiscountValue > highestDiscount) {
+                                                    highestDiscount = offer.catDiscountValue;
+                                                }
+                                            });
+                                            
+                                         
+                                        
+                                        } else {
+                                           
+                                        }
+                                    
+                                
+                                        if (highestDiscount > 0) {
+                                            const discountHTML = `<div id="discount">${highestDiscount}% OFF</div>`;
+                                      
+                                            const cardHTML = `
+    <div class="col-lg-3 col-md-12 mb-4">
+        <div class="card h-100">
+            <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light" style="position: relative;">
+                <div id="discount" style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 255, 0, 0.8); padding: 5px 10px; border-radius: 5px;">${highestDiscount}% OFF</div>
+
+                <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
+            </div>
+            <div class="card-body">
+                <!-- Icon for wish list -->
+                <button class="btn btn-link position-absolute start-0 top-0" onclick="toggleWishlist('${product._id}', this)">
+                    <i class="fas fa-heart" style="color: #63E6BE;"></i>
+                </button>
+                <div>
+                    <h5 class="card-title mb-3" style="height:50px;">${product.productName}</h5>
+                    ${discountHTML} 
+                </div>
+                <a href="/productpage/${product._id}" class="text-reset">
+                    <button class="m-2 bg-warning px-4">BUY NOW</button>
+                </a>
+                <h6 class="mb-3">₹ ${product.productPrice}</h6>
+            </div>
+        </div>
+    </div>`;
+                                    
+                                            cards.push(cardHTML);
+                                        } else {
+                                            // If there's no offer, generate card HTML without offer tag
+                                            const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
+                                                <div class="card h-100">
+                                                    <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                                                       
+                                                        <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <!-- Icon for wish list -->
+                                                        <button class="btn btn-link position-absolute start-0 top-0" onclick="toggleWishlist('${product._id}', this)">
+                                                            <i class="fas fa-heart" style="color: #63E6BE;"></i>
+                                                        </button>
+                                                        <div>
+                                                            <h5 class="card-title mb-3" style="height:50px;">${product.productName}</h5>
+                                                        </div>
+                                                        <a href="/productpage/${product._id}" class="text-reset">
+                                                            <button class="m-2 bg-warning px-4">BUY NOW</button>
+                                                        </a>
+                                                        <h6 class="mb-3">₹ ${product.productPrice}</h6>
+                                                    </div>
+                                                </div>
+                                            </div>`;
+                                    
+                                            cards.push(cardHTML);
+                                        }
                                     });
+                                    
+                                    
                                     
                                     
                                     contain.innerHTML=cards.join("")
@@ -325,9 +373,42 @@ let usersearch;
             
                                     } else if(usersearch==""||usersearch!=""&&productType!=undefined) {
                                         data.serc.forEach(product => {
+                                            let highestDiscount = 0;
+                                    
+                                       
+                                            if (product.offer) {
+                                                product.offer.forEach(offer => {
+                                                    if (offer.Discountvalue > highestDiscount) {
+                                                        highestDiscount = offer.Discountvalue;
+                                                    }
+                                                });
+                                            } else {
+                                               
+                                            }
+                                        
+                                
+                                            if (product.productCategory && product.productCategory.catOffer) {
+                                                product.productCategory.catOffer.forEach(offer => {
+                                                    if (offer.catDiscountValue > highestDiscount) {
+                                                        highestDiscount = offer.catDiscountValue;
+                                                    }
+                                                });
+                                                
+                                             
+                                            
+                                            } else {
+                                               
+                                            }
+                                        
+
+
+
+
+                                            
                                             const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
                                                 <div class="card h-100">
                                                     <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                                                        <div id="discount" style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 255, 0, 0.8); padding: 5px 10px; border-radius: 5px;">${highestDiscount}% OFF</div>
                                                         <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px/>
                                                     </div>
                                                     <div class="card-body">
@@ -351,9 +432,47 @@ let usersearch;
 
                                 else if(usersearch==""||usersearch!=""&& productType==undefined) {
                                     data.serc.forEach(product => {
+
+                                        let highestDiscount = 0;
+                                    
+                                       
+                                        if (product.offer) {
+                                            product.offer.forEach(offer => {
+                                                if (offer.Discountvalue > highestDiscount) {
+                                                    highestDiscount = offer.Discountvalue;
+                                                }
+                                            });
+                                        } else {
+                                           
+                                        }
+                                    
+                            
+                                        if (product.productCategory && product.productCategory.catOffer) {
+                                            product.productCategory.catOffer.forEach(offer => {
+                                                if (offer.catDiscountValue > highestDiscount) {
+                                                    highestDiscount = offer.catDiscountValue;
+                                                }
+                                            });
+                                            
+                                         
+                                        
+                                        } else {
+                                           
+                                        }
+                                    
+
+
+
+
+
+
+
+
+
                                         const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
                                             <div class="card h-100">
                                                 <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                                                    <div id="discount" style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 255, 0, 0.8); padding: 5px 10px; border-radius: 5px;">${highestDiscount}% OFF</div>
                                                     <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px/>
                                                 </div>
                                                 <div class="card-body">
@@ -380,9 +499,43 @@ let usersearch;
         else if(data.products!=undefined &&  data.SortByPrice==undefined)  {
                         console.log("ALLPPPP22")
                         data.products.forEach(product => {
+                            let highestDiscount = 0;
+                                    
+                                       
+                            if (product.offer) {
+                                product.offer.forEach(offer => {
+                                    if (offer.Discountvalue > highestDiscount) {
+                                        highestDiscount = offer.Discountvalue;
+                                    }
+                                });
+                            } else {
+                               
+                            }
+                        
+                
+                            if (product.productCategory && product.productCategory.catOffer) {
+                                product.productCategory.catOffer.forEach(offer => {
+                                    if (offer.catDiscountValue > highestDiscount) {
+                                        highestDiscount = offer.catDiscountValue;
+                                    }
+                                });
+                                
+                             
+                            
+                            } else {
+                               
+                            }
+                        
+
+
+
+
+
+
                             const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
                                 <div class="card h-100">
                                     <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                                        <div id="discount" style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 255, 0, 0.8); padding: 5px 10px; border-radius: 5px;">${highestDiscount}% OFF</div>
                                         <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px/>
                                     </div>
                                     <div class="card-body">
@@ -406,24 +559,72 @@ let usersearch;
    
                 if(usersearch==""|| usersearch!="" && productType!=undefined) {
                             data.serc.forEach(product => {
-                                const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
-                                    <div class="card h-100">
-                                        <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
-                                            <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px/>
-                                        </div>
-                                        <div class="card-body">
-                                            
+                                let highestDiscount = 0;
+                                    
+                                       
+                                if (product.offer) {
+                                    product.offer.forEach(offer => {
+                                        if (offer.Discountvalue > highestDiscount) {
+                                            highestDiscount = offer.Discountvalue;
+                                        }
+                                    });
+                                } else {
+                                   
+                                }
+                            
+                    
+                                if (product.productCategory && product.productCategory.catOffer) {
+                                    product.productCategory.catOffer.forEach(offer => {
+                                        if (offer.catDiscountValue > highestDiscount) {
+                                            highestDiscount = offer.catDiscountValue;
+                                        }
+                                    });
+                                    
+                                 
+                                
+                                } else {
+                                   
+                                }
+                        
+
+                                if (highestDiscount > 0) {
+                                    // Product has a discount
+                                    const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
+                                        <div class="card h-100">
+                                            <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                                                <div id="discount" style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 255, 0, 0.8); padding: 5px 10px; border-radius: 5px;">${highestDiscount}% OFF</div>
+                                                <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
+                                            </div>
+                                            <div class="card-body">
                                                 <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
-                                        
-                                            <a href="/productpage/${product._id}" class="text-reset">
-                                                <button class="m-2 bg-warning px-4">BUY NOW</button>
-                                            </a>
-                                            <h6 class="mb-3">₹ ${product.productPrice}</h6>
+                                                <a href="/productpage/${product._id}" class="text-reset">
+                                                    <button class="m-2 bg-warning px-4">BUY NOW</button>
+                                                </a>
+                                                <h6 class="mb-3">₹ ${product.productPrice}</h6>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>`
-                
-                                cards.push(cardHTML)
+                                    </div>`;
+                                                
+                                    cards.push(cardHTML);
+                                } else {
+                                    // Product has no discount
+                                    const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
+                                        <div class="card h-100">
+                                            <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                                                <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
+                                            </div>
+                                            <div class="card-body">
+                                                <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
+                                                <a href="/productpage/${product._id}" class="text-reset">
+                                                    <button class="m-2 bg-warning px-4">BUY NOW</button>
+                                                </a>
+                                                <h6 class="mb-3">₹ ${product.productPrice}</h6>
+                                            </div>
+                                        </div>
+                                    </div>`;
+                                                
+                                    cards.push(cardHTML);
+                                }
                             });
                             contain.innerHTML = cards.join("");
                             const paginations=document.querySelector('.pagination')
@@ -433,42 +634,6 @@ let usersearch;
 
 
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
  //......pagination section..........................................
@@ -496,35 +661,35 @@ let usersearch;
 
         function toggleWishlist(productId, button) {
             const icon = button.querySelector('i.fa-heart');
-            // Check if the icon's color is the default color or the wishlist color
+          
             if (icon.style.color === 'rgb(99, 230, 190)') {
-                // If it's the default color, change it to the wishlist color
-                icon.style.color = '#FF0000'; // Change to your desired color for wishlist
+               
+                icon.style.color = '#FF0000';
 
                 const data = { productId: productId };
 
-                // Make a POST request to the backend route
+                
                 fetch('/wishlistadd', {
-                    method: 'POST', // Specify the HTTP method
+                    method: 'POST', 
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json' // Specify the Accept header for JSON response
+                        'Accept': 'application/json'
                     },
-                    body: JSON.stringify(data) // Convert data to JSON format
+                    body: JSON.stringify(data) 
                 })
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
-                    return response.text(); // Convert response to text format
+                    return response.text(); 
                 })
                 .then(responseText => {
-                    console.log('Success:', responseText); // Log success message
-                    // Handle successful response from the server
+                    console.log('Success:', responseText);
+                    
                 })
                 .catch(error => {
-                    console.error('Error:', error); // Log error message
-                    // Handle error occurred during fetch request
+                    console.error('Error:', error); 
+                 
                 });
 
 
@@ -538,7 +703,7 @@ let usersearch;
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json' // Specify the Accept header for JSON response
+                        'Accept': 'application/json' 
                     },
                     body: JSON.stringify(data)
                 })
@@ -546,22 +711,20 @@ let usersearch;
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
-                    return response.text(); // Convert response to text format
+                    return response.text();
                 })
                 .then(responseText => {
-                    console.log('Success:', responseText); // Log success message
-                    // Handle successful response from the server
+                    console.log('Success:', responseText); 
+                   
                 })
                 .catch(error => {
-                    console.error('Error:', error); // Log error message
-                    // Handle error occurred during fetch request
+                    console.error('Error:', error);
+                   
                 });
-                // If it's the wishlist color, change it back to the default color
-                 // Change to your default icon color
+            
             }
         
-            // Here you can add the logic to actually add/remove the product from the wishlist
-            // This function is just for changing the color of the icon
+         
         }
         
         

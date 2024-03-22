@@ -19,6 +19,9 @@ creditAmount:{
 debitedAmount:{
     type:Number
 },
+remark:{
+    type:String,
+},
 
 
 })

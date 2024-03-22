@@ -104,11 +104,11 @@
                                     </td>
                                     <td id="orderDateCell"><%= order.OrderDate %></td>
                                     <td><%= order.paymentMethod %></td>
-                                    <td><%= order.Couponused %></td>
+                                    <td><%= order.couponCode %></td>
                                     <td id="deliverDateCell"><%= order.DeliveredDate %></td>
                                     <td>&#8377; <%= order.OrderTotalPrice %></td>
                                     <td><%= order.Status %></td>
-                                    <% if (order.Status !== "shipped" && order.Status !== "delivered" && order.Status !== "Cancel"&& order.Status !== "User cancelled" ) { %>
+                                    <% if (order.Status !== "shipped" && order.Status !== "delivered" && order.Status !== "Cancel"&& order.Status !== "User cancelled" && order.Status !== "Returned"  ) { %>
                                         <td>
                                             <form id="cancelForm<%= orderIndex %>" action="/orderCancel/<%= order._id %>" method="POST">
                                                 <input type="hidden" name="index" value="<%= orderIndex %>">
@@ -119,10 +119,46 @@
                                     
                                      else if(order.Status == "delivered") { %>
                                         <td>
-                                            <form id="returnForm<%= orderIndex %>" action="/orderReturn/<%= order._id %>" method="POST">
+                                           <!--  <form id="returnForm<%= orderIndex %>" action="/orderReturn/<%= order._id %>" method="POST">
                                                 <input type="hidden" name="index" value="<%= orderIndex %>">
                                                 <button type="button" class="btn btn-warning  btn-sm " onclick="showReturnConfirmation(<%= orderIndex %>)">Return</button>
-                                            </form>
+                                            </form> -->
+
+                                            <!-- Button to trigger the modal -->
+                                            <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#returnModal<%= orderIndex %>">Return</button>
+                                            
+                                            <!-- Modal -->
+                                            <div class="modal fade" id="returnModal<%= orderIndex %>" tabindex="-1" aria-labelledby="returnModalLabel<%= orderIndex %>" aria-hidden="true">
+                                              <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                  <div class="modal-header">
+                                                    <h5 class="modal-title" id="returnModalLabel<%= orderIndex %>">Return Order</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                  </div>
+                                                  <div class="modal-body">
+                                                    <form id="returnForm<%= orderIndex %>" action="/orderReturn/<%= order._id %>" method="POST">
+                                                      <input type="hidden" name="index" value="<%= orderIndex %>">
+                                                      <!-- Your form fields go here -->
+                                                      <div class="mb-3">
+                                                        <label for="reason" class="form-label">Reason for Return:</label>
+                                                        <select id="reason" name="reason" class="form-select">
+                                                          <option value="Defective product">Defective product</option>
+                                                          <option value="Not the color I wanted">Not the color I wanted</option>
+                                                          <option value="Tampered delivery">Tampered delivery</option>
+                                                        </select>
+                                                      </div>
+                                                    </form>
+                                                  </div>
+                                                  <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                    <button type="submit" form="returnForm<%= orderIndex %>" class="btn btn-primary">Submit</button>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                            
+
+
                                         </td>
                                     <% }
                                     else{%>
@@ -274,4 +310,3 @@
   
     
 </script>
-

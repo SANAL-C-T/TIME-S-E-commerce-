@@ -60,64 +60,61 @@
 <section style="background-color: #e8e8e8;">
   <div class="text-center container py-5">
     <div class="row">
-<!-- ---------------------------------------------------------------------------------------------- -->
-<% for (let i = 0; i < 4 && i < loadProduct.length; i++) { %>
-  <div class="col-lg-3 col-md-12 mb-4" >
-    
-    
-    <div class="card h-100" id="cd">
-   
-      <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light " data-mdb-ripple-color="light">
-        <% let highestDiscount = 0; %>
-
-        <% if (loadProduct[i].offer) { %>
-          <% loadProduct[i].offer.forEach(offer => { %>
-            <% if (offer.Discountvalue > highestDiscount) { %>
-              <% highestDiscount = offer.Discountvalue; %>
-            <% } %>
-          <% }); %>
-        <% } %>
-        
-        <% if (loadProduct[i].productCategory && loadProduct[i].productCategory.catOffer) { %>
-          <% loadProduct[i].productCategory.catOffer.forEach(offer => { %>
-            <% if (offer.catDiscountValue > highestDiscount) { %>
-              <% highestDiscount = offer.catDiscountValue; %>
-            <% } %>
-          <% }); %>
-        <% } %>
-        
-        <% if (highestDiscount > 0) { %>
-          <div id="discount">
-            <%= highestDiscount %>% OFF
+     
+      <% for (let i = 0; i < 4 && i < loadProduct.length; i++) { %>
+          <div class="col-lg-3 col-md-12 mb-4">
+              <div class="card h-100" id="cd">
+                  <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                      
+                      <% let highestDiscount = 0; %>
+                      <% if (loadProduct[i].offer) { %>
+                          <% loadProduct[i].offer.forEach(offer => { %>
+                              <% if (offer.Discountvalue > highestDiscount) { %>
+                                  <% highestDiscount = offer.Discountvalue; %>
+                              <% } %>
+                          <% }); %>
+                      <% } %>
+                      <% if (loadProduct[i].productCategory && loadProduct[i].productCategory.catOffer) { %>
+                          <% loadProduct[i].productCategory.catOffer.forEach(offer => { %>
+                              <% if (offer.catDiscountValue > highestDiscount) { %>
+                                  <% highestDiscount = offer.catDiscountValue; %>
+                              <% } %>
+                          <% }); %>
+                      <% } %>
+                      <% if (highestDiscount > 0) { %>
+                          <div id="discount">
+                              <%= highestDiscount %>% OFF
+                          </div>
+                      <% } %>
+                      <img src="<%= loadProduct[i].productImage[0].image1 %>" class="w-100" id="proimg" />
+                  </div>
+                  <div class="card-body bodyimg">
+                      <div>
+                          <h5 class="card-title mb-3" id="txtcrd"><%= loadProduct[i].productName %></h5>
+                      </div>
+                    
+                      <% if (loadProduct[i].stockCount > 0) { %>
+                          <div class=" justify-content-between m-3">
+                              <h6 class="mb-3 text-danger">&#8377; <%= loadProduct[i].productPrice %></h6>
+                              <div id="stock" class="mb-3 text-success">In Stock</div>
+                            
+                              <a href="/product/<%= loadProduct[i]._id %>" class="text-reset">
+                                  <button class="m-2" id="btBYNOW">BUY NOW</button>
+                              </a>
+                          </div>
+                      <% } else { %>
+                       
+                          <div class="m-3">
+                              <div id="stock" class="mb-3 text-danger">Out of Stock</div>
+                          </div>
+                      <% } %>
+                  </div>
+              </div>
           </div>
-        <% } %>
-        
-          <img src="<%= loadProduct[i].productImage[0].image1 %>" class="w-100" id="proimg" />
-         
-      </div>
-      <div class="card-body bodyimg">
-       
-          <div><h5 class="card-title mb-3"id="txtcrd"><%= loadProduct[i].productName %></h5></div>
-        
-          <h6 class="mb-3" style="text-decoration: line-through;">&#8377; <%= loadProduct[i].productPrice %></h6>
-
-          <div class="d-flex justify-content-between m-3">
-            <h6 class="mb-3 text-danger">&#8377; <%= loadProduct[i].productPrice %></h6>
-            <div id="stock" class="mb-3 text-success ">in stock</div>
-          </div>
-       
-        <a href="/product/<%= loadProduct[i]._id %> " class="text-reset">
-          <button class="m-2 " id="btBYNOW">BUY NOW</button>
-        </a>
-        
-      </div>
-    </div>
+      <% } %>
   </div>
-<% } %>
-
-
-<!--  --------------------------------------------------------------------------------------- -->
-    </div>  <!-- row closing -->
+  
+  
 </section>
 
 

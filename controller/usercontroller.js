@@ -629,7 +629,7 @@ if(productType=="allproducts"){
     .populate({
         path: 'productCategory',
         model: 'category',
-        select: 'categoryName',
+     
     })
     .skip((pageNumber - 1) * itemsPerPage)
     .limit(itemsPerPage)
@@ -645,7 +645,7 @@ else if(productType=="allproducts"&& usersearch!=""){
     .populate({
         path: 'productCategory',
         model: 'category',
-        select: 'categoryName',
+     
     })
     .skip((pageNumber - 1) * itemsPerPage)
     .limit(itemsPerPage)
@@ -667,7 +667,7 @@ else if(productType=="allproducts"&& usersearch!=""){
                                 .populate({
                                     path: 'productCategory',
                                     model: 'category',
-                                    select: 'categoryName',
+                                  
                                 })
                                 .sort({ productPrice: -1 });
 
@@ -680,7 +680,7 @@ else if(productType=="allproducts"&& usersearch!=""){
                                 .populate({
                                     path: 'productCategory',
                                     model: 'category',
-                                    select: 'categoryName',
+                                  
                                 }).sort({ productPrice: 1 }); 
                             }
 
@@ -700,21 +700,20 @@ else{
                                                 .populate({
                                                     path: 'productCategory',
                                                     model: 'category',
-                                                    select: 'categoryName',
+                                                 
                                                 })
                                                 .countDocuments();
 
                                     // Finding the products based on selection excluding deleted products
-                                                products = await productDatas
-                                                    .find({ 'productCategory': category._id, isDeleted: false })
-                                                    .populate({
-                                                        path: 'productCategory',
-                                                        model: 'category',
-                                                        select: 'categoryName',
-                                                    })
-                                                    .skip((pageNumber - 1) * itemsPerPage)
-                                                    .limit(itemsPerPage)
-                                                    .exec();
+                                    products = await productDatas
+                                    .find({ 'productCategory': category._id, isDeleted: false })
+                                    .populate({
+                                        path: 'productCategory',
+                                        model: 'category',
+                                    })
+                                    .skip((pageNumber - 1) * itemsPerPage)
+                                    .limit(itemsPerPage)
+                                    .exec();
 
                                 
                                         
@@ -726,7 +725,7 @@ else{
                                             .populate({
                                                 path: 'productCategory',
                                                 model: 'category',
-                                                select: 'categoryName',
+                                               
                                             })
                                             .sort({ productPrice: -1 });
 
@@ -738,7 +737,7 @@ else{
                                             .populate({
                                                 path: 'productCategory',
                                                 model: 'category',
-                                                select: 'categoryName',
+                                                
                                             }).sort({ productPrice: 1 }); 
                                         }
 
@@ -754,7 +753,7 @@ else{
                             .populate({
                                 path: 'productCategory',
                                 model: 'category',
-                                select: 'categoryName',
+                             
                             })
                             .skip((pageNumber - 1) * itemsPerPage)
                             .limit(itemsPerPage)
@@ -924,10 +923,8 @@ res.render("user/changepassword.ejs")
 }
 
 
-
-const showWishlist=async(req,res)=>{
-    try{
-
+const showWishlist = async (req, res) => {
+    try {
         const usersid = await new Promise((resolve, reject) => {
             const usertoken = req.cookies.usertoken;
             JWTtoken.verify(usertoken, jwtcode, (err, decoded) => {
@@ -940,32 +937,36 @@ const showWishlist=async(req,res)=>{
                 }
             });
         });
+
+        // Count total number of wish list items
+        const totalCount = await wishData.findOne({ userId: usersid }).countDocuments();
         
-        const wis = await wishData.findOne({ userId: usersid })
-        .populate({
-            path: "list",
-            model: "products" 
+        // pagination parameters
+        const page = parseInt(req.query.page) || 1; // Current page number, default: 1
+        const limit = 5; // Number of items per page
+
+        // Calculate the starting index of items for the current page
+        const startIndex = (page - 1) * limit;
+
+        // Retrieve wish list items for the current page
+        const wishList = await wishData.findOne({ userId: usersid })
+            .populate({
+                path: "list",
+                model: "products"
+            })
+            .skip(startIndex) // Skip items before the current page
+            .limit(limit); // Limit the number of items per page
+        
+        res.render("user/wishlist.ejs", {
+            wishList,
+            currentPage: page,
+            totalPages: Math.ceil(totalCount / limit) // Calculate total number of pages
         });
-
-
-        let counts=await wishData.findOne({ userId: usersid })
-        let wishPerPage=counts.list.length
-        console.log("counts",wishPerPage)
-
-        const wish={
-            wish:wis,
-            page:wishPerPage
-        }
-        // console.log("wish::",wish.list[0].productName)
-
-
-
-        res.render("user/wishlist.ejs",wis)
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send("Internal Server Error");
     }
-    catch(error){
-        console.log(error.message)
-    }
-}
+};
 
 
 
@@ -1170,7 +1171,40 @@ const wishtoremove=async(req,res)=>{
     }
 }
 
+const addtocartAndDeleteWishlist=async(req,res)=>{
+    try{
+       
 
+let itemToDeleteFromWishList=req.body.productId;
+
+console.log("itemto remove from wishlist::::::::::::::::::",itemToDeleteFromWishList)
+
+
+const usersid = await new Promise((resolve, reject) => {
+    const usertoken = req.cookies.usertoken;
+    JWTtoken.verify(usertoken, jwtcode, (err, decoded) => {
+        if (err) {
+            console.error('JWT verification failed:', err.message);
+            reject(err);
+        } else {
+            const userId = decoded._id; // Assuming the user ID is stored in _id field
+            resolve(userId);
+        }
+    });
+});
+
+
+await wishData.findOneAndUpdate({userId:usersid},
+    {$pull:{list:itemToDeleteFromWishList}}
+    )
+
+    res.status(200)
+
+    }
+    catch(error){
+        console.log(error.message)
+    }
+}
 
 
 
@@ -1207,7 +1241,8 @@ module.exports = {
     wallet,
     wishtoadd,
     wishtoremove,
-    showWishlist
+    showWishlist,
+    addtocartAndDeleteWishlist
   
 
 }

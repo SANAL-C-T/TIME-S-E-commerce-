@@ -17,9 +17,13 @@ const orderHistorySchema = mongoose.Schema({
     Discounted:Number,
     Status:String,
     unitPrice: Number,
-    
-    Couponused: String,
+    discountedByCoupon: { 
+        type: Boolean,
+        default: false,
+    },
+    CouponUsed: String,
     discountgiven: Number,
+    couponCode:String
 });
 
 const orderData = mongoose.model('orderHistory', orderHistorySchema);

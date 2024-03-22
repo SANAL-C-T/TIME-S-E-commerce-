@@ -6,8 +6,10 @@ const bannerData = require("../model/bannerSchema")
 const userDatas = require("../model/userSchema")
 const orderData=require("../model/orderhistoryschema")
 const couponData=require("../model/couponSchema")
+const cron = require('node-cron');
 const bcrypt = require("bcrypt")
 const ExcelJS = require('exceljs');
+const PDF = require('pdfkit');
 const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
 
 const moment=require("moment")
@@ -601,6 +603,8 @@ var downloadCODtotal;
 var downloadrazorpayTotal;
 var downloadcount;
 var downloadreturned;
+var discount;
+var discountedCount;
 
 // to download the sale report
 const downloadoption=async(req,res)=>{
@@ -613,38 +617,19 @@ const downloadoption=async(req,res)=>{
 
 
         let totalAmountSum = await orderData.aggregate([
-            {
-              $group: {
-                _id: null,
-                total: { $sum: "$OrderTotalPrice" }
-              }
-            }
+            {$group: {_id: null, total: { $sum: "$OrderTotalPrice" } }}
           ]).exec();
 
 
           let totalPAYMENTSum = await orderData.aggregate([
-            {
-              $group: {
-                _id: "$paymentMethod",
-                total: { $sum: "$OrderTotalPrice" }
-              }
-            }
+            {$group: { _id: "$paymentMethod",total: { $sum: "$OrderTotalPrice" } }}
           ]).exec();
 
 
 
           let totalReturnedSum = await orderData.aggregate([
-            {
-              $match: {
-                Status: "Returned"
-              }
-            },
-            {
-              $group: {
-                _id: "$Status",
-                total: { $sum: "$OrderTotalPrice" }
-              }
-            }
+            {$match: {Status: "Returned" }},
+            {$group: {_id: "$Status",total: { $sum: "$OrderTotalPrice" }}}
           ]).exec();
           
           const orders = await orderData.find({}).populate({
@@ -652,7 +637,34 @@ const downloadoption=async(req,res)=>{
             model: "user"
         });
           
-        // console.log("def",orders.user)
+        let totalReturnedCount = await orderData.aggregate([
+            { $match: { Status: "Returned" }},
+            { $group: { _id: null, count: { $sum: 1 }}}
+        ]).exec();
+        console.log("return count:::", totalReturnedCount[0].count);
+
+
+
+        let totalDeliveredCount = await orderData.aggregate([
+            { $match: { Status: "delivered" }},
+            { $group: { _id: null, count: { $sum: 1 }}}
+        ]).exec();
+        console.log("return count:::", totalDeliveredCount[0].count);
+
+
+
+        const discountAmount = await orderData.aggregate([
+            { $unwind: "$items" },
+            { $match: { "items.discounted": true } },
+            { $group: { _id: null, totalDiscountAmount: { $sum: "$items.DiscountedAmount" } } }
+        ]).exec();
+        console.log("discount amount", discountAmount[0].totalDiscountAmount);
+        
+        const discountedItemCount = await orderData.aggregate([
+            { $unwind: "$items" },
+            { $group: { _id: null, discountedItemCount: { $sum: { $cond: [{ $eq: ["$items.discounted", true] }, 1, 0] } } } }
+        ]).exec();
+        console.log("discount count", discountedItemCount[0].discountedItemCount);
           
         let totalcounts=await orderData.find({}).count()
         // console.log(totalcounts)
@@ -665,7 +677,10 @@ const downloadoption=async(req,res)=>{
             razorpayTotal:totalPAYMENTSum[1],
             count:totalcounts,
             returned:totalReturnedSum[0],
-       
+            discount:discountAmount[0].totalDiscountAmount,
+            discountedCount:  discountedItemCount[0].discountedItemCount,
+            returncount:totalReturnedCount[0].count,
+            deliveredCount:totalDeliveredCount[0].count
         }
 
 downloadtotal=totalAmountSum[0].total;
@@ -674,6 +689,8 @@ totalcounts=totalPAYMENTSum[1].total;
 downloadrazorpayTotal=totalPAYMENTSum[1].total
 downloadcount=totalcounts;
 downloadreturned=totalReturnedSum[0].total;
+discount=discountAmount[0].totalDiscountAmount;
+discountedCount=discountedItemCount[0].discountedItemCount;
 // console.log(totalcounts)
     res.render("admin/downloadsoption.ejs",{urlData})
     }
@@ -701,7 +718,7 @@ const H="REVENUE DETAILS";
 
       const data = [
         ['Total Generated Amount', 'COD', 'Online Payment', 'Amount Returned', 'Sale Count', 'Total Discount'],
-        [downloadtotal, downloadCODtotal, downloadrazorpayTotal, downloadcount, downloadreturned],
+        [downloadtotal, downloadCODtotal, downloadrazorpayTotal, downloadcount, downloadreturned, discount],
        
       ];
   
@@ -741,82 +758,6 @@ columnWidths.forEach((width, index) => {
   };
   
 
-
-//   const downloadrevenuepdf = async (req, res) => {
-//     try {
-//       console.log("download");
- 
-//       const H = "REVENUE DETAILS";
-
-
-    
-//         const pdfDoc = await PDFDocument.create()
-//         const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman)
-      
-//         const page = pdfDoc.addPage()
-//         const { width, height } = page.getSize()
-//         const fontSize = 30
-//         page.drawText('Creating PDFs in JavaScript is awesome!', {
-//           x: 50,
-//           y: height - 4 * fontSize,
-//           size: fontSize,
-//           font: timesRomanFont,
-//           color: rgb(0, 0.53, 0.71),
-//         })
-      
-//         const pdfBytes = await pdfDoc.save()
-    
-
-
-
-//     //   const data = [
-//     //     ['Total Generated Amount', 'COD', 'Online Payment', 'Amount Returned', 'Sale Count', 'Total Discount'],
-//     //     [downloadtotal, downloadCODtotal, downloadrazorpayTotal, downloadcount, downloadreturned],
-//     //   ];
-      
-//     //   const doc = new PDFDocument();
-      
-     
-//     //   res.setHeader('Content-Type', 'application/pdf');
-//     //   res.setHeader('Content-Disposition', 'attachment; filename=table.pdf');
-      
-   
-//     //   doc.pipe(res);
-      
-    
-//     //    doc.fontSize(14).text(H, { align: 'center', bold: true });
-      
-    
-//     //   doc.moveDown();
-      
-   
-//     //   data.forEach(row => {
-   
-//     //     row.forEach(cell => {
-       
-//     //       doc.text(cell.toString());
-//     //     });
-      
-       
-//     //     // doc.moveDown();
-//     //   });
-      
-      
-//     //   doc.end();
-//     // } catch (error) {
-//     //     console.error('Error creating PDF file:', error.message);
-//     //     res.status(500).send('Internal Server Error');
-//     //   }
-//   };
-  
-
-
-
-// Placeholder values for data (you need to define these elsewhere)
-
-
-
-
 const fs = require('fs');
 
 
@@ -830,7 +771,7 @@ const downloadrevenuepdf = async (req, res) => {
         // Placeholder values for data (you need to define these elsewhere)
         const data = [
             ['GENERATED AMOUNT', 'AMOUNT TO ACCOUNT', 'COD', 'ONLINE PAYMENT', 'AMOUNT RETURNED', 'AMOUNT DISCOUNTED'],
-            [downloadtotal, downloadCODtotal, downloadrazorpayTotal, downloadcount],
+            [downloadtotal, downloadCODtotal, downloadrazorpayTotal, downloadcount, downloadreturned, discount],
             // Add more data rows as needed
         ];
 
@@ -997,7 +938,12 @@ const offercategorywise=async(req,res)=>{
         }
 
 
-        await categoryData.findOneAndUpdate({_id:selectedCategory},{$set:{catOffer:addedOffer}})
+        await categoryData.findOneAndUpdate({_id:selectedCategory},{$set:{catOffer:addedOffer,hasCatOffer:true}})
+
+
+
+
+
 
 
         res.redirect("/admin/Offercategory")
@@ -1018,7 +964,7 @@ const removeOffer=async(req,res)=>{
             { $unset: { catOffer: 1 } },
             { new: true }
         );
-
+        await categoryData.findOneAndUpdate({_id:id},{$set:{hasCatOffer:false}})
         res.status(200).json({ message: "Offer removed successfully." });
     }
     catch(error){
@@ -1038,7 +984,7 @@ const removeproductOffer=async(req,res)=>{
             { new: true }
         );
 
-
+        await productData.findOneAndUpdate({_id:id},{$set:{haveProductOffer:false}})
         //the below code is very important for page reloading from javascript....
         res.status(200).json({ message: "Offer removed successfully." });
     }
@@ -1068,7 +1014,7 @@ let addedOffer={
 }
 
 
-await productData.findOneAndUpdate({_id:selectedProduct},{$set:{offer:addedOffer}})
+await productData.findOneAndUpdate({_id:selectedProduct},{$set:{offer:addedOffer,haveProductOffer:true}})
 
 
 res.redirect("/admin/Offerproduct")
@@ -1080,22 +1026,214 @@ res.redirect("/admin/Offerproduct")
     }
 }
 
+// here is the logic for controlling the offer after expirydate.....
 
-
-
-const bydate=async(req,res)=>{
-    try{
-
-        const urlData = {
-            pageTitle: 'GET SALES REPORT BY DATE',
-      
+async function checkDate() {
+    try {
+        let todayDate = moment(Date.now()).format('YYYY-MM-DD');
+        console.log(":::",todayDate);
+        let getTheExpiryDate = await productData.find({},{offer: 1});
+        for (const product of getTheExpiryDate) {
+            if (product.offer.length > 0) {
+                for (const offer of product.offer) {
+                    console.log(offer.endDate);
+                    // Compare expiry date with today's date so as to remove it
+                    if (todayDate > offer.endDate) {
+                        await productData.findOneAndUpdate(
+                            {_id: product._id},
+                            {$unset:{offer: 1}},
+                            {new: true}
+                        );
+                        await productData.findOneAndUpdate(
+                            {_id: product._id},
+                            {$set: {haveProductOffer: false}}
+                        );
+                        console.log("product offer removed......");
+                    }
+                }
+            }
         }
-        res.render("../views/admin/bydate.ejs",{ urlData})
-    }
-    catch(error){
-        console.log(error)
+    } catch (error) {
+        console.error("Error:", error.message);
     }
 }
+
+cron.schedule('*/10 * * * * ', () => {
+    checkDate();
+});
+
+
+
+
+//for datewise sales report 
+const postbydate=async(req,res)=>{
+    try{
+        let sd=req.body.startDate;
+        let ed=req.body.endDate;
+
+      let sDate = moment(sd).format('DD-MM-YYYY');
+let eDate = moment(ed).format('DD-MM-YYYY');
+
+
+
+
+console.log(sDate)
+// Perform the search query
+
+
+// const orders = await orderData.find({ OrderDate: {
+//     $regex: new RegExp(`^(${sDate}|${eDate})`)
+// }}).populate({
+//     path: "userid",
+//     model: "user"
+// });
+
+const orders = await orderData.find({
+    OrderDate: { $gte: (sDate), $lte: (eDate) }
+}).populate({
+    path: "userid",
+    model: "user"
+});
+
+
+console.log("datewise:::::::",orders)
+const urlData = {
+    pageTitle: 'SALES REPORT BY DATE',
+
+
+}
+
+
+// res.redirect("/admin/reportbydates")
+res.render("admin/bydate.ejs",{urlData,orders})
+    }
+    catch(error){
+        console.log(error.message)
+    }
+}
+   
+
+
+//RENDERING THE PAGE WITH DATEWISE SALES REPORT....
+const bydate=async(req,res)=>{
+    try{
+    }
+    catch(error){
+        console.log(error.message)
+    }
+}
+
+
+
+const downloadDetailPdf = async (req, res) => {
+    
+    try {
+        const tableData = req.body.tableData;
+        const currentDate = new Date().toDateString();
+       
+        const pdfDoc = new PDF();
+
+       
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename="table_data.pdf"');
+const title="TIME S  SALES REPORT"
+       
+        pdfDoc.pipe(res);
+        pdfDoc.text(title, { align: 'center' });
+        pdfDoc.moveDown(); 
+        pdfDoc.moveTo(50, pdfDoc.y)
+ 
+  .lineTo(550, pdfDoc.y)
+
+  .stroke();
+        pdfDoc.moveDown();
+        pdfDoc.text("DOWNLOADED ON: " + currentDate, { align: 'right' });
+        pdfDoc.moveDown(); 
+        pdfDoc.moveTo(50, pdfDoc.y)
+
+  .lineTo(550, pdfDoc.y)
+
+  .dash(5, { space: 5 })
+ 
+  .stroke();
+  pdfDoc.moveDown(); 
+  pdfDoc.moveDown(); 
+       
+        // Create table header
+        const header = ['SL NO', 'USERNAME', 'INVOICE DATE', 'INVOICE AMOUNT', 'PAYMENT METHOD'];
+        const rowWidths = [20, 20, 20, 20, 20]; // Adjust column widths to add space between columns
+
+        // Set font and font size for header and table content
+        pdfDoc.font('Helvetica').fontSize(10);
+
+        // Draw header
+        pdfDoc.font('Helvetica').fontSize(11);
+        pdfDoc.text(header.join('        '), { align: 'left', width: 1000 }); // Draw header text with increased width to add space between columns
+
+        // Draw table rows
+        pdfDoc.moveDown(); // Move down to create space between header and table data
+        tableData.forEach(row => {
+            const formattedRow = row.map((cell, index) => {
+                return cell.padEnd(rowWidths[index] - 2); // Adjust padding for each cell to match column width
+            });
+            pdfDoc.text(formattedRow.join('        '), { align: 'left', width: 1000 }); // Draw row text with increased width to add space between columns
+            pdfDoc.moveDown();
+          
+            // Move down to the next row
+        });
+
+        
+        pdfDoc.end();
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send('Internal Server Error');
+    }
+}
+
+
+
+const downloadDetailExcel = async (req, res) => {
+    try {
+        const { tableData } = req.body;
+
+        console.log("0000000000000000000000000000000");
+        console.log('Received tableData:', tableData);
+        // Create a new workbook
+        const headings = ['SL No', 'USERNAME', 'INVOICE DATE', 'INVOICE AMOUNT', 'PAYMENT METHOD'];
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Sheet 1');
+        worksheet.addRow(headings);
+
+        // Add the table data to the worksheet
+        tableData.forEach(row => {
+            worksheet.addRow(row);
+        });
+        worksheet.columns.forEach((column, index) => {
+            // Set width for the first column (SL No) to 10 characters
+            if (index === 0) {
+                column.width = 10;
+            }
+            // Set width for other columns to auto-fit
+            else {
+                column.width = 35;
+            }
+        });
+        // Set the appropriate response headers for file download
+        res.set({
+            'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition': 'attachment; filename=table_data.xlsx'
+        });
+
+        // Generate Excel file buffer
+        const buffer = await workbook.xlsx.writeBuffer();
+
+        // Send the Excel file buffer as the response
+        res.send(buffer);
+    } catch (error) {
+        console.error('Error generating or sending Excel file:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
 
 
 
@@ -1138,7 +1276,10 @@ module.exports = {
     offercategorywise,
     offerproductwise,
     bydate,
-    removeOffer
+    removeOffer,
+    postbydate,
+    downloadDetailPdf,
+    downloadDetailExcel
  
 
 }

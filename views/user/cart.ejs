@@ -7,11 +7,15 @@
         <tr>
           <th style="width: 5%;">SL NO</th>
           <th style="width: 10%;">IMAGE</th>
-          <th style="width: 30%;">NAME</th>
-          <th style="width: 15%;">QTY</th>
-          <th style="width: 20%;">UNIT PRICE</th>
-          <th style="width: 25%;">TOTAL PRICE</th>
-          <th style="width: 10%;">CANCEL</th>
+          <th style="width: 15%;">NAME</th>
+          <th style="width: 10%;">QTY</th>
+          <th style="width: 15%;">UNIT PRICE</th>
+          <th style="width: 10%;">OFF</th>
+       
+          <th style="width: 15%;">OFFER PRICE</th>
+          <th style="width: 5%;">CANCEL</th>
+          
+          
         </tr>
       </thead>
       <tbody>
@@ -33,6 +37,8 @@
             <p id="limit_<%= index %>" class="text-danger my-3 "></p>
           </td>
           <td id="unitPrice_<%= index %>">&#8377; <%= x.products.productPrice %></td>
+          <td id="discount_<%= index %>"><%= x.percentageDiscounted %> %</td>
+         
           <td id="totalPrice_<%= index %>">&#8377; <%= x.price %></td>
           <td>
             <form id="deleteForm" action="/itemdelete" method="post">
@@ -68,7 +74,7 @@
           <li id="summary"><h4>SUMMARY</h4></li>
           <hr>
           <li id="subprice"><h5>Sub Total: &#8377; <%=cartItem.cart.OrderTotalPrice%></h5></li>
-          <li><h5>Discount: &#8377; 0</h5></li>
+        
           <li><h5>GST: &#8377; 0</h5></li>
           <li><h5>Shipping Charges: &#8377; FREE</h5></li>
           <hr>
@@ -81,14 +87,14 @@
                 <input type="text" class="w-100" id="couponcode" name="couponcode" placeholder="Enter Coupon Code">
                 <button class="btn btn-success w-100 mt-4" onclick="couponSubmit()">APPLY</button>
             </div>
-        <% } else { %>
+        <% } else if(cartItem.cart.couponApplied == true) { %>
             <div>
           
                 <script>
                     var appliedCouponCode = '<%= cartItem.cart.couponCode %>';
                 </script>
                 <input type="text" class="w-100" id="removecode" name="removecode" placeholder="Enter Coupon Code">
-                <button class="btn btn-warning w-100 mt-4" onclick="removeCoupon(appliedCouponCode)">REMOVE</button>
+                <button class="btn btn-warning w-100 mt-4" onclick="removeCoupon()">REMOVE</button>
             </div>
         <% } %>
         
@@ -117,19 +123,27 @@
   var currentQty;
   var priceOfItem;
   var price;
-  
-
+  var percentageDiscount;
+  var actualcost;
 
 
   //............price calculation according to qyt................
   function priceCalculation(index) {
     let priceOfItemElement = document.getElementById(`unitPrice_${index}`);
     priceOfItem = parseInt(priceOfItemElement.textContent.replace(/\D/g, ''), 10);
-    price = priceOfItem * currentQty;
-    let currencySymbol = '₹';
+
+    let perDiscount=document.getElementById(`discount_${index}`)
+    percentageDiscount=parseInt(perDiscount.textContent)
+ 
+
+    actualcost=priceOfItem * currentQty;
+
+    price = actualcost-(actualcost * (percentageDiscount/100));
+    const currencySymbol = '₹';
     let totalPriceElement = document.getElementById(`totalPrice_${index}`);
     totalPriceElement.innerHTML = `${currencySymbol} ${price}`;
-    updateQuantitydecrOnServer(index, currentQty);
+
+    updateQuantitydecrOnServer(index, currentQty);//updating the datas on database.
   }
 
 
@@ -146,6 +160,7 @@
         index: index,
         quantity: currentQty,
         price: price,
+        ActualPriceWithoutOffer:actualcost
       }),
     })
     .then(response => {
@@ -181,7 +196,8 @@
       currentQty += 1;
       document.getElementById(`displayqty_${index}`).textContent = currentQty;
       document.getElementById(`limit_${index}`).innerHTML = "";
-      priceCalculation(index);
+
+      priceCalculation(index);//calculate the amount according to qyt..
 
       fetch("/stockup", {
         method: "POST",
@@ -215,7 +231,8 @@
       currentQty -= 1;
       document.getElementById(`displayqty_${index}`).textContent = currentQty;
       document.getElementById(`limit_${index}`).innerHTML = "";
-      priceCalculation(index);
+
+      priceCalculation(index);//calculate the amount according to qyt..
       fetch("/stockDown", {
         method: "POST",
         headers: {
@@ -257,62 +274,70 @@
 
 
 
-function couponSubmit(){
-  const couponCode = document.getElementById('couponcode').value;
-
-  alert(couponCode)
-  fetch("/applyCoupon",
-  {
-    method:"POST",
-    headers:{
-    'Content-Type':"application/json",
-    "Accept":"application/json"
-    },
-    body:JSON.stringify({
-      code:couponCode
+  function removeCoupon() {
+    const couponCode = document.getElementById('removecode').value;
+  
+    fetch("/removeCoupon", {
+      method: "POST",
+      headers: {
+        'Content-Type': "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({
+        couponCode
+      })
     })
-    
-  })
-  .then(response=>response.json())
-  .then(data=>{
-    console.log('Success:', data);
-  })
-  .catch(error=>{
-    console.error('Error submitting data:', error);
-  })
-}
-
-
-
-
-
-
-
-
-function removeCoupon(){
-  const couponCode = document.getElementById('removecode').value;
-
-  alert(couponCode)
-  fetch("/removeCoupon",
-  {
-    method:"POST",
-    headers:{
-    'Content-Type':"application/json",
-    "Accept":"application/json"
-    },
-    body:JSON.stringify({
-      couponCode
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error('Failed to remove coupon');
+      }
     })
-    
-  })
-  .then(response=>response.json())
-  .then(data=>{
-    console.log('Success:', data);
-  })
-  .catch(error=>{
-    console.error('Error submitting data:', error);
-  })
-}
+    .then(data => {
+      console.log('Success:', data);
+      location.reload();
+    })
+    .catch(error => {
+      console.error('Error removing coupon:', error);
+    });
+  }
+
+
+
+
+
+
+
+
+  function couponSubmit() {
+    const couponCode = document.getElementById('couponcode').value;
+  
+    fetch("/applyCoupon", {
+      method: "POST",
+      headers: {
+        'Content-Type': "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({
+        code: couponCode
+      })
+    })
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error('Failed to apply coupon');
+      }
+    })
+    .then(data => {
+      console.log('Success:', data);
+      location.reload();
+    })
+    .catch(error => {
+      console.error('Error applying coupon:', error);
+    });
+  }
 
 
 

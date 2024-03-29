@@ -1,44 +1,44 @@
-const mongoose=require("mongoose");
+const mongoose = require("mongoose");
 
-const spec=mongoose.Schema({
+const spec = mongoose.Schema({
 
-    brand:{
-        type:String
+    brand: {
+        type: String
     },
-    MadeIn:{
-        type:String
+    MadeIn: {
+        type: String
     },
-    StrapMaterial:{
-        type:String
+    StrapMaterial: {
+        type: String
     },
-    waterResistant:{
-        type:Boolean
+    waterResistant: {
+        type: Boolean
     },
-    display:{
-        type:String
+    display: {
+        type: String
     },
-    screenSize:{
-        type:String
+    screenSize: {
+        type: String
     },
-    fastCharge:{
-        type:Boolean
+    fastCharge: {
+        type: Boolean
     },
-    battery:{
-        type:String
+    battery: {
+        type: String
     },
-    weight:{
-        type:String
+    weight: {
+        type: String
     },
-    sleepTracker:{
-        type:Boolean
+    sleepTracker: {
+        type: Boolean
     },
-    warranty:{
-        type:String
+    warranty: {
+        type: String
     },
 
 
 })
 
-const specification=mongoose.model("specification",spec)
+const specification = mongoose.model("specification", spec)
 
-module.exports=specification
+module.exports = specification

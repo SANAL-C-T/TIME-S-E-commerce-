@@ -45,15 +45,20 @@
         <!-- Third line - Address details -->
         <h3 class="mx-4 mb-5">Address details</h3>
         <div class="d-flex my-4" id="thirdline">
+            <%if(udata.Address.length>0) {%>
             <div class="mb-3 mx-4">
-                <ul>
-                    <li><strong>House:</strong> <%= udata.Address[0].houseNo %> </li>
-                    <li><strong>Street:</strong> <%= udata.Address[0].street %> </li>
-                    <li><strong>Location:</strong> <%= udata.Address[0].location %> </li>
-                    <li><strong>Landmark:</strong> <%= udata.Address[0].landmark %> </li>
-                </ul>
+             
+                    <ul>
+                        <li><strong>House:</strong> <%= udata.Address[0].houseNo %> </li>
+                        <li><strong>Street:</strong> <%= udata.Address[0].street %> </li>
+                        <li><strong>Location:</strong> <%= udata.Address[0].location %> </li>
+                        <li><strong>Landmark:</strong> <%= udata.Address[0].landmark %> </li>
+                    </ul>
+              
+             
             </div>
             <div class="ml-4">
+                
                 <ul>
                     <li><strong>City:</strong> <%= udata.Address[0].city %> </li>
                     <li><strong>State:</strong> <%= udata.Address[0].state %> </li>
@@ -62,6 +67,7 @@
                 </ul>
             </div>
         </div>
+        <%} %>
     </main>
     
 

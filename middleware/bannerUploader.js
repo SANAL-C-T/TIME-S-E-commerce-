@@ -1,54 +1,47 @@
 const multer = require("multer");
-const storeBanner=multer.diskStorage({
 
-    destination:function(req,res,callback){
-        callback(null,"uploadBanner")
+const storeBanner = multer.diskStorage({
+    destination: function (req, file, callback) {
+        callback(null, "uploadBanner");
     },
-
-
-    filename:function(req,res,callback){
-        var ext=file.originalname.substring(file.originalname.lastIndexOf("."))
-        callback(null,file.originalname+"-"+Date.now()+ext)
+    filename: function (req, file, callback) {
+        var ext = file.originalname.substring(file.originalname.lastIndexOf("."));
+        callback(null, file.originalname + "-" + Date.now() + ext);
     }
+});
 
-})
-
-const bannerUpload=multer({
-
-    storage:storeBanner
-})
-
+const bannerUpload = multer({ storage: storeBanner });
 
 const singleBanner = (req, res, next) => {
-    upload.single("bannerImage")(req,res,function(err){
-        if(err){
-            console.log("BANNER not uploaded")
-        }{
-            console.log("BANNER upload success")
-            
+    bannerUpload.single("bannerImage")(req, res, function (err) {
+        if (err) {
+            console.error("Error uploading banner:", err);
+            return res.status(500).send("Banner upload failed");
+        } else {
+            console.log("Banner uploaded successfully");
+            console.log("File details:", req.file);
+            next();
         }
-        next();
-        
-    })
-   
-    
+    });
 };
 
 const multiBanner = (req, res, next) => {
-    upload.array("bannerImage", 5)(req, res, function (err) {
-        if (err ) {
-            console.log(err.message ,"BANNER not uploaded")
+    bannerUpload.fields([
+        { name: "bannerImage1", maxCount: 1 },
+        { name: "bannerImage2", maxCount: 1 },
+        { name: "bannerImage3", maxCount: 1 }
+    ])(req, res, function (err) {
+        if (err) {
+            console.error("Error uploading banners:", err);
+            return res.status(500).send("Banner upload failed");
         } else {
-            //logic for collecting new name and path of stored image.
-
-            console.log("BANNER upload success")
+            console.log("Banners uploaded successfully");
+            // console.log("Files details:", req.files);
+            next();
         }
-        next(); 
-        })
-       
+    });
 };
-
-module.exports={
+module.exports = {
     multiBanner,
     singleBanner
-}
+};

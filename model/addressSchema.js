@@ -1,16 +1,16 @@
-const mongoose=require("mongoose");
+const mongoose = require("mongoose");
 
 require("../model/config")
-const AddressCollection=mongoose.Schema({
-userId:{
-    type:String,
-},
-Address:{
-    type:String
-},
+const AddressCollection = mongoose.Schema({
+    userId: {
+        type: String,
+    },
+    Address: {
+        type: String
+    },
 
 })
 
-const AddressData=mongoose.model("UserOTP",AddressCollection);
+const AddressData = mongoose.model("UserOTP", AddressCollection);
 
-module.exports=AddressData;
+module.exports = AddressData;

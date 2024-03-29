@@ -31,7 +31,7 @@
                             <td>
                                 <form action="/admin/statusUpdate/<%= order._id %>" method="POST">
                                     <input type="hidden" name="index" value="<%= index %>">
-                                    <select class="form-control" name="status">
+                                    <select class="form-control" id="stat" name="status">
                                         <option value="pending" <%= order.status === "pending" ? "selected" : "" %>>Pending</option>
                                         <option value="order_placed" <%= order.status === "order_placed" ? "selected" : "" %>>Order Placed</option>
                                         <option value="shipped" <%= order.status === "shipped" ? "selected" : "" %>>Shipped</option>

@@ -21,19 +21,9 @@
   </div>
 
   <div id="rightside" class="m-3 pt-5 ">
-    <ul>
-      <li id="summary"><h2>SUMMARY</h2></li>
-      <hr>
-      <li><h5>Sub total: &#8377;</h5></li>
-      <br>
-      <li><h5>Discount: &#8377;</h5></li>
-      <br>
-      <li><h5>Tax: &#8377;</h5></li>
-      <hr>
-      <br>
-      <li><h4>Order total: &#8377;</h4></li>
-      <li> <button class="btn btn-primary mt-5 px-5 mx-3">PAY NOW </button></li>
-    </ul>
+    <div class="empty-cart-message">
+      <h4>Your cart is empty!</h4>
+  </div>
   </div>
 </div>
 
@@ -246,4 +236,11 @@ new DataTable("#example");
     border: solid 1px black;
     padding: 8px;
   }
+
+
+  .empty-cart-message {
+    text-align: center;
+    font-size: 24px;
+    color: #555;
+    margin-top: 20px;
 </style>

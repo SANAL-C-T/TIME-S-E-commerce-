@@ -1,21 +1,21 @@
 
 
 //this is the multer configeration part.
-const multer=require("multer")
-const storage=multer.diskStorage({
+const multer = require("multer")
+const storage = multer.diskStorage({
 
-    destination:function(req,file,callback){
-        callback(null,"upload") //this is the destiontion to which pic is stored
+    destination: function (req, file, callback) {
+        callback(null, "upload") //this is the destiontion to which pic is stored
     },
     filename: function (req, file, cb) {//remnaming function
-        
-        var ext=file.originalname.substring(file.originalname.lastIndexOf("."))
 
-        cb(null,file.originalname+ "-"+Date.now()+ext)
+        var ext = file.originalname.substring(file.originalname.lastIndexOf("."))
+
+        cb(null, file.originalname + "-" + Date.now() + ext)
     },
 })
 
-const upload=multer({//creating an instence of this configeration
+const upload = multer({//creating an instence of this configeration
     storage: storage,
 })
 
@@ -24,10 +24,10 @@ const upload=multer({//creating an instence of this configeration
 
 //converting to middleware
 const singleUpload = (req, res, next) => {
-    upload.single("productImage")(req,res,function(err){
-        if(err){
+    upload.single("productImage")(req, res, function (err) {
+        if (err) {
             console.log("image not uploaded")
-        }{
+        } {
             console.log("image upload success")
         }
         next();
@@ -37,43 +37,41 @@ const singleUpload = (req, res, next) => {
 
 
 const multiUpload = (req, res, next) => {
-console.log("hello  data is comming to multer")
+    // console.log("hello  data is comming to multer")
+    // Assuming data is the array structure you provided
+    const data = req.body;
+    // console.log("incoming imagedata", data.size)
+    for (let index = 0; index < data.length; index++) {
+        const item = data[index];
 
+        if (Array.isArray(item)) {
+            console.log(`Field ${index}:`);
+            console.log(`   ${item[0]}: ${item[1]}`);
+        } else if (item instanceof File) {
+            console.log(`File ${index}:`);
+            console.log(`   Name: ${item.name}`);
+            console.log(`   Size: ${item.size} bytes`);
 
- // Assuming data is the array structure you provided
- const data = req.body;
-console.log("incoming imagedata",data.size)
- for (let index = 0; index < data.length; index++) {
-     const item = data[index];
-
-     if (Array.isArray(item)) {
-         console.log(`Field ${index}:`);
-         console.log(`   ${item[0]}: ${item[1]}`);
-     } else if (item instanceof File) {
-         console.log(`File ${index}:`);
-         console.log(`   Name: ${item.name}`);
-         console.log(`   Size: ${item.size} bytes`);
-        
-     } else {
-         console.log(`Unknown type ${index}: ${item}`);
-     }
- }
- //this is the uploading function
+        } else {
+            console.log(`Unknown type ${index}: ${item}`);
+        }
+    }
+    //this is the uploading function
     upload.array("productImages[]", 5)(req, res, function (err) {
-        if (err ) {
-            console.log(err.message ,"image not uploaded")
+        if (err) {
+            console.log(err.message, "image not uploaded")
         } else {
             console.log("image upload success")
         }
-        next(); 
-        })
-       
+        next();
+    })
+
 };
 
 
 
 const profileimageupload = (req, res, next) => {
-    upload.single("profilepic")(req, res, function(err) {
+    upload.single("profilepic")(req, res, function (err) {
         if (err) {
             console.log("Image not uploaded");
         } else {
@@ -90,7 +88,7 @@ const profileimageupload = (req, res, next) => {
 
 
 
-module.exports={
+module.exports = {
     singleUpload,
     multiUpload,
     profileimageupload

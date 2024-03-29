@@ -5,25 +5,25 @@ require('../model/config');
 const orderHistorySchema = mongoose.Schema({
     userid: ObjectId,
     orderId: ObjectId,
-    OrderDate:String,
-    DeliveredDate:String,
+    OrderDate: String,
+    DeliveredDate: String,
     paymentMethod: String,
     address: String,
     userid: ObjectId,
-    items:[],
-    Address:String,
+    items: [],
+    Address: String,
     OrderTotalPrice: Number,
-    tax:Number,
-    Discounted:Number,
-    Status:String,
+    tax: Number,
+    Discounted: Number,
+    Status: String,
     unitPrice: Number,
-    discountedByCoupon: { 
+    discountedByCoupon: {
         type: Boolean,
         default: false,
     },
     CouponUsed: String,
     discountgiven: Number,
-    couponCode:String
+    couponCode: String
 });
 
 const orderData = mongoose.model('orderHistory', orderHistorySchema);

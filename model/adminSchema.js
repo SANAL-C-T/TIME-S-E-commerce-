@@ -1,27 +1,27 @@
-const mongoose=require("mongoose");
+const mongoose = require("mongoose");
 
 require("../model/config")
 
-const adminSchema=mongoose.Schema({
-   
-    email:{
-        type:String,
-        
+const adminSchema = mongoose.Schema({
+
+    email: {
+        type: String,
+
     },
-    password:{
-        type:String,
+    password: {
+        type: String,
         required: true
     },
-    phone:{
-        type:Number,
-      
+    phone: {
+        type: Number,
+
     },
-    
-    username:{
-        type:String,
+
+    username: {
+        type: String,
         required: true
     },
-    date:{//date of joining
+    date: {//date of joining
         type: Date,
     },
     status: { //active now or not
@@ -33,6 +33,6 @@ const adminSchema=mongoose.Schema({
     }
 });
 
-const adminData=mongoose.model("admin",adminSchema);
+const adminData = mongoose.model("admin", adminSchema);
 
-module.exports=adminData;
+module.exports = adminData;

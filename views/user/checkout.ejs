@@ -223,14 +223,8 @@
       var selectedRadio = document.querySelector('input[name="fromDbAddressRadio"]:checked');
 
 
-
-alert("yui" + selectionCheck)
-    
-
-
-      if (selectionCheck==1) {
-        alert(selectionCheck)
-        alert("saved address section");
+      if (selectionCheck==1) {//purpose of this is to take the saved address for delivery...
+      
         let Value = selectedRadio.value;
       
            fetch("/paynow", {
@@ -244,15 +238,28 @@ alert("yui" + selectionCheck)
                     paymentMethod:paymentMethod
                 }),
             })
-                .then(response => {
+                .then(response => { //in this part it will handle the response recieved from the backend.
                     if (!response.ok) {
                         throw new Error("paynow fetch in checkout not giving an OK response as intended");
                     }
                     return response.json();
+//what this does, is it convert the received  data to json object.
+
+
+
                 })
+                
                 .then(data => {
+
+if(data.COD==true||data.wallet==true){
+  window.location.href = "/successpage"
+}
+else if(data.COD==false||data.wallet==false){
+  window.location.href = "/failedpage"
+}
+
                     console.log("Success 1:", data);
-                    var options = {
+                    var options = {//the data send from backend after creating the interface
                         "key": data.key_id,
                         "amount": data.amount,
                         "currency": "INR",
@@ -260,11 +267,7 @@ alert("yui" + selectionCheck)
                         "description": "Test Payment",
                         "image": "/image/TIME S.jpg",
                         "order_id": data.order_id,
-                        "handler": function (response) {
-                            alert(response.razorpay_payment_id);
-                            alert(response.razorpay_order_id);
-                            alert(response.razorpay_signature);
-                        },
+                       
                         "prefill": {
                           "name": data.username,
                           "email": data.email,
@@ -296,21 +299,17 @@ alert("yui" + selectionCheck)
                             },
                           },
                         },
-                    
-
-
-
+                  
+                        "handler": function (response) {
+                          sendRazPaymentDetials(response.razorpay_payment_id, response.razorpay_order_id, response.razorpay_signature);
+                        },
                     };
 
                     var rzp1 = new Razorpay(options);
+
                     rzp1.on('payment.failed', function (response) {
-                        alert(response.error.code);
-                        alert(response.error.description);
-                        alert(response.error.source);
-                        alert(response.error.step);
-                        alert(response.error.reason);
-                        alert(response.error.metadata.order_id);
-                        alert(response.error.metadata.payment_id);
+                    sendRazFailedPaymentDetials(response.code,response.description,response.source,response.step,response.reason,response.order_id,response.payment_id)
+                      
                     });
 
                     rzp1.open(); // Open Razorpay after initialization
@@ -322,10 +321,10 @@ alert("yui" + selectionCheck)
     
       
       
-      else if(selectionCheck==2) {
-        alert(selectionCheck)
+      else if(selectionCheck==2) {//purpose of this is to used typed address for delivery...
+      
         console.log("in typeD address section")
-        alert("IN TYPED address section");
+    
     
      
         var saveaddressCheckbox=document.getElementById('saveaddressCheckbox').checked;
@@ -397,6 +396,9 @@ alert("yui" + selectionCheck)
 
               var rzp1 = new Razorpay(options);
               rzp1.on('payment.failed', function (response) {
+
+
+                sendRazFailedPaymentDetials(code,description,source,step,reason,order_id,payment_id)
                   alert(response.error.code);
                   alert(response.error.description);
                   alert(response.error.source);
@@ -417,6 +419,40 @@ alert("yui" + selectionCheck)
       
     }
 
+
+
+     function sendRazPaymentDetials(payment_id, order_id, signature) {
+      fetch("/paymentData", {
+          method: "post",
+          headers: {
+              'Content-Type': "application/json",
+              'Accept': "application/json"
+          },
+          body: JSON.stringify({ payment_id, order_id, signature })
+      })
+      .then(response => response.json())
+      .then(data => {
+          // Redirect to success page if the request is successful
+          alert(data)
+          window.location.href = "/successpage";
+         
+      })
+      .catch(error => {
+          
+          console.error("Error:", error);
+      });
+  }
+
+    async function sendRazFailedPaymentDetials(code,description,source,step,reason,order_id,payment_id){
+      fetch("/failedPaymentData",{
+        method:"post",
+        headers:{
+          'content-Type':"application/json",
+          'Accept':"application/json"
+        },
+        body:JSON.stringify({code,description,source,step,reason,order_id,payment_id})
+      })
+          }
 
 
 

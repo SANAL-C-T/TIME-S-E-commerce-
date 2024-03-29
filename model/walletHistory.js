@@ -1,17 +1,14 @@
-const mongoose=require("mongoose");
+const mongoose = require("mongoose");
 
 require("../model/config")
-const walletCollection=mongoose.Schema({
-userId:{
-    type:String,
-},
-history:[{
-    
-}]
-
-
+const walletCollection = mongoose.Schema({
+    userId: {
+        type: String,
+    },
+    history: [{
+    }]
 })
 
-const walletData=mongoose.model("wallet",walletCollection);
+const walletData = mongoose.model("wallet", walletCollection);
 
-module.exports=walletData;
+module.exports = walletData;

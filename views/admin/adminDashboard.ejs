@@ -1,5 +1,214 @@
+
+
 <%- include("../partials/adminheader.ejs") %>
 
+<div class="container">
+    <h3>Overall  Sales Statistics</h3>
+    <hr>
+
+    <div class="d-flex">
+        <div class="mb-5" id="graphs">
+            <canvas id="myChart" width="700" height="200"></canvas>
+        </div>
+        <div>
+            <canvas id="myChart2" width="200" height="200"></canvas>
+        </div>
+    </div>
+    <hr>
+    <div class="d-flex mb-5">
+        <div class="box">
+            <h6>Total revenue</h6>
+            <h4><%= urlData.revenue[0].totalAmount %></h4>
+        </div>
+        <div class="mx-5 box">
+            <h6>Sales count</h6>
+            <h4><%= urlData.revenue[0].totalAmount %></h4>
+        </div>
+        <div class="mx-5 box">
+            <h6>Total Users</h6>
+            <h4><%= urlData.userCount[0].totalUser %></h4>
+        </div>
+        <div class="mx-5 box">
+            <h6>most payment</h6>
+            <h4><%= urlData.revenue[0].totalAmount %></h4>
+        </div>
+    </div>
+
+    <div class="d-flex mb-5">
+        <div class="box">
+            <h6>Total revenue</h6>
+            <h4></h4>
+        </div>
+        <div class="mx-5 box">
+            <h6>Sales count</h6>
+            <h4>50000</h4>
+        </div>
+        <div class="mx-5 box">
+            <h6>Total Users</h6>
+            <h4>50000</h4>
+        </div>
+        <div class="mx-5 box">
+            <h6>most payment</h6>
+            <h4>50000</h4>
+        </div>
+    </div>
+</div>
+
+<input type="text" id="paymentObject" value="<%= JSON.stringify(urlData.paymentMethod) %>" hidden>
+<input type="text" id="salesObject" value="<%= JSON.stringify(urlData.StatusCount) %>" hidden>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        var encodedSalesCount = document.getElementById("salesObject").value;
+        var salesCount = JSON.parse(encodedSalesCount);
+
+        // Extracting labels and data points from paymentMethodData
+        var salesCountlabels = Object.keys(salesCount);
+        var salesCountdataPoints = Object.values(salesCount);
 
 
-<%- include("../partials/adminfooter.ejs") %>
+// below a bar chart using Chart.js
+const ctx = document.getElementById('myChart').getContext('2d');
+
+const myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: salesCountlabels,
+        datasets: [{
+            label: 'Order details',
+            data: salesCountdataPoints,
+            backgroundColor:  ['rgba(255, 99, 132, 0.6)','rgba(0, 128, 0, 0.6)','rgba(54, 162, 235, 0.6)'],
+            borderColor: ['rgba(255, 99, 132, 1)','rgba(0, 128, 0, 1)','rgba(54, 162, 235, 1)'],
+            borderWidth: 2,
+            barThickness: 80
+        }]
+    },
+    options: {
+        scales: {
+            x: {
+                stacked: true,
+                ticks: {
+                    color: 'black',
+                    font: {
+                        size: 11,
+                        family: "'Arial', sans-serif",
+                        style: ''
+                    }
+                }
+            },
+            y: {
+                beginAtZero: true,
+                grid: {
+                    color: 'rgba(0, 0, 0, 0.1)',
+                    lineWidth: 1
+                },
+                ticks: {
+                    color: 'black',
+                    font: {
+                        size: 11,
+                        family: "'Arial', sans-serif",
+                        style: ''
+                    }
+                }
+            }
+        },
+        plugins: {
+            title: {
+                display: true,
+                text: 'Order Status',
+                font: {
+                    size: 14,
+                    family: "'Arial', sans-serif",
+                    weight: 'bold'
+                },
+                color: 'black'
+            },
+            legend: {
+                display:  false,
+                position: 'bottom',
+                labels: {
+                    font: {
+                        size: 12,
+                        weight: 'normal'
+                    }
+                }
+            },
+            tooltip: {
+                enabled: true,
+             
+                titleFont: {
+                    size: 12,
+                    weight: 'bold'
+                },
+                bodyFont: {
+                    size: 12
+                }
+                
+            }
+        }
+    }
+    
+});
+
+
+
+        var encodedPaymentData = document.getElementById("paymentObject").value;
+        var paymentMethodData = JSON.parse(encodedPaymentData);
+
+        // Extracting labels and data points from paymentMethodData
+        var labels = Object.keys(paymentMethodData);
+        var dataPoints = Object.values(paymentMethodData);
+
+        // below a pie chart
+        var ctxPieChart = document.getElementById('myChart2').getContext('2d');
+        var myPieChart = new Chart(ctxPieChart, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Sales by Payment Method',
+                    data: dataPoints,
+                     backgroundColor: [
+                    'rgba(309, 195, 125, 06)',  // Orange
+                    'rgba(57, 255, 20, 0.6)',  // Neon Green
+                    'rgba(255, 115, 125, 0.6)'  
+                ],
+                    borderColor: [
+                    'rgba(309, 195, 125, 1)',  // Orange
+                    'rgba(57, 255, 20, 1)',  // Neon Green
+                    'rgba(255, 115, 125, 1)'
+                        
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+            
+            }
+        });
+    });
+</script>
+
+<style>
+    .box {
+        margin: 20px;
+        width: 250px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgb(249, 231, 214);
+        box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    #myChart,
+    #myChart2 {
+        background-color: #ffffff;
+        border-radius: 4px;
+        box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);
+        margin: 5px;
+    }
+</style>

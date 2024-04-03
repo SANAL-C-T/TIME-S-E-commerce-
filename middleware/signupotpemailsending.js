@@ -5,6 +5,7 @@ const email = process.env.COMPANY_EMAIL;
 const pass = process.env.SECRE_PASS;
 const otpGenerator = require('otp-generator');
 //----------=-----------=-------------=----------=------------=
+
 const sentEmail = async (req, res, next) => {
   try {
     let usermailid;
@@ -16,6 +17,8 @@ const sentEmail = async (req, res, next) => {
       req.body.email = req.session.email;
       req.body.password = req.session.password;
       req.body.phone = req.session.phone;
+      req.body.Referralcode=req.session.referralCode;
+
       console.log("using data in session for resending OTP to email")
     } else {//this is for sending the OTP to email when email is avaliable
       usermailid = req.body.email; //body parser is defined in server file, so no need to specife here also.
@@ -24,6 +27,7 @@ const sentEmail = async (req, res, next) => {
       req.session.email = req.body.email;
       req.session.password = req.body.password;
       req.session.phone = req.body.phone;
+      req.session.referralCode=req.body.Referralcode;
       console.log("using direct data to send OTP to email")
 
     }

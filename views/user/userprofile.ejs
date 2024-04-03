@@ -67,7 +67,17 @@
                 </ul>
             </div>
         </div>
-        <%} %>
+        <%} %> 
+        
+        
+
+<div class="text-center ">Sharing the code below with your network, you can unlock cash rewards</div>
+
+        <div class="input-group mb-3 mt-2 ">
+            <input type="text" class="form-control" id="input-field" value="<%=udata.My_promotionalCode%>">
+            <button class="btn btn-primary copy-btn" onclick="copyInputValue()">Copy</button>
+          </div>
+
     </main>
     
 
@@ -75,21 +85,7 @@
 
 
 </div>
-
-
-
 </div>
-
-
-
-
-                   
-
-
-
-
-
-
 <%-include("../partials/footer.ejs")%>
 
 <style>
@@ -192,9 +188,25 @@
     }
 
 
+    .input-container {
+        position: relative;
+      
+      }
+  
+      button {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+      }
+
+
     </style>
 
     <script>
-
-
-    </script>
+        function copyInputValue() {
+          var inputField = document.getElementById("input-field");
+          inputField.select();
+          document.execCommand("copy");
+         
+        }
+      </script>

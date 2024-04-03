@@ -20,7 +20,11 @@ const cartSchema = mongoose.Schema({
             actualPrice:Number,
             DiscountedAmount:Number,
             discounted:Boolean,
-            percentageDiscounted:Number
+            percentageDiscounted:Number,
+            isNowDeleted: {
+                type: Boolean,
+                default: false
+            },
         }
     ],
 
@@ -30,6 +34,7 @@ const cartSchema = mongoose.Schema({
     TotalDiscountedAmount:Number,
     CouponCode:String,
     ShippingCharge:Number,
+    couponValue:Number
 })
 
 const cartData = mongoose.model("carts", cartSchema)

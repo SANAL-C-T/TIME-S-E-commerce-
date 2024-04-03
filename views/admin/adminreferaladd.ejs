@@ -1,0 +1,52 @@
+<%- include("../partials/adminheader.ejs") %>
+
+    <div class="container mt-3">
+
+        <div class="mt-4">
+            <a href="/admin/listCoupon">
+                <button>LIST COUPON</button>
+            </a>
+
+          
+        </div>
+        <br>
+
+        <a href="/admin/Offercategory" class="btn btn-primary ">CATEGORY BASED</a>
+        <a href="/admin/offerreferral" class="btn btn-success">REFERRAL BASED</a>
+
+
+
+<hr>
+
+<h4 class="mb-3 mt-3  ">Current avaliable bonus for new users.</h4>
+
+<h5> Upon signup, User will receive a generous bonus of <b>₹ <%=bonusavalible%></b> credits as a warm welcome to this platform.</h5>
+
+
+<hr>
+        <h4 class="mb-3 mt-3  ">Update bonus for new users.</h4>
+
+        <form action="/admin/referOfferAdd" method="POST">
+
+            <div class="mb-3">
+                <label for="bonus">Enter bonus amount:</label>
+                <input type="tel" id="bonus" name="bonus" placeholder="Enter amount">
+            </div>
+
+            <div class="mb-3 d-flex justify-content-between ">
+                <label for="refferCreatedDate">Created Date:</label>
+                <input type="date" id="refferCreatedDate" name="refferCreatedDate">
+
+                <label for="refferExpiryDate">Expiry Date:</label>
+                <input type="date" id="refferExpiryDate" name="refferExpiryDate">
+            </div>
+
+            <button class="btn btn-success ">UPDATE</button>
+
+        </form>
+
+
+
+
+
+    </div>

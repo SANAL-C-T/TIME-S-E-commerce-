@@ -7,6 +7,7 @@ const orderHistorySchema = mongoose.Schema({
     orderId: ObjectId,
     OrderDate: String,
     DeliveredDate: String,
+    OrderDateGraph: Date,
     paymentMethod: String,
     address: String,
     userid: ObjectId,

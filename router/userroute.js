@@ -50,6 +50,10 @@ userUrlRouter.get("/changepassword", jwtauth.userhaveToken1, user.changepassword
 userUrlRouter.post("/changepassword", jwtauth.userhaveToken1, user.changesavedpassword)
 userUrlRouter.get("/savedaddress", jwtauth.userhaveToken1, cart.savedAddress)
 userUrlRouter.post("/deleteAddress/:index", jwtauth.userhaveToken1, cart.deleteAddress)
+userUrlRouter.post("/inviteNewUser",jwtauth.userhaveToken1, user.convertInviteLink)
+
+
+
 //wishlist
 userUrlRouter.get("/wishlist", jwtauth.userhaveToken1, user.showWishlist)
 userUrlRouter.post("/wishlistadd", jwtauth.userhaveToken1, user.wishtoadd)
@@ -75,10 +79,17 @@ userUrlRouter.post("/orderCancel/:id", jwtauth.userhaveToken1, cart.cancelOrder)
 userUrlRouter.post("/orderReturn/:id", jwtauth.userhaveToken1, cart.ReturnOrder)
 //review
 userUrlRouter.get("/review/:id", jwtauth.userhaveToken1, user.addReview)
-userUrlRouter.get("/review/:id", jwtauth.userhaveToken1, user.viewReview)
+// userUrlRouter.get("/review/:id", jwtauth.userhaveToken1, user.viewReview)
 userUrlRouter.post("/saveReview/:id", jwtauth.userhaveToken1, user.saveReview)
+userUrlRouter.get("/viewreview/:id", jwtauth.userhaveToken1, user.viewAllReview)
+
+userUrlRouter.post("/sortNew/:selectedProduct", jwtauth.userhaveToken1, user.sortNewReview);
+userUrlRouter.post("/sortLowestStar/:selectedProduct", jwtauth.userhaveToken1, user.sortLowestStar);
+userUrlRouter.post("/sorthighestStar/:selectedProduct", jwtauth.userhaveToken1, user.sorthighestStar);
+
 //wallet
 userUrlRouter.get("/wallet", jwtauth.userhaveToken1, user.wallet)
+//COUPON
 userUrlRouter.post("/applyCoupon", jwtauth.userhaveToken1, cart.couponAdd)
 userUrlRouter.post("/removeCoupon", jwtauth.userhaveToken1, cart.couponremove)
 

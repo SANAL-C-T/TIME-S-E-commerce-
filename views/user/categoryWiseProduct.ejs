@@ -1,55 +1,57 @@
 <%-include("../partials/userloggedHeder.ejs")%>
 
 <div  class="d-flex  gradient-sidebar ">
-  
-    <div class=" row">
+    <div class="row">
           
-            <div class="sideMenu mt-3 mx-3  ">
-            
+            <div class="sideMenu mt-3 mx-3">
                 <ul class="nav flex-column">
                     <h6 class="text-center mt-3  text-light">FILTER</h6>
-              
-                    <li class="nav-item  ">
-                        <label class="nav-link" for="allproducts">
-                        <input type="radio" id="allproducts" name="productType" class="form-check-input">
-                        ALL PRODUCT
-                    </label>
-                </li>
+                <!--     <li class="nav-item  ">
+                            <label class="nav-link" for="allproducts">
+                                <input type="radio" id="allproducts" name="productType" class="form-check-input">
+                                ALL PRODUCT
+                            </label>
+                         </li>
 
+                        <li class="nav-item  ">
+                                <label class="nav-link" for="APPLE">
+                                    <input type="radio" id="APPLE" name="productType" class="form-check-input" <%= comingCategory === "APPLE" ? 'checked' : '' %>>
+                                    APPLE
+                                </label>
+                        </li>
 
+                        <li class="nav-item">
+                            <label class="nav-link" for="GARMIN">
+                                <input type="radio" id="GARMIN" name="productType" class="form-check-input" <%= comingCategory === "GARMIN" ? 'checked' : '' %>>
+                                GARMIN
+                            </label>
+                        </li>
 
-
-                    <li class="nav-item  ">
-                            <label class="nav-link" for="APPLE">
-                            <input type="radio" id="APPLE" name="productType" class="form-check-input" <%= comingCategory === "APPLE" ? 'checked' : '' %>>
-                            APPLE
-                        </label>
-                    </li>
-
-                    <li class="nav-item">
-                        <label class="nav-link" for="GARMIN">
-                            <input type="radio" id="GARMIN" name="productType" class="form-check-input" <%= comingCategory === "GARMIN" ? 'checked' : '' %>>
-                            GARMIN
-                        </label>
-                    </li>
-
-                    <li class="nav-item">
-                        <label class="nav-link" for="SAMSUNG">
-                            <input type="radio" id="SAMSUNG" name="productType" class="form-check-input" <%= comingCategory === "SAMSUNG" ? 'checked' : '' %>>
-                            SAMSUNG
-                        </label>
-                    </li>
+                        <li class="nav-item">
+                            <label class="nav-link" for="SAMSUNG">
+                                <input type="radio" id="SAMSUNG" name="productType" class="form-check-input" <%= comingCategory === "SAMSUNG" ? 'checked' : '' %>>
+                                SAMSUNG
+                            </label>
+                        </li> -->
+                    
+                    <input type="checkbox" id="APPLE" name="productType" class="form-check-input" <%= comingCategory === "APPLE" ? 'checked' : '' %>>
+                    <label class="form-check-label" for="APPLE">APPLE</label>
+                    <br>
+                    <input type="checkbox" id="GARMIN" name="productType" class="form-check-input" <%= comingCategory === "GARMIN" ? 'checked' : '' %>>
+                    <label class="form-check-label" for="GARMIN">GARMIN</label>
+                    <br>
+                    <input type="checkbox" id="SAMSUNG" name="productType" class="form-check-input" <%= comingCategory === "SAMSUNG" ? 'checked' : '' %>>
+                    <label class="form-check-label" for="SAMSUNG">SAMSUNG</label>
                     
 
+                    <!-- sorting by price -->
                 <h6 class="text-center mt-3 "> PRICE</h6>
-
                     <li class="nav-item">
                         <label class="nav-link" for="Hightolow">
                             <input type="radio" id="Hightolow" name="pricesort" class="form-check-input">
                             High to Low
                         </label>
                     </li>
-
                     <li class="nav-item">
                         <label class="nav-link" for="lowtohigh">
                             <input type="radio" id="lowtohigh" name="pricesort" class="form-check-input">
@@ -64,121 +66,132 @@
             </div>
          
             
-          </div>
+    </div>
     
 
 
-<style>
-            #proimg { 
-                height: 250px;
-              }
-              #txtcrd {
-                height: 50px;
-              }
-              .gradient-sidebar {
-                background: linear-gradient(to bottom , #080707, #290129); /* Adjust colors as needed */
-            } 
-</style>
+
 
 
 
 <main class="col-md-9 ms-sm-auto col-lg-10 md-4">
-<section style="background-color: #fbf9f9;">
+    <!-- ---------------------------------------------------------------------------------------------- -->
+    <section style="background-color: #fbf9f9;">
         <div class="text-center container py-5  ">
-        <h4 class="mt-4 mb-5  nam"><strong><%=catwise.productCategory.
-            categoryName%></strong></h4>
+           
+                <form class="form-inline my-2 my-lg-0">
+                    <input class="form-control mr-sm-2" type="search" placeholder="Search" name="ser" id="serh" aria-label="Search">
+                <br>
+                </form>
+ <!-- ---------------------------------------------------------------------------------------------- -->
+ <div id="messageContainer"></div>
 
-            <form class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" type="search" placeholder="Search" name="ser" id="serh" aria-label="Search">
-               <!--  <button class="btn btn-success my-4" type="submit">Search</button> -->
-               <br>
-              </form>
-
-<div class="row pdlist">
-
-
- 
+        <div class="row pdlist">
+                <% catlist.forEach(product => { %>
+                    <div class="col-lg-3 col-md-12 mb-4">
+                        <div class="card h-100">
+                            <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                                <img src="<%= product.productImage[0].image1%>" class="w-100" id="proimg"/>
+                            </div>
+                                <div class="card-body">   
+                                    <button class="btn btn-link position-absolute start-0 top-0" onclick="addToWishlist('<%= product._id %>')">
+                                        <i class="fas fa-heart" style="color: #63E6BE;"></i>
+                                    </button>
+                                    <div><h5 class="card-title mb-3" id="txtcrd"><%= product.productName %></h5></div> 
+                                                     
+                                    <a href="/productpage/<%= product._id %>" class="text-reset">
+                                        <button class="m-2 bg-warning px-4">BUY NOW</button>
+                                    </a>
+                                    <h6 class="mb-3">₹ <%= product.productPrice %></h6>
+                                </div>
+                        </div>
+                    </div>
+                <% }) %>
+        </div>  <!-- row closing -->
+ <!-- ---------------------------------------------------------------------------------------------- -->
+<!-- pagination -->
+            <div class="pagination_div w-100 mt-4  d-flex justify-content-center  b ">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination d-flex">
+                        <% for (let i = 1; i <= Math.ceil(docCount / 4); i++) { %>
+                            <li class="page-item <%= i === 1 ? 'active' : '' %>">
+                                <a class="page-link" onclick="newProductlist(i)"><%= i %></a>
+                            </li>
+                        <% } %>
+                    </ul>
+                </nav>
+            </div>
 <!-- ---------------------------------------------------------------------------------------------- -->
-<% catlist.forEach(product => { %>
-   
-    <div class="col-lg-3 col-md-12 mb-4">
-        <div class="card h-100">
-           
-           
-            <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
-                <img src="<%= product.productImage[0].image1%>" class="w-100" id="proimg"/>
-            </div>
-            <div class="card-body">   
-                <button class="btn btn-link position-absolute start-0 top-0" onclick="addToWishlist('<%= product._id %>')">
-                    <i class="fas fa-heart" style="color: #63E6BE;"></i>
-                </button>
-                <div><h5 class="card-title mb-3" id="txtcrd"><%= product.productName %></h5></div>                  
-                <a href="/productpage/<%= product._id %>" class="text-reset">
-                    <button class="m-2 bg-warning px-4">BUY NOW</button>
-                </a>
-                <h6 class="mb-3">₹ <%= product.productPrice %></h6>
-            </div>
-        </div>
-    </div>
-<% }) %>
-
-
-
-    <!--  --------------------------------------------------------------------------------------- -->
-</div>  <!-- row closing -->
-
-<div class="pagination_div w-100 mt-4  d-flex justify-content-center  b ">
-    <nav aria-label="Page navigation example">
-        <ul class="pagination d-flex">
-            <% for (let i = 1; i <= Math.ceil(docCount / 4); i++) { %>
-                <li class="page-item <%= i === 1 ? 'active' : '' %>">
-                    <a class="page-link" onclick="newProductlist(i)"><%= i %></a>
-                </li>
-            <% } %>
-        </ul>
-    </nav>
-</div>
-  </section>
-
-
+    </section>
+<!-- ---------------------------------------------------------------------------------------------- -->
 </main>
+
+
 
 </div>
 <%-include("../partials/footer.ejs")%>
 
 
+
+<!-- ------------------------------------------\EJS  COMPLETE\---------------------------------------------------- -->
+
+
+
+
+
+
+
 <style>
+    #proimg { 
+        height: 250px;
+      }
+      #txtcrd {
+        height: 50px;
+      }
+      .gradient-sidebar {
+        background: linear-gradient(to bottom , #080707, #290129); /* Adjust colors as needed */
+    } 
+
     .pagination .page-item.active .page-link {
         background-color: #04fa6f;
         color: #000000; 
+    }
+
+
+    .form-check-label {
+        color: azure;
     }
 </style>
 
 
 
 
+
+
+
+
+<!-- --------------------------------------------JAVASCRIPT STARTING-------------------------------------------------- -->
+
 <script>
 
 let usersearch;
 
+//below function responsible
   document.addEventListener('DOMContentLoaded', async function () {
         const filters = document.querySelectorAll('input[name=productType]');
         const sorts = document.querySelectorAll('input[name=pricesort]');
-        const discounts = document.querySelectorAll('input[name=discounted]');
         const searchInputs = document.querySelector('input[name="ser"]');
         const page = 1;
 
        console.log(searchInputs)
-           
+       console.log("filters::::",filters)
         filters.forEach((selection)=>{
             selection.addEventListener("change",newProductlist);
         })
         sorts.forEach((selection)=>{
             selection.addEventListener("change",newProductlist);
         })
-        discounts.forEach((selection)=>{
-            selection.addEventListener("change",newProductlist);
-        })
+       
         searchInputs.addEventListener("input",newProductlist);
        
         newProductlist(page);
@@ -188,8 +201,16 @@ let usersearch;
     //this will work if pagination is clicked, filtered, serched
             async function newProductlist(page){
                 
-                const productType=document.querySelector('input[name=productType]:checked');
-                const discounted=document.querySelector('input[name=discounted]:checked');
+                const productType=document.querySelectorAll('input[name=productType]:checked');
+                const checkedValues = [];
+
+                // Loop through each checked checkbox and push its ID to the array
+                productType.forEach(checkbox => {
+                    checkedValues.push(checkbox.id);
+                });
+                console.log(checkedValues);
+
+            
                 const pricesort=document.querySelector('input[name=pricesort]:checked');
                 const ser = document.querySelector('input[name=ser]').value; 
                 usersearch=ser;
@@ -202,8 +223,8 @@ let usersearch;
                         "Content-Type":"application/json"
                     },
                     body:JSON.stringify({
-                        productType: productType ? productType.id : null,
-                        discounted: discounted ? discounted.id : null,
+                        productType: checkedValues,
+                    
                         pricesort: pricesort ? pricesort.id : null,
                         page:page,
                         ser:ser,
@@ -213,7 +234,8 @@ let usersearch;
                     const data=await responseData.json() //incoming data from backend is here.
                     console.log("frontend",data)
                     updateTitle(data);//updating the page title
-                    updateProductHTML(data);//updating the page content.
+
+                    updateProductHTML(data);//updating the page content.==
                    
                 }
                 catch(error){
@@ -230,388 +252,195 @@ let usersearch;
                     lock=0;
                     title.innerHTML = `<h4 class="mt-4 mb-5"><strong>${data.productType}</strong></h4>`;
                 } else {
+                    console.log("empty")
                 lock=1;
                 }
             }
             
             
-        
-            
-
-
-
-        
 //...................product card..........................
 
             function updateProductHTML(data) {
-                const contain = document.querySelector(".pdlist");
-                const productType=document.querySelector('input[name=productType]:checked');
+                const contain = document.querySelector(".pdlist"); //getting  the card container
+                const productType=document.querySelectorAll('input[name=productType]:checked');
+                const checkedValues = [];
+                productType.forEach(checkbox => {
+                    checkedValues.push(checkbox.id);
+                });
                 console.log("update product data in userside in categorywise page",data)
  
                if(lock!=1){
                     contain.innerHTML = '';
-                  
                 }
+
                 let cards=[] 
 
+                if (data.products != undefined && data.SortByPrice == undefined) {  // when user enter to the page, it wont have any sorting.
+                    console.log("workingggggggggg   in line 292")
                 
-                if(data.products==undefined) {
-               
-                    console.log("product is undefined  so used price sort")
-            
-
-                                if (usersearch=="") {
-                                    data.SortByPrice.forEach(product => {
-                                        let highestDiscount = 0;
-                                    
-                                       
-                                        if (product.offer) {
-                                            product.offer.forEach(offer => {
-                                                if (offer.Discountvalue > highestDiscount) {
-                                                    highestDiscount = offer.Discountvalue;
-                                                }
-                                            });
-                                        } else {
-                                           
-                                        }
-                                    
-                            
-                                        if (product.productCategory && product.productCategory.catOffer) {
-                                            product.productCategory.catOffer.forEach(offer => {
-                                                if (offer.catDiscountValue > highestDiscount) {
-                                                    highestDiscount = offer.catDiscountValue;
-                                                }
-                                            });
-                                            
-                                         
-                                        
-                                        } else {
-                                           
-                                        }
-                                    
-                                
-                                        if (highestDiscount > 0) {
-                                            const discountHTML = `<div id="discount">${highestDiscount}% OFF</div>`;
-                                      
-                                            const cardHTML = `
-    <div class="col-lg-3 col-md-12 mb-4">
-        <div class="card h-100">
-            <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light" style="position: relative;">
-                <div id="discount" style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 255, 0, 0.8); padding: 5px 10px; border-radius: 5px;">${highestDiscount}% OFF</div>
-
-                <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
-            </div>
-            <div class="card-body">
-                <!-- Icon for wish list -->
-                <button class="btn btn-link position-absolute start-0 top-0" onclick="toggleWishlist('${product._id}', this)">
-                    <i class="fas fa-heart" style="color: #63E6BE;"></i>
-                </button>
-                <div>
-                    <h5 class="card-title mb-3" style="height:50px;">${product.productName}</h5>
-                    ${discountHTML} 
-                </div>
-                <a href="/productpage/${product._id}" class="text-reset">
-                    <button class="m-2 bg-warning px-4">BUY NOW</button>
-                </a>
-                <h6 class="mb-3">₹ ${product.productPrice}</h6>
-            </div>
-        </div>
-    </div>`;
-                                    
-                                            cards.push(cardHTML);
-                                        } else {
-                                            // If there's no offer, generate card HTML without offer tag
-                                            const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
-                                                <div class="card h-100">
-                                                    <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
-                                                       
-                                                        <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <!-- Icon for wish list -->
-                                                        <button class="btn btn-link position-absolute start-0 top-0" onclick="toggleWishlist('${product._id}', this)">
-                                                            <i class="fas fa-heart" style="color: #63E6BE;"></i>
-                                                        </button>
-                                                        <div>
-                                                            <h5 class="card-title mb-3" style="height:50px;">${product.productName}</h5>
-                                                        </div>
-                                                        <a href="/productpage/${product._id}" class="text-reset">
-                                                            <button class="m-2 bg-warning px-4">BUY NOW</button>
-                                                        </a>
-                                                        <h6 class="mb-3">₹ ${product.productPrice}</h6>
-                                                    </div>
-                                                </div>
-                                            </div>`;
-                                    
-                                            cards.push(cardHTML);
-                                        }
-                                    });
-                                    
-                                    
-                                    
-                                    
-                                    contain.innerHTML=cards.join("")
-                                    const paginations=document.querySelector('.pagination')
-                                    paginations.innerHTML = generatePagination(data.docCount, data.pageStartindex);
-                   
-            
-                                    } else if(usersearch==""||usersearch!=""&&productType!=undefined) {
-                                        data.serc.forEach(product => {
-                                            let highestDiscount = 0;
-                                    
-                                       
-                                            if (product.offer) {
-                                                product.offer.forEach(offer => {
-                                                    if (offer.Discountvalue > highestDiscount) {
-                                                        highestDiscount = offer.Discountvalue;
-                                                    }
-                                                });
-                                            } else {
-                                               
-                                            }
-                                        
-                                
-                                            if (product.productCategory && product.productCategory.catOffer) {
-                                                product.productCategory.catOffer.forEach(offer => {
-                                                    if (offer.catDiscountValue > highestDiscount) {
-                                                        highestDiscount = offer.catDiscountValue;
-                                                    }
-                                                });
-                                                
-                                             
-                                            
-                                            } else {
-                                               
-                                            }
-                                        
-
-
-
-
-                                            
-                                            const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
-                                                <div class="card h-100">
-                                                    <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
-                                                        <div id="discount" style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 255, 0, 0.8); padding: 5px 10px; border-radius: 5px;">${highestDiscount}% OFF</div>
-                                                        <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px/>
-                                                    </div>
-                                                    <div class="card-body">
-                                                        
-                                                            <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
-                                                    
-                                                        <a href="/productpage/${product._id}" class="text-reset">
-                                                            <button class="m-2 bg-warning px-4">BUY NOW</button>
-                                                        </a>
-                                                        <h6 class="mb-3">₹ ${product.productPrice}</h6>
-                                                    </div>
-                                                </div>
-                                            </div>`
-                            
-                                            cards.push(cardHTML)
-                                        });
-                                        contain.innerHTML = cards.join("");
-                                        const paginations=document.querySelector('.pagination')
-                                        paginations.innerHTML = generatePagination(data.docCount, data.pageStartindex);
+                    data.products.forEach(product => { //it shows the offer tag on the image
+                        let highestDiscount = 0;
+                
+                        if (product.offer) {
+                            product.offer.forEach(offer => {
+                                if (offer.Discountvalue > highestDiscount) {
+                                    highestDiscount = offer.Discountvalue;
                                 }
-
-                                else if(usersearch==""||usersearch!=""&& productType==undefined) {
-                                    data.serc.forEach(product => {
-
-                                        let highestDiscount = 0;
-                                    
-                                       
-                                        if (product.offer) {
-                                            product.offer.forEach(offer => {
-                                                if (offer.Discountvalue > highestDiscount) {
-                                                    highestDiscount = offer.Discountvalue;
-                                                }
-                                            });
-                                        } else {
-                                           
-                                        }
-                                    
-                            
-                                        if (product.productCategory && product.productCategory.catOffer) {
-                                            product.productCategory.catOffer.forEach(offer => {
-                                                if (offer.catDiscountValue > highestDiscount) {
-                                                    highestDiscount = offer.catDiscountValue;
-                                                }
-                                            });
-                                            
-                                         
-                                        
-                                        } else {
-                                           
-                                        }
-                                    
-
-
-
-                                        const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
-                                            <div class="card h-100">
-                                                <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
-                                                    <div id="discount" style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 255, 0, 0.8); padding: 5px 10px; border-radius: 5px;">${highestDiscount}% OFF</div>
-                                                    <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px/>
-                                                </div>
-                                                <div class="card-body">
-                                                    
-                                                        <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
-                                                
-                                                    <a href="/productpage/${product._id}" class="text-reset">
-                                                        <button class="m-2 bg-warning px-4">BUY NOW</button>
-                                                    </a>
-                                                    <h6 class="mb-3">₹ ${product.productPrice}</h6>
-                                                </div>
-                                            </div>
-                                        </div>`
-                        
-                                        cards.push(cardHTML)
-                                    });
-                                    contain.innerHTML = cards.join("");
-                                    const paginations=document.querySelector('.pagination')
-                                    paginations.innerHTML = generatePagination(data.docCount, data.pageStartindex);
-                            }
-                                
-          
-        }
-        else if(data.products!=undefined &&  data.SortByPrice==undefined)  {
-                        console.log("ALLPPPP22")
-                        data.products.forEach(product => {
-                            let highestDiscount = 0;
-                                    
-                                       
-                            if (product.offer) {
-                                product.offer.forEach(offer => {
-                                    if (offer.Discountvalue > highestDiscount) {
-                                        highestDiscount = offer.Discountvalue;
-                                    }
-                                });
-                            } else {
-                               
-                            }
-                        
+                            });
+                        } else {
                 
-                            if (product.productCategory && product.productCategory.catOffer) {
-                                product.productCategory.catOffer.forEach(offer => {
-                                    if (offer.catDiscountValue > highestDiscount) {
-                                        highestDiscount = offer.catDiscountValue;
-                                    }
-                                });
-                                
-                             
-                            
-                            } else {
-                               
-                            }
-                        
-
-
-
-
-
-
+                        }
+                
+                        if (product.productCategory && product.productCategory.catOffer) {
+                            product.productCategory.catOffer.forEach(offer => {
+                                if (offer.catDiscountValue > highestDiscount) {
+                                    highestDiscount = offer.catDiscountValue;
+                                }
+                            });
+                        } else {
+                
+                        }
+                
+                        if (highestDiscount > 0) {
+                            // Product has a discount
                             const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
                                 <div class="card h-100">
                                     <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
                                         <div id="discount" style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 255, 0, 0.8); padding: 5px 10px; border-radius: 5px;">${highestDiscount}% OFF</div>
-                                        <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px/>
+                                        <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
                                     </div>
                                     <div class="card-body">
-                                            <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
+                                        <button class="btn btn-link position-absolute start-0 top-0" onclick="toggleWishlist('${product._id}', this)">
+                                            <i class="fas fa-heart" style="color: #63E6BE;"></i>
+                                        </button>
+
+                                        <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
                                         <a href="/productpage/${product._id}" class="text-reset">
                                             <button class="m-2 bg-warning px-4">BUY NOW</button>
                                         </a>
                                         <h6 class="mb-3">₹ ${product.productPrice}</h6>
                                     </div>
                                 </div>
-                            </div>`
-
-                            cards.push(cardHTML)
-                        });
-                    
-                        contain.innerHTML = cards.join("");
-                        const paginations=document.querySelector('.pagination')
-                        paginations.innerHTML = generatePagination(data.docCount, data.pageStartindex);
-
+                            </div>`;
             
-   
-                if(usersearch==""|| usersearch!="" && productType!=undefined) {
-                            data.serc.forEach(product => {
-                                let highestDiscount = 0;
-                                    
-                                       
-                                if (product.offer) {
-                                    product.offer.forEach(offer => {
-                                        if (offer.Discountvalue > highestDiscount) {
-                                            highestDiscount = offer.Discountvalue;
-                                        }
-                                    });
-                                } else {
-                                   
-                                }
-                            
-                    
-                                if (product.productCategory && product.productCategory.catOffer) {
-                                    product.productCategory.catOffer.forEach(offer => {
-                                        if (offer.catDiscountValue > highestDiscount) {
-                                            highestDiscount = offer.catDiscountValue;
-                                        }
-                                    });
-                                    
-                                 
-                                
-                                } else {
-                                   
-                                }
-                        
+                            cards.push(cardHTML);
+                        } else {
+                            // Product has no discount
+                            const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
+                                <div class="card h-100">
+                                    <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                                        <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
+                                    </div>
+                                    <div class="card-body">
+                                        <button class="btn btn-link position-absolute start-0 top-0" onclick="toggleWishlist('${product._id}', this)">
+                                            <i class="fas fa-heart" style="color: #63E6BE;"></i>
+                                        </button>
+                                        <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
+                                        <a href="/productpage/${product._id}" class="text-reset">
+                                            <button class="m-2 bg-warning px-4">BUY NOW</button>
+                                        </a>
+                                        <h6 class="mb-3">₹ ${product.productPrice}</h6>
+                                    </div>
+                                </div>
+                            </div>`;
+            
+                            cards.push(cardHTML);
+                        }
+                    });
+                
+                    contain.innerHTML = cards.join("");
+                    const paginations = document.querySelector('.pagination')
+                    paginations.innerHTML = generatePagination(data.docCount, data.pageStartindex);
+            
+                  
+                    }
+                
+                else if(data.products != undefined && data.SortByPrice != undefined){
+                    console.log("sorting")
 
-                                if (highestDiscount > 0) {
-                                    // Product has a discount
-                                    const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
-                                        <div class="card h-100">
-                                            <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
-                                                <div id="discount" style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 255, 0, 0.8); padding: 5px 10px; border-radius: 5px;">${highestDiscount}% OFF</div>
-                                                <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
-                                            </div>
-                                            <div class="card-body">
-                                                <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
-                                                <a href="/productpage/${product._id}" class="text-reset">
-                                                    <button class="m-2 bg-warning px-4">BUY NOW</button>
-                                                </a>
-                                                <h6 class="mb-3">₹ ${product.productPrice}</h6>
-                                            </div>
-                                        </div>
-                                    </div>`;
-                                                
-                                    cards.push(cardHTML);
-                                } else {
-                                    // Product has no discount
-                                    const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
-                                        <div class="card h-100">
-                                            <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
-                                                <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
-                                            </div>
-                                            <div class="card-body">
-                                                <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
-                                                <a href="/productpage/${product._id}" class="text-reset">
-                                                    <button class="m-2 bg-warning px-4">BUY NOW</button>
-                                                </a>
-                                                <h6 class="mb-3">₹ ${product.productPrice}</h6>
-                                            </div>
-                                        </div>
-                                    </div>`;
-                                                
-                                    cards.push(cardHTML);
+                    data.products.forEach(product => { //it shows the offer tag on the image
+                        let highestDiscount = 0;
+                
+                        if (product.offer) {
+                            product.offer.forEach(offer => {
+                                if (offer.Discountvalue > highestDiscount) {
+                                    highestDiscount = offer.Discountvalue;
                                 }
                             });
-                            contain.innerHTML = cards.join("");
-                            const paginations=document.querySelector('.pagination')
-                            paginations.innerHTML = generatePagination(data.docCount, data.pageStartindex);
-                    }
+                        } else {
+                
+                        }
+                
+                        if (product.productCategory && product.productCategory.catOffer) {
+                            product.productCategory.catOffer.forEach(offer => {
+                                if (offer.catDiscountValue > highestDiscount) {
+                                    highestDiscount = offer.catDiscountValue;
+                                }
+                            });
+                        } else {
+                
+                        }
+                
+                        if (highestDiscount > 0) {
+                            // Product has a discount
+                            const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
+                                <div class="card h-100">
+                                    <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                                        <div id="discount" style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 255, 0, 0.8); padding: 5px 10px; border-radius: 5px;">${highestDiscount}% OFF</div>
+                                        <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
+                                    </div>
+                                    <div class="card-body">
+                                        <button class="btn btn-link position-absolute start-0 top-0" onclick="toggleWishlist('${product._id}', this)">
+                                            <i class="fas fa-heart" style="color: #63E6BE;"></i>
+                                        </button>
+                                        <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
+                                        <a href="/productpage/${product._id}" class="text-reset">
+                                            <button class="m-2 bg-warning px-4">BUY NOW</button>
+                                        </a>
+                                        <h6 class="mb-3">₹ ${product.productPrice}</h6>
+                                    </div>
+                                </div>
+                            </div>`;
+            
+                            cards.push(cardHTML);
+                        } else {
+                            // Product has no discount
+                            const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
+                                <div class="card h-100">
+                                    <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                                        <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
+                                    </div>
+                                    <div class="card-body">
+                                        <button class="btn btn-link position-absolute start-0 top-0" onclick="toggleWishlist('${product._id}', this)">
+                                            <i class="fas fa-heart" style="color: #63E6BE;"></i>
+                                        </button>
+                                        <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
+                                        <a href="/productpage/${product._id}" class="text-reset">
+                                            <button class="m-2 bg-warning px-4">BUY NOW</button>
+                                        </a>
+                                        <h6 class="mb-3">₹ ${product.productPrice}</h6>
+                                    </div>
+                                </div>
+                            </div>`;
+            
+                            cards.push(cardHTML);
+                        }
+                    });
+                
+                    contain.innerHTML = cards.join("");
+                    const paginations = document.querySelector('.pagination')
+                    paginations.innerHTML = generatePagination(data.docCount, data.pageStartindex);
+
+
+                }
 
 
 
-        }
+
+
+
+
+
 
 
  //......pagination section..........................................
@@ -637,6 +466,7 @@ let usersearch;
         }
 
 
+
         function toggleWishlist(productId, button) {
             const icon = button.querySelector('i.fa-heart');
           
@@ -657,17 +487,17 @@ let usersearch;
                 })
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                        throw new Error('response is not ok');
                     }
-                    return response.text(); 
+                    return response.json(); 
                 })
                 .then(responseText => {
                     console.log('Success:', responseText);
-                    
+                    showMessage(responseText.message);
                 })
                 .catch(error => {
                     console.error('Error:', error); 
-                 
+                    
                 });
 
 
@@ -693,7 +523,7 @@ let usersearch;
                 })
                 .then(responseText => {
                     console.log('Success:', responseText); 
-                   
+                    
                 })
                 .catch(error => {
                     console.error('Error:', error);
@@ -707,7 +537,17 @@ let usersearch;
         
         
 
+        function showMessage(message) {
+    
+            const messageContainer = document.getElementById('messageContainer');
 
+            messageContainer.textContent = message;
+           setTimeout(()=>{
+            messageContainer.textContent = "";
+           },2000);
+          
+          
+        }
 
 
 

@@ -4,12 +4,16 @@ const categData = require("../model/categorySchema")
 const reviewData = require("../model/reviewschema")
 const wishData = require("../model/wishlist")
 const productData = require("../model/productSchema")
-
+const referData = require("../model/refferschems")
+const promoCodeGenerator = require('otp-generator');
 const bcrypt = require("bcrypt")
+const moment = require("moment");
 const { render } = require("ejs")
 // const session = require("express-session")
 const JWTtoken = require("jsonwebtoken")
 const walletData = require("../model/walletSchema")
+const { y } = require("pdfkit")
+const { values } = require("pdf-lib")
 
 require('dotenv').config();
 const jwtcode = process.env.jwt_user_secret
@@ -84,63 +88,118 @@ const homeNotLog = async (req, res) => {
 //this is the homepage of a loggedin user.
 const home = async (req, res) => {
     try {
+
+        // const deletedOrNot=await productData.find
         let loadProduct = 0;
         let loadProductG = 0;
         let loadProductA = 0;
 
-        const samsungProduct = await productDatas.find({
+
+
+        const HavesamsungProduct = await productDatas.find({
             productCategory: '65ae1ded74d4441c5067ee22', // Replace with the actual category ID
             isDeleted: false,
         })
-            .populate({
-                path: 'productCategory',
-                match: { Categorystatus: true } // Only include categories with Categorystatus set to true
+
+        if (HavesamsungProduct.length > 0) {
+            const samsungProduct = await productDatas.find({
+                productCategory: '65ae1ded74d4441c5067ee22', // Replace with the actual category ID
+                isDeleted: false,
             })
-            .exec();
+                .populate({
+                    path: 'productCategory',
+                    match: { Categorystatus: true } // Only include categories with Categorystatus set to true
+                })
+                .exec();
 
-        // console.log("samsungProduct::::",samsungProduct)
+            console.log("samsungProduct::::", samsungProduct)
+
+            if (samsungProduct[0].productCategory && samsungProduct[0].productCategory.Categorystatus === true) {
+                console.log("Samsung product loaded");
+                loadProduct = samsungProduct;
+            } else {
+                loadProduct = 0;
+            }
 
 
-        if (samsungProduct[0].productCategory && samsungProduct[0].productCategory.Categorystatus === true) {
-            console.log("Samsung product loaded");
-            loadProduct = samsungProduct;
-        } else {
-            loadProduct = 0;
+        }
+        else {
+            loadProduct = 0
         }
 
-        const appleProduct = await productDatas.find({
+
+
+
+        const HaveappleProduct = await productDatas.find({
             productCategory: '65ae1df474d4441c5067ee24', // Replace with the actual category ID
             isDeleted: false,
         })
-            .populate({
-                path: 'productCategory',
-                match: { Categorystatus: true } // Only include categories with Categorystatus set to true
-            })
-            .exec();
 
-        if (appleProduct[0].productCategory && appleProduct[0].productCategory.Categorystatus === true) {
-            console.log("Apple product loaded");
-            loadProductA = appleProduct;
-        } else {
-            loadProductA = 0;
+
+        if (HaveappleProduct.length > 0) {
+            const appleProduct = await productDatas.find({
+                productCategory: '65ae1df474d4441c5067ee24', // Replace with the actual category ID
+                isDeleted: false,
+            })
+                .populate({
+                    path: 'productCategory',
+                    match: { Categorystatus: true } // Only include categories with Categorystatus set to true
+                })
+                .exec();
+
+            if (appleProduct[0].productCategory && appleProduct[0].productCategory.Categorystatus === true) {
+                console.log("Apple product loaded");
+                loadProductA = appleProduct;
+            } else {
+                loadProductA = 0;
+            }
+
+
+        }
+        else {
+            loadProductA = 0
         }
 
-        const garminProduct = await productDatas.find({
+
+
+
+        const HavegarminProduct = await productDatas.find({
             productCategory: '65ae1e0674d4441c5067ee26', // Replace with the actual category ID
             isDeleted: false,
         })
-            .populate({
-                path: 'productCategory',
-                match: { Categorystatus: true } // Only include categories with Categorystatus set to true
-            })
-            .exec();
 
-        if (garminProduct[0].productCategory && garminProduct[0].productCategory.Categorystatus === true) {
-            console.log("Garmin product loaded");
-            loadProductG = garminProduct;
-        } else {
-            loadProductG = 0;
+        if (HavegarminProduct.length > 0) {
+
+            const garminProduct = await productDatas.find({
+                productCategory: '65ae1e0674d4441c5067ee26', // Replace with the actual category ID
+                isDeleted: false,
+            })
+                .populate({
+                    path: 'productCategory',
+                    match: { Categorystatus: true } // Only include categories with Categorystatus set to true
+                })
+                .exec();
+
+            if (garminProduct[0].productCategory && garminProduct[0].productCategory.Categorystatus === true) {
+                console.log("Garmin product loaded");
+                loadProductG = garminProduct;
+            } else {
+                loadProductG = 0;
+            }
+
+
+
         }
+        else {
+            loadProductG = 0
+        }
+
+
+
+
+        console.log("AAAAAA::::", loadProduct, loadProductA, loadProductG)
+
+
 
         res.render("user/userHomepage.ejs", { loadProduct, loadProductA, loadProductG });
 
@@ -148,6 +207,9 @@ const home = async (req, res) => {
         console.log(error.message)
     }
 }
+
+
+
 
 // for taking the user to login page on clickig any buy now on home page
 const login = async (req, res) => {
@@ -234,15 +296,28 @@ const storeData = async (req, res) => {
         const passwordCode = await secretPass(req.session.password);
         const userEmail = req.session.email;
         const emailIndb = await userData.findOne({ email: userEmail })
+        const referCode = req.session.referralCode;
+        const usedReferenceCode = await userData.findOne({ My_promotionalCode: referCode })
+
+
+        let userUsedReferCode;
+        if (usedReferenceCode == null) {
+            userUsedReferCode = false;
+        } else {
+            userUsedReferCode = true;
+        }
+        const promoCode = promoCodeGenerator.generate(10, { upperCaseAlphabets: true, lowerCaseAlphabets: true, specialChars: false });
 
         // console.log("1:::", emailIndb)
-        if (emailIndb == null) {
+        if (emailIndb == null) {//save only if email doesnot exist in db
             const userdetails = new userData({
                 username: req.session.username,
                 email: req.session.email,
                 password: passwordCode,
                 phone: req.session.phone,
-                verified: true
+                verified: true,
+                usedApromotionalCode: userUsedReferCode,
+                My_promotionalCode: promoCode
             })
             console.log("Signup data saved in database")
             await userdetails.save()
@@ -263,9 +338,35 @@ const storeData = async (req, res) => {
 
         const wallet = new walletData({
             userId: userdetails._id,
-            avaliable:0
+            avaliable: 0
         });
         await wallet.save();
+
+
+        const referBonus = await referData.find({})
+        // console.log("referBonus::",referBonus)
+        // console.log("referBonus::",referBonus.block_promotion)
+        // console.log("usedReferenceCode::", usedReferenceCode)
+
+        const walle = await walletData.findOne({ userId: userdetails._id })
+        // console.log("walle::",walle.avaliable)
+
+
+        const promotedPersonsWallet = await walletData.findOne({ userId: usedReferenceCode._id })
+        // console.log("promotedPersonsWallet:::",promotedPersonsWallet)
+
+        if (usedReferenceCode != null) {
+
+            const newbalance = promotedPersonsWallet.avaliable + referBonus[0].bonusAmount
+
+            await walletData.findOneAndUpdate({ userId: usedReferenceCode._id }, { $set: { avaliable: newbalance } })
+            if (referBonus[0].block_promotion == false) {
+                await walletData.findOneAndUpdate({ userId: userdetails._id }, { $set: { avaliable: referBonus[0].bonusAmount } });
+            } else {
+
+
+            }
+        }
 
     }
     catch (error) {
@@ -306,9 +407,11 @@ const productdetail = async (req, res) => {
         if (!pdetail) {
             return res.status(404).send('Product not found');
         }
-        {
+        {}
 
-        }
+    
+    
+
         res.render("user/productdetail.ejs", { pdetail });
     } catch (error) {
         console.log(error.message);
@@ -417,7 +520,6 @@ const contactb = async (req, res) => {
 //this page is rendered when the buy product is clicked ,
 const categoryWiseProduct = async (req, res) => {
     try {
-
         // console.log("in categoryWise Product")
         const qid = req.params.proid;
         // console.log("id", qid)
@@ -434,11 +536,8 @@ const categoryWiseProduct = async (req, res) => {
         let comingCategory = catwise.productCategory.categoryName;
         // console.log("ef",catwise.productCategory.categoryName)
         if (!catwise) {
-
             return res.status(404).send('Category-wise product not found');
         }
-
-
         const catlist = await productDatas.find({ productCategory: catwise.productCategory, isDeleted: false })
             .populate({
                 path: 'productCategory',
@@ -448,12 +547,15 @@ const categoryWiseProduct = async (req, res) => {
             .skip((pageNumber - 1) * itemsPerPage)
             .limit(itemsPerPage)
             .exec();
-
         const docCount = await productDatas.countDocuments({ productCategory: catwise.productCategory, isDeleted: false });
-        console.log("in categorywise product in usercontroller ", docCount);
+        // console.log("in categorywise product in usercontroller ", docCount);
+
+
+
+   
+
 
         let pageStartindex = (pageNumber - 1) * itemsPerPage;
-
         res.render("user/categoryWiseProduct.ejs", { catlist, catwise, docCount, pageStartindex, comingCategory });
 
     } catch (error) {
@@ -507,17 +609,24 @@ const resetpassword = async (req, res) => {
 //.........categorywise filter.....................................
 const filter = async (req, res) => {
     try {
+        const userFilter = req.body.productType;
+        console.log("productTypeChecked::::", userFilter)
+        const UserFilterObjectId = await categData.find({ categoryName: { $in: userFilter } }, { _id: 1 });
+        // console.log("UserFilterObjectId:::::", UserFilterObjectId);
+        const userFilteredProduct = await productDatas.find({ 'productCategory': { $in: UserFilterObjectId } })
+            .populate({
+                path: 'productCategory',
+                model: 'category',
+            })
+        // console.log("userFilteredProduct:::::", userFilteredProduct)
 
-        const productType = req.body.productType;//radio button data of selected category.
-        const discounted = req.body.discounted;
+        const productCount = userFilteredProduct.length;
         const pricesort = req.body.pricesort;
         const pages = req.body.page;
         const usersearch = req.body.ser;
         const pageNumber = parseInt(pages) || 1;
         const itemsPerPage = 4;
         let searching;
-
-
 
         if (usersearch) {
             searching = { productName: { $regex: `^${usersearch}`, $options: 'i' } };
@@ -529,169 +638,63 @@ const filter = async (req, res) => {
         let SortByPrice
 
         try {
+            // getting any filtered category
+            const category = await categData.find({ categoryName: { $in: userFilter } }, { _id: 1 });
+            // Taking the count of documents excluding deleted products
+            docCount = productCount;
+            // Finding the products based on selection excluding deleted products
+            products = await productDatas.find({ 'productCategory': { $in: category }, isDeleted: false })
+                .populate({
+                    path: 'productCategory',
+                    model: 'category',
+                })
+                .skip((pageNumber - 1) * itemsPerPage)
+                .limit(itemsPerPage)
+                .exec();
 
-            if (productType == "allproducts") {
-                const pages = req.body.page;
-
-                const pageNumber = parseInt(pages) || 1;
-                const itemsPerPage = 4;
-
-                docCount = await productDatas
-                    .find({ isDeleted: false })
+            if (pricesort === "Hightolow") {
+                console.log("=====sorting from Hightolow===")
+                SortByPrice = await productDatas.find({ 'productCategory': { $in: category }, isDeleted: false })
                     .populate({
                         path: 'productCategory',
                         model: 'category',
-                        select: 'categoryName',
-                    })
-                    .countDocuments();
-
-                //111111111111111111111111111111111111111111111111111111111111111111111111
-
-                if (productType == "allproducts") {
-                    products = await productDatas
-                        .find({ isDeleted: false })
-                        .populate({
-                            path: 'productCategory',
-                            model: 'category',
-
-                        })
-                        .skip((pageNumber - 1) * itemsPerPage)
-                        .limit(itemsPerPage)
-                        .exec();
-                }
-
-
-
-
-                else if (productType == "allproducts" && usersearch != "") {
-                    serc = await productDatas
-                        .find({ ...searching, isDeleted: false })
-                        .populate({
-                            path: 'productCategory',
-                            model: 'category',
-
-                        })
-                        .skip((pageNumber - 1) * itemsPerPage)
-                        .limit(itemsPerPage)
-                        .exec();
-                }
-
-
-
-
-
-                let pageStartindex = (pageNumber - 1) * itemsPerPage;
-
-                if (pricesort === "Hightolow") {
-                    products = undefined;
-                    console.log("Hightolow::::::")
-                    console.log("price sort in user route  Hightolow::::")
-                    SortByPrice = await productDatas
-                        .find({ isDeleted: false })
-                        .populate({
-                            path: 'productCategory',
-                            model: 'category',
-
-                        })
-                        .sort({ productPrice: -1 });
-
-                } else if (pricesort === "lowtohigh") {
-                    products = undefined;
-                    console.log("Hightolow2222::::::")
-                    SortByPrice = console.log("price sort in user route: low to high:::")
-                    SortByPrice = await productDatas
-                        .find({ isDeleted: false })
-                        .populate({
-                            path: 'productCategory',
-                            model: 'category',
-
-                        }).sort({ productPrice: 1 });
-                }
-
-                console.log("pageStartindex::::", pageStartindex)
-
-                console.log("///////////////////////////////////////////////////////////")
-            }
-            else {
-                console.log("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-
-                // should work when the category id is present, but not if selected all products
-
-                const category = await categData.findOne({ categoryName: productType });
-                // Taking the count of documents excluding deleted products
-                docCount = await productDatas
-                    .find({ 'productCategory': category._id, isDeleted: false })
-                    .populate({
-                        path: 'productCategory',
-                        model: 'category',
-
-                    })
-                    .countDocuments();
-
-                // Finding the products based on selection excluding deleted products
-                products = await productDatas
-                    .find({ 'productCategory': category._id, isDeleted: false })
-                    .populate({
-                        path: 'productCategory',
-                        model: 'category',
-                    })
+                    }).sort({ productPrice: -1 })
                     .skip((pageNumber - 1) * itemsPerPage)
                     .limit(itemsPerPage)
                     .exec();
 
+                products = SortByPrice;
 
-
-                if (pricesort === "Hightolow") {
-                    console.log("666666666666::::")
-                    products = undefined;
-                    SortByPrice = await productDatas
-                        .find({ 'productCategory': category._id, isDeleted: false })
-                        .populate({
-                            path: 'productCategory',
-                            model: 'category',
-
-                        })
-                        .sort({ productPrice: -1 });
-
-                } else if (pricesort === "lowtohigh") {
-                    console.log("pri555555555555 low to high:::")
-                    products = undefined;
-                    SortByPrice = await productDatas
-                        .find({ 'productCategory': category._id, isDeleted: false })
-                        .populate({
-                            path: 'productCategory',
-                            model: 'category',
-
-                        }).sort({ productPrice: 1 });
-                }
-
-
-                console.log("sort data::", SortByPrice)
-
-
-                console.log("user searche222558:", usersearch)
-
-                if (usersearch != "") {
-                    serc = await productDatas
-                        .find({ ...searching, isDeleted: false, 'productCategory': category._id, })
-                        .populate({
-                            path: 'productCategory',
-                            model: 'category',
-
-                        })
-                        .skip((pageNumber - 1) * itemsPerPage)
-                        .limit(itemsPerPage)
-                        .exec();
-
-                    console.log('search QueryHGJHGJ:', serc);//is working and getting data.
-
-
-
-                }
+            } else if (pricesort === "lowtohigh") {
+                console.log("=====sorting from low to high:::")
+                // 
+                SortByPrice = await productDatas.find({ 'productCategory': { $in: category }, isDeleted: false })
+                    .populate({
+                        path: 'productCategory',
+                        model: 'category',
+                    }).sort({ productPrice: 1 })
+                    .skip((pageNumber - 1) * itemsPerPage)
+                    .limit(itemsPerPage)
+                    .exec();
+                ;
+                products = SortByPrice;
             }
-
-
+            // console.log("::::sort data::::", SortByPrice)
+            if (usersearch != "") {
+                console.log(":::::user trying to search====::::", usersearch)
+                serc = await productDatas.find({ 'productCategory': { $in: category }, ...searching, isDeleted: false, })
+                    .populate({
+                        path: 'productCategory',
+                        model: 'category',
+                    }).skip((pageNumber - 1) * itemsPerPage)
+                    .limit(itemsPerPage)
+                    .exec();
+                products = serc;
+                console.log(':::user search query::::', serc);//is working and getting data.
+            }
         }
+
+
         catch (error) {
             console.log("try inside")
             console.error('Error fetching products:', error);
@@ -703,23 +706,22 @@ const filter = async (req, res) => {
 
         let pageStartindex = (pageNumber - 1) * itemsPerPage;
         //sending a response body to the frontend as a part of post fetch.
-        console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-        console.log("data 1", products)
-        console.log("data 2", pageStartindex)
-        console.log("data 3", docCount)
-        console.log("data 4", productType)
-        console.log("data 5", serc)
-        console.log("data 6", SortByPrice)
-        console.log("data ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+        console.log("___________________________________________________")
+        // console.log(" ::::products::", products)
+        console.log(" :::pageStartindex:::", pageStartindex)
+        console.log(" :::docCount::", docCount)
+        console.log(":::userFilte::", userFilter)
+        console.log(" :::search::", serc)
+        // console.log(" :::sort::", SortByPrice)
+        console.log(" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
         res.json({
             products,
             pageStartindex,
             docCount,
-            productType,
+            userFilter,
             serc,
             SortByPrice
-
         });
 
     } catch (error) {
@@ -745,9 +747,21 @@ const editprofile = async (req, res) => {
 //...............................................
 const saveEditProfile = async (req, res) => {
     try {
-        // console.log("::::", req.body)
-        const user = req.userid;//from JWT AUTHENTICATION
+       let user;
+        let token=req.cookies.usertoken;
+
+        JWTtoken.verify(token,jwtcode,(err,decoded)=>{
+        if(err){
+              console.log("user not verified")
+        }else{
+        const usersdetail=decoded._id;
+        user=usersdetail
+        console.log(user)
+       }})
+
+
         let pImage = `/${req.file.filename}`;
+       
         let address = {
             houseNo: req.body.house,
             street: req.body.street,
@@ -758,7 +772,9 @@ const saveEditProfile = async (req, res) => {
             country: req.body.Country,
             pincode: req.body.pincode,
         }
-        let userdatadetails = await userData.updateOne({ _id: user }, {
+
+
+        await userData.updateOne({ _id: user }, {
             $set: {
                 first_name: req.body.username1,
                 Last_name: req.body.username2,
@@ -767,6 +783,9 @@ const saveEditProfile = async (req, res) => {
                 Address: address
             }
         })
+
+
+        console.log("data saved")
     }
     catch (error) {
         console.log(error.message)
@@ -780,7 +799,7 @@ const saveEditProfile = async (req, res) => {
 const profile = async (req, res) => {
     try {
         const usersid = req.userid;//this is comming from jwt authentication
-        let udata = await userData.findOne({ _id: usersid })
+        const udata = await userData.findOne({ _id: usersid })
         console.log("in user profile--userController")
         res.render("user/userprofile", { udata })
     }
@@ -807,24 +826,20 @@ const showWishlist = async (req, res) => {
     try {
         const usersid = req.userid;//this is comming from jwt authentication
 
-        // Count total number of wish list items
         const totalCount = await wishData.findOne({ userId: usersid }).countDocuments();
+        const page = parseInt(req.query.page) || 1; 
+        const limit = 5;
 
-        // pagination parameters
-        const page = parseInt(req.query.page) || 1; // Current page number, default: 1
-        const limit = 5; // Number of items per page
 
-        // Calculate the starting index of items for the current page
         const startIndex = (page - 1) * limit;
-
-        // Retrieve wish list items for the current page
         const wishList = await wishData.findOne({ userId: usersid })
             .populate({
                 path: "list",
-                model: "products"
+                model: "products",
+                match: { isDeleted: false }
             })
-            .skip(startIndex) // Skip items before the current page
-            .limit(limit); // Limit the number of items per page
+            .skip(startIndex) 
+            .limit(limit); 
 
         res.render("user/wishlist.ejs", {
             wishList,
@@ -888,14 +903,22 @@ const addReview = async (req, res) => {
 const saveReview = async (req, res) => {
     try {
         const usersid = req.userid;//from JWT AUTHENTICATION
+
+        const getUserName = await userData.find({ _id: usersid }, { username: 1 });
+        console.log("getUserName:", getUserName[0].username);
+        
+
         const saveRev = new reviewData({
             comment: req.body.reviewDescription,
             rating: req.body.rating,
             user: usersid,
+            username: getUserName[0].username,
             product: req.params.id,
             Time: Date.now()
         })
         saveRev.save()
+        res.redirect("/home")
+       
     }
     catch (error) {
         console.log(error.message)
@@ -905,14 +928,82 @@ const saveReview = async (req, res) => {
 
 //.........view review.....................
 
-const viewReview = async (req, res) => {
+const viewAllReview = async (req, res) => {
     try {
+        const usersid = req.userid;//from JWT AUTHENTICATION
+        const selectedProduct= req.params.id;
+        // console.log("gd", selectedProduct,usersid)
+
+        const viewRev=await reviewData.find({product:selectedProduct})
+        // console.log("viewRev::",viewRev)
+        //we are just changing the time format in the array
+        viewRev.forEach(review => {
+            review.formattedTime = moment(review.Time).format('MMMM Do YYYY, h:mm:ss a');
+        });
+        
+        res.render("user/allreview.ejs",{viewRev,selectedProduct})
 
     }
     catch (error) {
         console.log(error.message)
+
     }
 }
+
+
+
+const sortNewReview = async (req, res) => {
+    try {
+      
+        const productIdNow = req.params.selectedProduct;
+        console.log("productIdNow:", productIdNow);
+
+        const viewRev = await reviewData.find({ product: productIdNow }).sort({Time: -1 });
+
+// console.log(viewRev)
+        res.status(200).json({ viewRev });
+
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
+const sorthighestStar= async (req, res) => {
+    try {
+        console.log("hello sorthighestStar");
+        const productIdNow = req.params.selectedProduct;
+        console.log("productIdNow:", productIdNow);
+
+        const viewRev = await reviewData.find({ product: productIdNow }).sort({rating: 1 });
+
+// console.log(viewRev)
+        res.status(200).json({ viewRev });
+
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
+
+
+
+const sortLowestStar= async (req, res) => {
+    try {
+        console.log("hello sortLowestStar");
+        const productIdNow = req.params.selectedProduct;
+        console.log("productIdNow:", productIdNow);
+
+        const viewRev = await reviewData.find({ product: productIdNow }).sort({rating: -1 });
+
+console.log(viewRev)
+        res.status(200).json({ viewRev });
+
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
+
 
 //.........wallet..........
 
@@ -941,22 +1032,33 @@ const wallet = async (req, res) => {
 const wishtoadd = async (req, res) => {
     try {
         const productId = req.body.productId;
-        // console.log("Product ID:", productId);
+        console.log("Product ID:", productId);
         const usersid = req.userid;//from JWT AUTHENTICATION
-        const selectedProduct = await productData.findById(productId);
+        const alreadyIn = await wishData.findOne({ userId: usersid, list: { $in: [productId] } });
+        if (alreadyIn == null) {
 
-        if (!selectedProduct) {
-            console.log("Selected product not found");
-            return res.status(404).json({ error: "Selected product not found" });
+            const selectedProduct = await productData.findById(productId);
+
+
+            if (!selectedProduct) {
+                console.log("Selected product not found");
+                return res.status(404).json({ error: "Selected product not found" });
+            }
+            // Push the ObjectId of the selected product to the list array in the wishlist collection
+            const updatedWishlist = await wishData.findOneAndUpdate(
+                { userId: usersid },
+                { $push: { list: selectedProduct._id } }, // Push only the ObjectId of the selected product
+                { new: true }
+            );
+
+
+            res.status(200).json({ message: "Product added to wishlist successfully" });
         }
-        // Push the ObjectId of the selected product to the list array in the wishlist collection
-        const updatedWishlist = await wishData.findOneAndUpdate(
-            { userId: usersid },
-            { $push: { list: selectedProduct._id } }, // Push only the ObjectId of the selected product
-            { new: true }
-        );
-        // console.log("Updated wishlist:", updatedWishlist);
-        res.status(200).json({ message: "Product added to wishlist successfully" });
+        else {
+            return res.status(200).json({ message: "Product is already in the wishlist" });
+
+        }
+
     } catch (error) {
         console.error("Error adding product to wishlist:", error);
         res.status(500).json({ error: "Internal server error" });
@@ -990,6 +1092,123 @@ const addtocartAndDeleteWishlist = async (req, res) => {
     }
 }
 
+// const convertInviteLink = async (req, res) => {
+//     try {
+//         const emailToSentInvitation = req.body.refferEmail;
+//         const secretCode=22222
+//         console.log("emailToSentInvitation:", emailToSentInvitation)
+//          const invitationToken = secretCode;
+
+
+//          const siteslink = `http://localhost:3000/signup?invite=${invitationToken}`;
+
+
+//         // url  + encryptedcode of user 
+
+
+//         //now send to the emailToSentInvitation
+
+
+
+//         const transporter = nodemailer.createTransport({
+//             service: 'gmail',
+//             auth: {
+//               user: email,
+//               pass: pass,
+//             }
+//           });
+
+
+
+//           console.log(name)
+//           const code = otpGenerator.generate(5, { upperCaseAlphabets: false, lowerCaseAlphabets: false, specialChars: false });
+
+
+
+//           let mailOptions = {
+//             from: email,
+//             to: emailToSentInvitation,
+//             subject: 'Invitation mail from TIME S ',
+//             html: `
+//                       <h1>Hello friend ${name} you are invited to signup with TIME-S Ecommerce!</h1> 
+
+//                       <h3>Please click on the provided link to signup:${code}.</h3>
+//                   `,
+//           };
+//           console.log("generatedlink:", Number(code))
+//           req.session.otp = Number(code)
+//           transporter.sendMail(mailOptions, function (err, data) {
+//             if (err) {
+//               console.log("Error in sending email:  " + err);
+//             } else {
+//               console.log("Email sent successfully");
+//             }
+//           });
+
+//         }
+//         catch (error) {
+//           console.log("email not sent catched error:", error.message)
+//         }
+
+
+
+
+
+
+
+//     }
+//     catch (error) {
+//         console.log(error.message)
+//     }
+// }
+
+
+const convertInviteLink = async (emailToSentInvitation, name) => {
+    try {
+        // Generate a secret code for the invitation
+        const secretCode = otpGenerator.generate(5, { upperCaseAlphabets: false, lowerCaseAlphabets: false, specialChars: false });
+
+        // Construct the invitation link with the secret code
+        const invitationToken = secretCode;
+        const siteslink = `http://localhost:3000/signup?invite=${invitationToken}`;
+
+        // Create a Nodemailer transporter
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: email,
+                pass: pass,
+            }
+        });
+
+        // Compose the email message
+        const mailOptions = {
+            from: email,
+            to: emailToSentInvitation,
+            subject: 'Invitation mail from TIME S',
+            html: `
+                <h1>Hello friend ${name}, you are invited to signup with TIME-S Ecommerce!</h1> 
+                <h3>Please click on the provided link to signup: <a href="${siteslink}">${siteslink}</a></h3>
+            `,
+        };
+
+        // Send the email
+        await transporter.sendMail(mailOptions);
+        console.log("Email sent successfully");
+
+        // Save the invitation in the database (if needed)
+        const invitation = new Invitation({
+            email: emailToSentInvitation,
+            secretCode: secretCode,
+            // Add other relevant invitation details
+        });
+        await invitation.save();
+    } catch (error) {
+        console.error("Error sending email:", error.message);
+        // Handle error appropriately
+    }
+};
+
 
 
 //...........exports..................................................................................................
@@ -1020,10 +1239,14 @@ module.exports = {
     changesavedpassword,
     addReview,
     saveReview,
-    viewReview,
+    viewAllReview,
     wallet,
     wishtoadd,
     wishtoremove,
     showWishlist,
-    addtocartAndDeleteWishlist
+    addtocartAndDeleteWishlist,
+    convertInviteLink,
+    sortNewReview,
+    sortLowestStar,
+    sorthighestStar
 }

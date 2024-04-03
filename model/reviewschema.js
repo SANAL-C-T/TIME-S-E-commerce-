@@ -4,8 +4,15 @@ require("../model/config")
 const reviewSchema = mongoose.Schema({
     comment: String,
     rating: Number,
-    user: ObjectId,//will store id, 
-    product: ObjectId,
+    username:String,
+    user:  {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user'
+    },
+    product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'products'
+    },
     Time: { type: Date, default: Date.now }
 });
 

@@ -60,6 +60,25 @@
   <div class="text-center container py-5">
     <div class="row">
      
+      <% if (loadProduct.length === 0) { %>
+        <div class="col-lg-3 col-md-12 mb-4">
+          <div class="card h-100" id="cd">
+            <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+              <img src="" class="w-100" id="proimg" alt="">
+
+            </div>
+            <div class="card-body bodyimg">
+              <div>
+                <h5 class="card-title mb-3" id="txtcrd"> NO PRODUCT TO DISPLAY</h5>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% } %>
+      
+
+
+
       <% for (let i = 0; i < 4 && i < loadProduct.length; i++) { %>
           <div class="col-lg-3 col-md-12 mb-4">
               <div class="card h-100" id="cd">
@@ -221,6 +240,26 @@ Imagine effortlessly handling your Apple Watch with simple gestures, making it i
   <div class="text-center container py-5">
     <div class="row">
 <!-- ---------------------------------------------------------------------------------------------- -->
+<% if (loadProductA.length === 0) { %>
+  <div class="col-lg-3 col-md-12 mb-4">
+    <div class="card h-100" id="cd">
+      <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+        <img src="" class="w-100" id="proimg" alt="">
+
+      </div>
+      <div class="card-body bodyimg">
+        <div>
+          <h5 class="card-title mb-3" id="txtcrd"> NO PRODUCT TO DISPLAY</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+<% } %>
+
+
+
+
+
 <% for (let i = 0; i < 4 && i < loadProductA.length; i++) { %>
   <div class="col-lg-3 col-md-12 mb-4">
     <div class="card h-100" id="cd" >
@@ -302,6 +341,26 @@ Imagine effortlessly handling your Apple Watch with simple gestures, making it i
   <div class="text-center container py-5" >
     <div class="row" >
 <!-- ---------------------------------------------------------------------------------------------- -->
+
+<% if (loadProductG.length === 0) { %>
+  <div class="col-lg-3 col-md-12 mb-4">
+    <div class="card h-100" id="cd">
+      <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+        <img src="" class="w-100" id="proimg" alt="">
+
+      </div>
+      <div class="card-body bodyimg">
+        <div>
+          <h5 class="card-title mb-3" id="txtcrd"> NO PRODUCT TO DISPLAY</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+<% } %>
+
+
+
+
 <% for (let i = 0; i < 4 && i < loadProductG.length; i++) { %>
   <div class="col-lg-3 col-md-12 mb-4" >
     <div class="card h-100" id="cd">

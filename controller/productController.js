@@ -244,6 +244,7 @@ const Deleteproduct = async (req, res) => {
         const item = req.params.id;
 
         await productData.updateOne({ _id: item }, { $set: { isDeleted: true } });
+        
         console.log("deleted")
         res.redirect("/admin/listProduct")
     } catch (error) {

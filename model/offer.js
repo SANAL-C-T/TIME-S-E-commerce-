@@ -8,7 +8,7 @@ const offerSchema = mongoose.Schema({
     createdDate: String,
     validTime: String,
     productCategoryOffer: String,
-    productOffer
+
 })
 const offerData = mongoose.model("offer", offerSchema)
 

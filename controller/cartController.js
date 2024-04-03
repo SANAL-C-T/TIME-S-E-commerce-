@@ -10,6 +10,7 @@ const Razorpay = require("razorpay");
 const moment = require("moment");
 const categoryData = require('../model/categorySchema');
 const crypto = require('crypto');
+const { Console } = require('console');
 require('dotenv').config();
 const razKey = process.env.RAZORPAY_ID_KEY;
 const razSec = process.env.RAZORPAY_SECRET_KEY;
@@ -24,19 +25,20 @@ var instance = new Razorpay({
 
 
 //..................product add to cart............................................
-const cartadd = async (req, res) => {
+const cartadd = async (req, res) => {   // need to optmise this code, due to time limitation....
     try {
         //----------------------------verify user--------
         const selectedProduct = req.params.prodid; //getting product id from front end
         const usersid = req.userid;//this is comming from jwt authentication
 
-        console.log("new way to get userid::::", usersid)
+
 
         // for checking if the product has offer....
         let hasOffer = await productDatas.findOne(
             { _id: selectedProduct },
             { haveProductOffer: 1 }
         );
+
         console.log("hasOffer", hasOffer ? hasOffer.haveProductOffer : false);
 
         // for checking if the category has offer
@@ -46,6 +48,7 @@ const cartadd = async (req, res) => {
             { _id: catiDS },
             { hasCatOffer: 1 }
         );
+
         console.log("hascateOffer", haveCategoryOffer ? haveCategoryOffer.hasCatOffer : false);
 
 
@@ -85,16 +88,19 @@ const cartadd = async (req, res) => {
             );
 
             percentageDiscount = Math.max(productDiscountPercentage, catDiscountpercentage)
+
         } else if (!hasOffer && haveCategoryOffer) {
             newPrice = pdata.productPrice - (pdata.productPrice * (catDiscountpercentage / 100));
         } else {
             newPrice = pdata.productPrice;
         }
 
+        newPrice = Math.round(newPrice);
         console.log("New Price:", newPrice);
         console.log("Max discount percentage :", percentageDiscount);
 
         let Discount = pdata.productPrice - newPrice;
+        Discount = Math.round(Discount);
         let hasdiscount = false;
 
         if (Discount > 0) {
@@ -153,14 +159,48 @@ const cartadd = async (req, res) => {
                     path: 'items.products',
                     model: 'products',
                 });
-            let cartItem = {
-                cart: INcart
-            };
+
             await productDatas.findOneAndUpdate(
                 { _id: selectedProduct },
                 { $set: { stockCount: qyt - 1 } }
             );
+
+
+            //........................
+            const checkProductDeleted = await cartData.findOne({ userid: usersid })
+                .populate({
+                    path: 'items.products',
+                    model: 'products',
+                    match: { isDeleted: false }
+                });
+
+            // console.log("checkProductDeleted::::", checkProductDeleted);
+
+            const filteredItems = checkProductDeleted.items.filter(item => item.products !== null);
+
+            const Price = filteredItems.reduce((acc, item) => {
+                return acc + item.price;
+            }, 0);
+
+
+            await cartData.updateOne(
+                { userid: usersid },
+                { $set: { items: filteredItems, OrderTotalPrice: Price } }
+            );
+
+            //..................
+            const cart = await cartData.findOne({ userid: usersid })
+                .populate({
+                    path: 'items.products',
+                    model: 'products',
+                });
+
+
+            let cartItem = {
+                cart: cart
+            };
             res.render("user/cart.ejs", { cartItem });
+
         } else {
             // if it already exists in the cart, show an alert, so the user can use increment button
             res.locals.errorMessage = 'Product exists in the cart, so increase the QTY.';
@@ -169,6 +209,7 @@ const cartadd = async (req, res) => {
                 .populate({
                     path: 'items.products',
                     model: 'products',
+
                 });
 
             // sum up all price in the cart
@@ -195,22 +236,68 @@ const cartadd = async (req, res) => {
 const showcart = async (req, res) => {
     try {
         const usersid = req.userid;//from JWT AUTHENTICATION
+
         const itemINcart = await cartData.findOne({ userid: usersid })
             .populate({
-                path: 'items.products',  //field in the current schema
-                model: 'products', //name of the other collection schema
+                path: 'items.products',
+                model: 'products',
             });
 
         if (itemINcart == null) {
             res.render("user/emptcart.ejs");
         }
 
-        let cartItem = {
-            cart: itemINcart
-        };
 
-        // console.log("Product Name:", cartItem.cart.items[1].products.productName);
-        res.render("user/cart.ejs", { cartItem });
+
+
+        if (itemINcart.couponApplied == true) {
+            console.log("has coupon used>>>>>>")
+
+            let cartItem = {
+                cart: itemINcart
+            };
+
+            // console.log("Product Name:", cartItem.cart.items[1].products.productName);
+            res.render("user/cart.ejs", { cartItem });
+
+        }
+
+        else {
+
+            const checkProductDeleted = await cartData.findOne({ userid: usersid })
+                .populate({
+                    path: 'items.products',
+                    model: 'products',
+                    match: { isDeleted: false }
+                });
+
+            // console.log("checkProductDeleted::::", checkProductDeleted);
+
+
+
+
+            const filteredItems = checkProductDeleted.items.filter(item => item.products !== null);
+
+            const totalPrice = filteredItems.reduce((acc, item) => {
+                return acc + item.price;
+            }, 0);
+
+
+            await cartData.updateOne(
+                { userid: usersid },
+                { $set: { items: filteredItems, OrderTotalPrice: totalPrice } }
+            );
+
+
+
+            let cartItem = {
+                cart: itemINcart
+            };
+
+            // console.log("Product Name:", cartItem.cart.items[1].products.productName);
+            res.render("user/cart.ejs", { cartItem });
+        }
+
     } catch (error) {
         console.log(error.message);
     }
@@ -310,7 +397,9 @@ const itemdel = async (req, res) => {
         const deleteIndex = req.body.deleteIndex;
         const id = req.body.id;
         const qyt = parseInt(req.body.currentQyt);
-        //  console.log(deleteIndex,id,qyt)
+
+        // console.log("+++++++******"    ,deleteIndex,   id,    qyt)
+
         const usersid = req.userid;//from JWT AUTHENTICATION
         const getQuantity = await cartData.findOne(
             { userid: usersid, "items.products": new mongoose.Types.ObjectId(id) },
@@ -319,7 +408,7 @@ const itemdel = async (req, res) => {
 
         if (getQuantity && getQuantity.items && getQuantity.items.length > 0) {
             var quantityy = getQuantity.items[0].quantity;
-            console.log("Quantity:", quantityy);
+            // console.log("Quantity:", quantityy);
         } else {
             console.log("Product not found in the cart");
         }
@@ -376,6 +465,10 @@ const proceedToaddress = async (req, res) => {
         const usersid = req.userid;//from JWT AUTHENTICATION
         const user = await userData.findOne({ _id: usersid })
         const cart = await cartData.findOne({ userid: usersid })
+        console.log("::::::cart:::::::::", cart)
+        if (cart == null) {
+            res.redirect("/cart")
+        }
         const database = {
             userdata: user,
             cartdata: cart
@@ -394,10 +487,7 @@ const proceedToaddress = async (req, res) => {
 var razOrderID;
 const addAddressToPurchase = async (req, res) => {
 
-    console.log(".-=-=-= add address to purchase in cart controller is runing now")
-
-
-
+    console.log("//////add address to purchase in cart controller is runing now////")
     try {
         var name;
         var email;
@@ -407,15 +497,15 @@ const addAddressToPurchase = async (req, res) => {
         var paymentMode = req.body.paymentMethod;
         const tosaveaddressCheckbox = req.body.saveaddressCheckbox;
 
-        let phoneNumber = req.body.phoneNumber
-        let house = req.body.house
-        let street = req.body.street
-        let location = req.body.location
-        let landmark = req.body.landmark
-        let city = req.body.city
-        let state = req.body.state
-        let Country = req.body.Country
-        let pincode = req.body.pincode
+        const phoneNumber = req.body.phoneNumber
+        const house = req.body.house
+        const street = req.body.street
+        const location = req.body.location
+        const landmark = req.body.landmark
+        const city = req.body.city
+        const state = req.body.state
+        const Country = req.body.Country
+        const pincode = req.body.pincode
 
 
         // console.log("===savedAddress coming to try block of add address to purchase::", savedAddress)
@@ -441,7 +531,6 @@ const addAddressToPurchase = async (req, res) => {
 
 
         const usersid = req.userid;//from JWT AUTHENTICATION
-
 
         const userD = await userData.findOne({ _id: usersid })
         name = userD.username;
@@ -523,6 +612,7 @@ const addAddressToPurchase = async (req, res) => {
         }
 
         else if (paymentMode == "Razorpay") {
+            console.log("in raz pay")
 
             let inCart = await cartData.findOne({ userid: usersid })
 
@@ -619,9 +709,9 @@ const handlePaymentData = async (req, res) => {
             console.log('Payment verification is successful');
             const clearCart = await cartEraseAccording("razorpay", usersid, req, res);
             if (clearCart == true) {
-                res.status(200).send("payment verified");
+                res.status(200).json("payment verified");
             } else {
-                res.status(500).send("payment not verified");
+                res.status(500).json("payment not verified");
             }
 
         } else {
@@ -655,13 +745,16 @@ async function cartEraseAccording(PayMode, usersid, req, res) {
         const purchaseHistory = new orderHistoryData({
             userid: usersid,
             OrderDate: formatedDate,
+            OrderDateGraph: date,
             orderId: presentCart._id,
             paymentMethod: PayMode,
             address: presentCart.Address,
             items: presentCart.items,
             OrderTotalPrice: presentCart.OrderTotalPrice,
             Status: "pending",
-            couponCode: presentCart.CouponCode
+            couponCode: presentCart.CouponCode,
+            discountedByCoupon: presentCart.couponApplied,
+            discountgiven: presentCart.couponValue
         });
 
         await purchaseHistory.save(); //save the data.
@@ -946,54 +1039,120 @@ const savedAddress = async (req, res) => {
 
 
 //COUPON APPLYING.....
-var discValue;
-var amount;
+// var discValue;
+// var amount;
+// const couponAdd = async (req, res) => {
+//     try {
+//         const code = req.body.code
+//         const usersid = req.userid;//from JWT AUTHENTICATION
+
+//         const couponInDb = await couponData.findOne({ couponCode: code })
+//          console.log("coupon value:::", couponInDb.discount)
+//        const discValue = couponInDb.discount;
+
+//         //getting price in cart
+//         let inCart = await cartData.findOne({ userid: usersid })
+//         const amount = inCart.OrderTotalPrice;
+//         const isCouponApplied = inCart.couponApplied;
+//         //if coupon exists... we proceed...
+
+
+//         const newAmount = amount - discValue;
+
+//         console.log("newAmount:::", newAmount)
+
+//         await cartData.updateOne({ userid: usersid }, { $set: {OrderTotalPrice: newAmount, Discounted: discValue, couponApplied: true, CouponCode: code } });
+//         if (couponInDb != null && isCouponApplied == false) {
+
+//         } else {
+//             console.log("coupon dont exist")
+//         }
+
+//         //the below line with a message is very important for the working of location.reload , in the frontend.
+//         res.status(200).json({ success: true, message: "Coupon applied successfully." });
+//     }
+//     catch (error) {
+//         console.log(error.message)
+//     }
+// }
+
+
 const couponAdd = async (req, res) => {
     try {
-        const code = req.body.code
-        // console.log(code)
-        const usersid = req.userid;//from JWT AUTHENTICATION
-        //getting the coupon value...
-        let couponInDb = await couponData.findOne({ couponCode: code })
-        // console.log("coupon value:::", couponInDb.discount)
-        discValue = couponInDb.discount;
+        const code = req.body.code;
+        const usersid = req.userid; // Obtaining user ID from JWT authentication
 
-        //getting price in cart
-        let inCart = await cartData.findOne({ userid: usersid })
-        amount = inCart.OrderTotalPrice;
-        isCouponApplied = inCart.couponApplied;
-        //if coupon exists... we proceed...
-        if (couponInDb != null && isCouponApplied == false) {
-            let newAmount = amount - discValue;
-            await cartData.updateOne({ userid: usersid }, { $set: { OrderTotalPrice: newAmount, Discounted: discValue, couponApplied: true, CouponCode: code } });
-        } else {
-            console.log("coupon dont exist")
+        // Retrieve coupon details from the database
+        const couponInDb = await couponData.findOne({ couponCode: code });
+        if (!couponInDb) {
+            console.log("Coupon not found.");
+            return res.status(200).json({ success: false, message: "Coupon does not exist." });
         }
 
-        //the below line with a message is very important for the working of location.reload , in the frontend.
-        res.status(200).json({ success: true, message: "Coupon applied successfully." });
+        // Retrieve cart details for the user
+        const inCart = await cartData.findOne({ userid: usersid });
+        if (!inCart) {
+            console.log("Cart not found.");
+            return res.status(400).json({ success: false, message: "Cart not found." });
+        }
+
+        // Check if the coupon has already been applied
+        if (inCart.couponApplied) {
+            console.log("Coupon already applied.");
+            return res.status(400).json({ success: false, message: "Coupon already applied." });
+        }
+
+        // Calculate the new total price after applying the discount
+        const discValue = couponInDb.discount;
+        const amount = inCart.OrderTotalPrice;
+        const newAmount = amount - discValue;
+
+        // Update the cart data with the new total price and coupon details
+        await cartData.updateOne(
+            { userid: usersid },
+            {
+                $set: {
+                    OrderTotalPrice: newAmount,
+                    Discounted: discValue,
+                    couponApplied: true,
+                    CouponCode: code,
+                    couponValue: discValue
+                }
+            }
+        );
+
+        console.log("Coupon applied successfully.");
+        res.status(200).json({ success: true, grandtotal: newAmount, codes: code, message: "Coupon applied successfully." });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ success: false, message: "Internal server error." });
     }
-    catch (error) {
-        console.log(error.message)
-    }
-}
+};
+
+
 
 //coupon removal.....
 const couponremove = async (req, res) => {
     try {
         const usersid = req.userid;//from JWT AUTHENTICATION
+
         const inCartcOUPON = await cartData.findOne({ userid: usersid })
-        let co = inCartcOUPON.CouponCode;
-        let couponInDb = await couponData.findOne({ couponCode: co })
+
+        let codeFroMDatabase = inCartcOUPON.CouponCode;
+        let couponInDb = await couponData.findOne({ couponCode: codeFroMDatabase })
+
         console.log("coupon value:::", couponInDb.discount)
         let coupValue = couponInDb.discount;
         let inCart = await cartData.findOne({ userid: usersid })
         let cartamount = inCart.OrderTotalPrice;
-        let couponremovedPrice = cartamount;
-        // console.log("couponremovedPrice", couponremovedPrice)
-        await cartData.updateOne({ userid: usersid }, { $set: { OrderTotalPrice: couponremovedPrice, Discounted: 0, couponApplied: false } });
+
+        let couponremovedPrice = cartamount + coupValue;
+
+
+        console.log("couponremovedPrice", couponremovedPrice)
+        await cartData.updateOne({ userid: usersid }, { $set: { OrderTotalPrice: couponremovedPrice, Discounted: 0, couponApplied: false, CouponCode: "" } });
         //the below line with a message is very important for the working of location.reload , in the frontend.
-        res.status(200).json({ success: true, message: "Coupon removed successfully." });
+        res.status(200).json({ success: true, grandtotals: couponremovedPrice, message: "Coupon removed successfully." });
     }
     catch (error) {
         console.log(error.message)

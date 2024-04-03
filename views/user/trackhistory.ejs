@@ -1,5 +1,7 @@
 <%- include("../partials/userloggedHeder.ejs") %>
-  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 
 <div class="container-fluid  d-flex ">
     <div class=" row">
@@ -17,25 +19,31 @@
         </nav>
     </div>
   
+
+
+
+
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4 d-flex flex-column  mx-3 ">
    
         <div class="table-responsive">
-<br>
+            <br>
             <div class="text-center "><h5>ORDER HISTORY</h5></div>
             
                     <table id="example" class="table table-striped ">
                         <thead>
                             <tr>
-                                <th style="width: 2%;">NO</th>
+                                <th style="width: 3%;">NO</th>
                                 <th style="width: 15%;">ORDER ID</th>
                                 <th style="width: 15%;">INFO</th>
-                                <th style="width: 15%;">ORDER DATE</th>
+                                <th style="width: 12%;">ORDER DATE</th>
                                 <th style="width: 15%;">PAYMENT METHOD</th>
                                 <th style="width: 10%;">COUPON APPLIED</th>
                                 <th style="width: 15%;">STATUS TIME</th>
                                 <th style="width: 10%;">TOTAL</th>
                                 <th style="width: 10%;">STATUS</th>
                                 <th style="width: 5%;">ACTION</th>
+                                <th style="width: 5%;">BILL</th>
+                                
                                 
                             </tr>
                         </thead>
@@ -85,8 +93,8 @@
                                                                 <% cartHistory[orderIndex].items.forEach((item) => { %>
                                                                    <div class="d-flex  justify-content-between ">
                                                                     <div class="p-3 w-50 "><%= item.productName %></div>
+                                                                    <div class="p-3 text  ">QTY: <%= item.quantity %> </div>
                                                                     <div class="p-3 text-danger  ">&#8377;<%= item.price %> </div>
-                                        
                                                                     <div class="p-3 "><img src="<%= item.productImage %>" style="width:70px; height:70px;"></div>
 
                                                                    </div>
@@ -102,12 +110,16 @@
                                         </div>
                                         <!-- End Modal -->
                                     </td>
+
+
                                     <td id="orderDateCell"><%= order.OrderDate %></td>
                                     <td><%= order.paymentMethod %></td>
                                     <td><%= order.couponCode %></td>
                                     <td id="deliverDateCell"><%= order.DeliveredDate %></td>
                                     <td>&#8377; <%= order.OrderTotalPrice %></td>
                                     <td><%= order.Status %></td>
+
+
                                     <% if (order.Status !== "shipped" && order.Status !== "delivered" && order.Status !== "Cancel"&& order.Status !== "User cancelled" && order.Status !== "Returned"  ) { %>
                                         <td>
                                             <form id="cancelForm<%= orderIndex %>" action="/orderCancel/<%= order._id %>" method="POST">
@@ -156,17 +168,96 @@
                                                 </div>
                                               </div>
                                             </div>
-                                            
+                                        </td>
+                                    <% }
+
+                                    else{%>
+                                        <td></td> 
+                                        <%}
+                                    
+                                    %>
 
 
+                                    <% if (order.Status == "delivered") { %>
+                                        <td> <!-- Modal invoice trigger button -->
+                                            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalIdbill<%= orderIndex %>">BILL</button>
+                                            <!-- Modal Body -->
+                                            <div class="modal fade" id="modalIdbill<%= orderIndex %>" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="modalTitleId">INVOICE SUMMARY</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="container" id="invoice<%= orderIndex %>">
+                                                                <div class="text-center">
+                                                                    <img src="/image/TIME S.jpg">
+                                                                </div>
+                                                                <hr>
+                                                                <div class="d-flex justify-content-between">
+                                                                    <div style="width: 50%;"><b>Delivered Address:</b> <%=order.address%></div>
+                                                                    
+                                                                    <div><b>Delivered Date:</b> <%=order.DeliveredDate%></div>
+                                                                </div>
+                                                                <hr class="dashed">
+                                                                <h6 class="text-center">SUMMARY</h6>
+                                                                <hr>
+                                                                <div class="d-flex justify-content-between    liness">
+                                                                    <div id="sl">SL NO</div>
+                                                                    <div id="item">ITEM</div>
+                                                                    <div id="qyt">QTY</div>
+                                                                    <div id="delivery">DELIVERY CHARGES</div>
+                                                                    <div id="cgst">CGST</div>
+                                                                    <div id="sgst">SGST</div>
+                                                                    <div id="price">PRICE</div>
+                                                                </div>
+                                                                
+                                                                <hr>
+                                                                
+                                                                <% cartHistory[orderIndex].items.forEach((item, index) => { %>
+                                                                    <div class="d-flex justify-content-between   liness">
+                                                                        <div id="sl"><%=index + 1%></div>
+                                                                        <div id="item"><%= item.productName %></div>
+                                                                        <div id="qyt" class="text-danger"><%= item.quantity %></div>
+                                                                        <div id="delivery">&#8377; 40</div>
+                                                                        <div id="cgst">CGST</div>
+                                                                        <div id="sgst">SGST</div>
+                                                                        <div class="text-danger">&#8377; <%= item.price %></div>
+                                                                    </div>
+                                                                <% }); %>
+                                                            
+                                                                
+                                                                <hr>
+                                                                
+                                                                <div>
+                                                                    <div><b>Grand Total: </b> &#8377;  <%= order.OrderTotalPrice %></div>
+                                                                </div>
+                                                                
+                                                                <hr>
+                                                                <div class="text-center">
+                                                                    <div>--THANK YOU FOR PURCHASING WITH US--</div>
+                                                                    <div>"If you want to return the product, the return window will be open for 7 days from the date of delivery."</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-warning " onclick="billdownload(<%= orderIndex %>)"   >DOWNLOAD</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </td>
                                     <% }
                                     else{%>
                                         <td></td> 
-                                        <%
-                                    }
+                                        <%}
                                     
                                     %>
+                                    
+                                  
+
+                                    
                                 </tr>
                             <% }); %>
                         
@@ -203,24 +294,19 @@
                                 });
                               }
 
-
-
-
                             </script>
                         </tbody>
-                        
-            
                     </table>
                     </div>
-                </div>
-            </div>
+     
 
 </main>
 
-
-
     </div>
 </div>
+
+
+
 <%-include("../partials/footer.ejs")%>
 
 <style>
@@ -298,6 +384,49 @@
     color: #333; /* Set text color for body cells */
 }
 
+
+
+.liness {
+    display: flex;
+    justify-content: space-between;
+}
+
+#sl, #item, #qyt, #delivery, #cgst, #sgst, #price {
+    padding: 5px; /* Adjust padding as needed */
+}
+
+#sl {
+    width: 5%;
+}
+
+#item {
+    width: 15%;
+}
+
+#qyt {
+    width: 10%;
+}
+
+#delivery {
+    width: 20%;
+}
+
+#cgst {
+    width: 10%;
+}
+
+#sgst {
+    width: 15%;
+}
+
+#price {
+    width: 15%;
+}
+
+
+
+
+
     </style>
 
   
@@ -307,6 +436,46 @@
 <script>
     new DataTable("#example");
 
-  
+
+
+    
+    function billdownload(orderIndex) {
+        const invoiceElement = document.getElementById(`invoice${orderIndex}`);
+        console.log("Invoice Element:", invoiceElement);
+        html2canvas(invoiceElement, { scale: 7 }).then((canvas) => {
+            console.log("Canvas width:", canvas.width);
+            console.log("Canvas height:", canvas.height);
+            console.log("Canvas data URL:", canvas.toDataURL());
+        
+            // Calculate dimensions for A4 page
+            const a4Width = 595; // Width of A4 page in pixels
+            const a4Height = 842; // Height of A4 page in pixels
+            
+            // Calculate scaling factors to fit content onto A4 page
+            const scaleFactor = Math.min(a4Width / canvas.width, a4Height / canvas.height);
+            const scaledWidth = canvas.width * scaleFactor;
+            const scaledHeight = canvas.height * scaleFactor;
+            
+            // Create a new jsPDF instance with A4 page dimensions
+            const { jsPDF } = window.jspdf;
+            let doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'px',
+                imageQuality: 1,
+                margin: { top: 100, right: 30, bottom: 50, left: 30 },
+                format: [a4Width, a4Height]
+            });
+            doc.context2d.imageSmoothingEnabled = true;
+            // Add the scaled image to the PDF document
+            doc.addImage(canvas, 'JPEG', 0, 50, scaledWidth, scaledHeight);
+            // Save the PDF file
+            doc.save("newFile.pdf");
+        });
+    }
+    
+    
+        
+
+
     
 </script>

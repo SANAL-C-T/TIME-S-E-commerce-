@@ -19,37 +19,42 @@
         </tr>
       </thead>
       <tbody>
-        <% cartItem.cart.items.forEach((item, index) => { %>
-          <tr id="tableRow_<%= index %>">
-            <td><%= index + 1 %></td>
-            <td>
-              <img src="<%= item.products && item.products.productImage && item.products.productImage[0] && item.products.productImage[0].image1 ? item.products.productImage[0].image1 : 'placeholder_image_url' %>" alt="<%= item.products && item.products.productName ? item.products.productName : 'Product Name' %>" style="width: 60px; height: auto;">
-            </td>
-            <td><%= item.products && item.products.productName ? item.products.productName : 'Product Name' %></td>
-            <td>
-              <span id="qtybox_<%= index %>">
-                <button onclick="decrementQuantity(<%= index %>)" style="border: none; padding: 5px; background-color: transparent; color: #ff001e;"><b><strong>-</strong></b></button>
-                <span id="displayqty_<%= index %>" class="quantity-display"><%= item.quantity %></span>
-                <button onclick="incrementQuantity(<%= index %>)" style="border: none; padding: 5px; background-color: transparent; color: #2cfb02;"><b><strong>+</strong></b></button>
-              </span>
-              <p id="limit_<%= index %>" class="text-danger my-3 "></p>
-            </td>
-            <td id="unitPrice_<%= index %>">&#8377; <%= item.products && item.products.productPrice ? item.products.productPrice : '0' %></td>
-            <td id="discount_<%= index %>"><%= item.percentageDiscounted %> %</td>
-            <td id="totalPrice_<%= index %>">&#8377; <%= item.price %></td>
-            <td>
-              <form id="deleteForm_<%= index %>" action="/itemdelete" method="post">
-                <input type="hidden" name="currentQyt" value="<%= item.quantity %>">
-                <input type="hidden" name="deleteIndex" value="<%= index %>">
-                <input type="hidden" name="id" value="<%= item.products && item.products._id ? item.products._id : 'placeholder_product_id' %>">
-                <button type="button" onclick="confirmDelete('deleteForm_<%= index %>')" style="background-color: transparent; border: none; color: #df1919;"><b>X</b></button>
-              </form>
-            </td>
-          </tr>
+        <% cartItem.cart.items.forEach((x, index) => { %>
+            <% if (x.products != null) { %>
+                <tr id="tableRow_<%= index %>">
+                    <td><%= index + 1 %></td>
+                    <td><img src="<%= x.products.productImage[0].image1 %>" alt="<%= x.productName %>" style="width: 60px; height: auto;"></td>
+                    <td><%= x.productName %></td>
+                    <td>
+                        <span id="qtybox_<%= index %>">
+                            <button onclick="decrementQuantity(<%= index %>)" style="border: none; padding: 5px; background-color: transparent; color: #ff001e;">
+                                <b><strong>-</strong></b>
+                            </button>
+                            <span id="displayqty_<%= index %>" class="quantity-display"><%= x.quantity %></span>
+                            <button onclick="incrementQuantity(<%= index %>)" style="border: none; padding: 5px; background-color: transparent; color: #2cfb02;">
+                                <b><strong>+</strong></b>
+                            </button>
+                        </span>
+                        <p id="limit_<%= index %>" class="text-danger my-3 "></p>
+                    </td>
+                    <td id="unitPrice_<%= index %>">&#8377; <%= x.price %></td>
+                    <td id="discount_<%= index %>"><%= x.percentageDiscounted %> %</td>
+                    <td id="totalPrice_<%= index %>">&#8377; <%= x.price %></td>
+                    <td>
+                        <form id="deleteForm_<%= index %>" action="/itemdelete" method="post">
+                            <input type="hidden" name="currentQty" value="<%= x.quantity %>">
+                            <input type="hidden" name="deleteIndex" value="<%= index %>">
+                            <input type="hidden" name="id" value="<%= x.products ? x.products._id : '' %>">
+                            <button type="button" onclick="confirmDelete('<%= index %>')" style="background-color: transparent; border: none; color: #df1919;">
+                                <b>X</b>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            <% } %>
         <% }); %>
-      </tbody>
-      
-      
+    </tbody>
+    
       <% if (locals.errorMessage) { %>
         <script>
             setTimeout(function() {
@@ -72,38 +77,30 @@
           <hr>
           <li id="subprice"><h5>Sub Total: &#8377; <%=cartItem.cart.OrderTotalPrice%></h5></li>
         
-          <li><h5>GST: 18%</h5></li>
+          <li><h5>GST: &#8377; 0</h5></li>
           <li><h5>Shipping Charges: &#8377; FREE</h5></li>
           <hr>
-          <li id="cartprice"><h5><B>Grand Total:</B> &#8377; <%=cartItem.cart.OrderTotalPrice%></h5></li>
+          <li id="cartprice"><h4>Grand Total: &#8377; <%=cartItem.cart.OrderTotalPrice%></h4></li>
           <hr>
-
-<div id="couponSection">
-  <h6 id="question">Have a coupon ?</h6>
+          <h6>Have a coupon ?</h6>
   
-  <% if (cartItem.cart.couponApplied == false) { %>
-    <div id="hasapplied">
-        <input type="text" class="w-100" id="couponcode" name="couponcode" placeholder="Enter Coupon Code">
-        <button class="btn btn-success w-100 mt-4" onclick="couponSubmit()">APPLY</button>
-    </div>
-<% } else if(cartItem.cart.couponApplied == true) { %>
-    <div id="hasremoved">
-        <script>
-            var appliedCouponCode = '<%= cartItem.cart.couponCode %>';
-        </script>
-        <input type="text" class="w-100" id="removecode" name="removecode" hidden>
-        <button class="btn btn-warning w-100 mt-4" onclick="removeCoupon()">REMOVE COUPON</button>
-    </div>
-<% } %>
-
-
-
-</div>
-       
+          <% if (cartItem.cart.couponApplied == false) { %>
+            <div>
+                <input type="text" class="w-100" id="couponcode" name="couponcode" placeholder="Enter Coupon Code">
+                <button class="btn btn-success w-100 mt-4" onclick="couponSubmit()">APPLY</button>
+            </div>
+        <% } else if(cartItem.cart.couponApplied == true) { %>
+            <div>
+          
+                <script>
+                    var appliedCouponCode = '<%= cartItem.cart.couponCode %>';
+                </script>
+                <input type="text" class="w-100" id="removecode" name="removecode" placeholder="Enter Coupon Code">
+                <button class="btn btn-warning w-100 mt-4" onclick="removeCoupon()">REMOVE</button>
+            </div>
+        <% } %>
+        
           <hr>
-
-
-
           <form action="/paynow" method="GET">
               <button type="submit" class="btn btn-warning w-100 mt-4">PAY NOW</button>
           </form>
@@ -260,22 +257,22 @@
 
 
 //..........confirm delete................................................................
-function confirmDelete(formId) {
-  Swal.fire({
-    title: 'Are you sure?',
-    text: 'You won\'t be able to revert this!',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#008000',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes, delete it!'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      document.getElementById(formId).submit();
-    }
-  });
-}
 
+  function confirmDelete() {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You won\'t be able to revert this!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: ' #008000',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        document.getElementById('deleteForm').submit();
+      }
+    });
+  }
 
 
 
@@ -301,21 +298,7 @@ function confirmDelete(formId) {
     })
     .then(data => {
       console.log('Success:', data);
-      if(data.message=="Coupon removed successfully."){
-       
-    console.log("removecoupon::",data)
-        const newPriceS=document.getElementById("cartprice")
-        newPriceS.innerHTML=`<h5><B>Grand Total:</B> &#8377; ${data.grandtotals}</h5>`
-     
-        const displayCouponMessage=document.getElementById("question");
-        displayCouponMessage.innerText="Have a coupon ?"
-
-        const hideRemovebutton=document.getElementById("hasapplied")
-        hideRemovebutton.innerHTML=` <input type="text" class="w-100" id="couponcode" name="couponcode" placeholder="Enter Coupon Code">
-        <button class="btn btn-success w-100 mt-4" onclick="couponSubmit()">APPLY</button>`
-        
-      }
-    
+      location.reload();
     })
     .catch(error => {
       console.error('Error removing coupon:', error);
@@ -351,26 +334,7 @@ function confirmDelete(formId) {
     })
     .then(data => {
       console.log('Success:', data);
-    
-      if(data.message=="Coupon applied successfully."){
-        const newPrice=document.getElementById("cartprice")
-        newPrice.innerHTML=`<h5><B>Grand Total:</B> &#8377; ${data.grandtotal}</h5>`
-     
-        const displayCouponMessage=document.getElementById("question");
-        displayCouponMessage.innerText=`Coupon used: ${data.codes}` 
-
-        const hideapplybutton=document.getElementById("hasapplied")
-        hideapplybutton.innerHTML=` <input type="text" class="w-100" id="removecode" name="removecode" hidden>
-        <button class="btn btn-warning w-100 mt-4" onclick="removeCoupon()">REMOVE COUPON</button>`
-
-        
-      }
-    else if(data.message=="Coupon does not exist."){
-      const displayCouponMessage=document.getElementById("question");
-      displayCouponMessage.innerText=`Coupon does not exist ` 
-    }
-          
-
+      location.reload();
     })
     .catch(error => {
       console.error('Error applying coupon:', error);

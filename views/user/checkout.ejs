@@ -218,6 +218,9 @@
 
 <script>
   var selectionCheck=1;
+
+
+
     function paymentprocess() {  
       var paymentMethod= document.querySelector('input[name="paymentMethod"]:checked').value;
       var selectedRadio = document.querySelector('input[name="fromDbAddressRadio"]:checked');
@@ -251,14 +254,18 @@
                 
                 .then(data => {
 
-if(data.COD==true||data.wallet==true){
-  window.location.href = "/successpage"
-}
-else if(data.COD==false||data.wallet==false){
-  window.location.href = "/failedpage"
-}
+                
+                            if(data.COD==true||data.wallet==true){
+                              console.log("Success 1:", data);
+                              window.location.href = "/successpage"
+                            }
+                            else if(data.COD==false||data.wallet==false){
+                              console.log("Success 1:", data);
+                              window.location.href = "/failedpage"
 
-                    console.log("Success 1:", data);
+                            
+                            }
+
                     var options = {//the data send from backend after creating the interface
                         "key": data.key_id,
                         "amount": data.amount,
@@ -323,21 +330,20 @@ else if(data.COD==false||data.wallet==false){
       
       else if(selectionCheck==2) {//purpose of this is to used typed address for delivery...
       
-        console.log("in typeD address section")
+        console.log("in typed address section")
     
-    
-     
-        var saveaddressCheckbox=document.getElementById('saveaddressCheckbox').checked;
-        var phoneNumber =  document.getElementById('phonenumber').value;
-        var house =  document.getElementById('house').value;
-        var street = document.getElementById('street').value;
-        var location = document.getElementById('location').value;
-        var landmark =  document.getElementById('landmark').value;
-        var city =  document.getElementById('city').value;
-        var state =  document.getElementById('state').value;
-        var Country =  document.getElementById('Country').value;
-        var pincode =  document.getElementById('pincode').value;
-        console.log("paymentMode2",paymentMethod) //working
+  
+        const saveaddressCheckbox=document.getElementById('saveaddressCheckbox').checked;
+        const phoneNumber =  document.getElementById('phonenumber').value;
+        const house =  document.getElementById('house').value;
+        const street = document.getElementById('street').value;
+        const location = document.getElementById('location').value;
+        const landmark =  document.getElementById('landmark').value;
+        const city =  document.getElementById('city').value;
+        const state =  document.getElementById('state').value;
+        const Country =  document.getElementById('Country').value;
+        const pincode =  document.getElementById('pincode').value;
+        console.log("paymentMode2:::::",paymentMethod) //working
 
         fetch("/paynow", {
           method: "POST",
@@ -361,63 +367,87 @@ else if(data.COD==false||data.wallet==false){
       })
           .then(response => {
               if (!response.ok) {
-                  throw new Error("paynow fetch in checkout not giving an OK response as intended");
+                  throw new Error("not working in 2nd fetch of payment");
               }
               return response.json();
           })
           .then(data => {
+            if(data.COD==true||data.wallet==true){
+              console.log("Success 2:", data);         
+              window.location.href = "/successpage"
+            }
+            else if(data.COD==false||data.wallet==false){
               console.log("Success 2:", data);
-        
+              window.location.href = "/failedpage"
+
+            }
+
               var options = {
-                  "key": data.key_id,
-                  "amount": data.amount,
-                  "currency": "INR",
-                  "name": "TIME S",
-                  "description": "Test Transaction",
-                  "image": "/image/TIME S.jpg",
-                  "order_id": data.order_id,
-                  "handler": function (response) {
-                      alert(response.razorpay_payment_id);
-                      alert(response.razorpay_order_id);
-                      alert(response.razorpay_signature);
-                  },
-                  "prefill": {
-                    "name": data.username,
-                    "email": data.email,
-                    "contact": data.phone
-                  },
-                  "notes": {
-                      "address": ""
-                  },
-                  "theme": {
-                      "color": "#735bff"
-                  }
-              };
-
-              var rzp1 = new Razorpay(options);
-              rzp1.on('payment.failed', function (response) {
+                "key": data.key_id,
+                        "amount": data.amount,
+                        "currency": "INR",
+                        "name": "TIME S",
+                        "description": "Test Payment",
+                        "image": "/image/TIME S.jpg",
+                        "order_id": data.order_id,
+                       
+                        "prefill": {
+                          "name": data.username,
+                          "email": data.email,
+                          "contact": data.phone
+                        },
+                        "notes": {
+                            "address": ""
+                        },
+                        "theme": {
+                            "color": "#735bff" 
+                        },
 
 
-                sendRazFailedPaymentDetials(code,description,source,step,reason,order_id,payment_id)
-                  alert(response.error.code);
-                  alert(response.error.description);
-                  alert(response.error.source);
-                  alert(response.error.step);
-                  alert(response.error.reason);
-                  alert(response.error.metadata.order_id);
-                  alert(response.error.metadata.payment_id);
-              });
+                        config: {
+                          display: {
+                            blocks: {
+                              banks: {
+                                name: 'Pay via UPI',
+                                instruments: [
+                                  {
+                                    method: 'upi'
+                                  }
+                                ],
+                              },
+                            },
+                            sequence: ['block.banks'],
+                            preferences: {
+                              show_default_blocks: true,
+                            },
+                          },
+                        },
+                  
+                        "handler": function (response) {
+                          sendRazPaymentDetials(response.razorpay_payment_id, response.razorpay_order_id, response.razorpay_signature);
+                        },
+                    };
 
-              rzp1.open(); // Open Razorpay after initialization
-          })
-          .catch(error => {
-              console.error("Error during fetch:", error);
-          });
+                    var rzp1 = new Razorpay(options);
+
+                    rzp1.on('payment.failed', function (response) {
+                    sendRazFailedPaymentDetials(response.code,response.description,response.source,response.step,response.reason,response.order_id,response.payment_id)
+                      
+                    });
+
+                    rzp1.open(); // Open Razorpay after initialization
+                })
+                .catch(error => {
+                    console.error("Error during fetch:", error);
+                });
        
       }
     
       
     }
+
+
+
 
 
 
@@ -432,9 +462,16 @@ else if(data.COD==false||data.wallet==false){
       })
       .then(response => response.json())
       .then(data => {
-          // Redirect to success page if the request is successful
-          alert(data)
+        if (data === "payment verified") {
+          // Display a success message and redirect to success page
           window.location.href = "/successpage";
+      } else {
+          // Display an error message
+          alert("Payment not verified");
+          // Handle the error condition accordingly
+          // For example, you might want to redirect to an error page
+          // window.location.href = "/errorpage";
+      }
          
       })
       .catch(error => {
@@ -442,6 +479,17 @@ else if(data.COD==false||data.wallet==false){
           console.error("Error:", error);
       });
   }
+
+
+
+
+
+
+
+
+
+
+
 
     async function sendRazFailedPaymentDetials(code,description,source,step,reason,order_id,payment_id){
       fetch("/failedPaymentData",{
@@ -455,6 +503,15 @@ else if(data.COD==false||data.wallet==false){
           }
 
 
+
+
+
+
+
+
+
+
+//function related to accordian
 
 function clearRadioButtons() {
   var radioButtons = document.getElementsByName("fromDbAddressRadio");
@@ -532,11 +589,6 @@ if(house.trim()===""){
   houseMessage.innerHTML="Mandatory";
   isValid=false;
 }
-
-
-
-
-
 
 
 }

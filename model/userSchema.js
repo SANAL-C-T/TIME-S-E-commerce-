@@ -60,7 +60,14 @@ const userSchema = mongoose.Schema({
         OneTimeUsed: Boolean,
         appliedOnDate: String,
         expiryDate: String
-    }]
+    }],
+
+    My_promotionalCode: "string",
+    usedApromotionalCode: {
+        type: Boolean,
+        default: false
+    },
+
 });
 
 const userData = mongoose.model("user", userSchema);

@@ -43,6 +43,70 @@
 
 </div>
 
+
+<div class="table-responsive mt-3">
+  <h5 class="text-center">REVENUE DETAILS</h5>
+  <table id="example2" style="width:100%">
+    <thead>
+      <tr>
+        <th>GENERATED AMOUNT</th>
+        <th>WALLET</th>
+        <th>CASH ON DELIVERY</th>
+        <th>ONLINE PAYMENT</th>
+        <th>AMOUNT RETURNED</th>
+        <th>AMOUNT DISCOUNTED BY COUPON</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>₹ <%=revenue%></td>
+        <td>₹ <%=walletss %></td>
+        <td>₹ <%=cod%></td>
+        <td>₹ <%=raz%></td>
+        <td>₹ <%=returned%></td>
+        <td>₹ <%=totalcouponDiscount%></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="table-responsive mt-3">
+  <h5 class="text-center">COUNT DETAILS</h5>
+  <table id="example3" style="width:100%">
+    <thead>
+      <tr>
+        <th>SALE COUNT</th>
+        <th>RETURN COUNT</th>
+        <th>DELIVERED COUNT</th>
+        <th>DISCOUNTED COUNT</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><!-- Populate with sale count --></td>
+        <td><!-- Populate with return count --></td>
+        <td><!-- Populate with delivered count --></td>
+        <td><!-- Populate with discounted count --></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="d-flex justify-content-between">
+  <a href="/admin/downloadrevenue"><button>DOWNLOAD REVENUE DETAILS IN EXCEL FILE</button></a>
+  <a href="/admin/downloadrevenuepdf"><button>DOWNLOAD REVENUE DETAILS IN PDF</button></a>
+</div>
+
+
+
+
+
+
+
+
+
+
+
 </div>
 
 

@@ -56,7 +56,7 @@
               <br>
 
               <br>
-              <h4 class="card-text">Ratings & Reviews</h4>
+              <h4 class="card-text">Avg Rating: <b id="avgRating"><%=roundedaverageRating%></b></h4>
               <br>
 
 
@@ -101,3 +101,11 @@
                    
 
 <%-include("../partials/footer.ejs")%>
+
+
+
+<style>
+  #avgRating{
+    color: rgb(255, 98, 0);
+  }
+</style>

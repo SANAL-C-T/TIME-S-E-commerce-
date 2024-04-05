@@ -14,6 +14,9 @@ const product = require("../controller/productController")
 adminUrlRouter.get("/enter", jwtAuth.haveToken, adminin.adminlogin)
 adminUrlRouter.post("/enter", adminin.adminVerification)
 adminUrlRouter.get("/dashboard", jwtAuth.haveToken1, adminin.adminDashboard)
+adminUrlRouter.post("/adjustGraph", jwtAuth.haveToken1, adminin.renderDashboard)
+
+
 adminUrlRouter.get("/banner", jwtAuth.haveToken1, adminin.adminbanner)
 //add product
 adminUrlRouter.get("/products", jwtAuth.haveToken1, adminin.adminproduct)

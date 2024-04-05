@@ -9,9 +9,11 @@
 
     <div class="align-right">
         <select id="selectOption">
-            <option value="day"> DAILY REPORT </option>
-            <option value="month"> MONTHLY REPORT </option>
-            <option value="year"> YEARLY REPORT </option>
+            <option value="overall"> OVERALL DATA </option>
+            <option value="daywise"> TODAYS DATA </option>
+            <option value="weekwise"> WEEKLY DATA </option>
+            <option value="monthwise"> MONTHLY DATA </option>
+            <option value="yearwise"> YEARLY DATA </option>
         </select>
     </div>
     
@@ -57,22 +59,36 @@
     </div>
     <hr>
 <h3>Top 10 Best selling products</h3>
-    <div class="d-flex mb-5">
-
+    <div class=" mb-5">
+        <% for (let i = 0; i < 10 && i < urlData.bestseller.length; i++) { %>
+            <div class=" m-3" id="bestSeller"><%= urlData.bestseller[i]._id %></div>
+        <% } %>
+        
+      
 
 
     </div>
 </div>
 
+
+
+<!-- padding data to the chart -->
 <input type="text" id="paymentObject" value="<%= JSON.stringify(urlData.paymentMethod) %>" hidden>
 <input type="text" id="statusObject" value="<%= JSON.stringify(urlData.StatusCount) %>" hidden>
 <input type="text" id="daywiseSoldItemsObject" value="<%= JSON.stringify(urlData.daywiseSoldItems) %>" hidden>
+<!-- ...................... -->
+
+
+
+
+
+
 
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {          
 
         var encodedstatusCount = document.getElementById("statusObject").value;
         var statusCount = JSON.parse(encodedstatusCount);
@@ -83,146 +99,146 @@
 
 
 // below a bar chart using Chart.js
-const ctx = document.getElementById('myChart').getContext('2d');
+        const ctx = document.getElementById('myChart').getContext('2d');
 
-const myChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: statusCountlabels,
-        datasets: [{
-            label: 'Order details',
-            data: statusCountdataPoints,
-            backgroundColor:  ['rgba(255, 99, 132, 0.6)','rgba(0, 128, 0, 0.6)','rgba(54, 162, 235, 0.6)'],
-            borderColor: 'rgba(0, 0, 0, 1)',
-            borderWidth: 1,
-            barThickness: 50
-        }]
-    },
-    options: {
-        scales: {
-            x: {
-                stacked: true,
-                ticks: {
-                    color: 'black',
-                    font: {
-                        size: 11,
-                        family: "'Arial', sans-serif",
-                        style: ''
-                    }
-                }
+        const myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: statusCountlabels,
+                datasets: [{
+                    label: 'Order details',
+                    data: statusCountdataPoints,
+                    backgroundColor:  ['rgba(255, 99, 132, 0.6)','rgba(0, 128, 0, 0.6)','rgba(54, 162, 235, 0.6)'],
+                    borderColor: 'rgba(0, 0, 0, 1)',
+                    borderWidth: 1,
+                    barThickness: 50
+                }]
             },
-            y: {
-                beginAtZero: true,
-                grid: {
-                    color: 'rgba(0, 0, 0, 0.1)',
-                    lineWidth: 1
+            options: {
+                scales: {
+                    x: {
+                        stacked: true,
+                        ticks: {
+                            color: 'black',
+                            font: {
+                                size: 11,
+                                family: "'Arial', sans-serif",
+                                style: ''
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)',
+                            lineWidth: 1
+                        },
+                        ticks: {
+                            color: 'black',
+                            font: {
+                                size: 11,
+                                family: "'Arial', sans-serif",
+                                style: ''
+                            }
+                        }
+                    }
                 },
-                ticks: {
-                    color: 'black',
-                    font: {
-                        size: 11,
-                        family: "'Arial', sans-serif",
-                        style: ''
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Order Status',
+                        font: {
+                            size: 14,
+                            family: "'Arial', sans-serif",
+                            weight: 'bold'
+                        },
+                        color: 'black'
+                    },
+                    legend: {
+                        display:  false,
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                size: 12,
+                                weight: 'normal'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        enabled: true,
+                    
+                        titleFont: {
+                            size: 12,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 12
+                        }
+                        
                     }
                 }
             }
-        },
-        plugins: {
-            title: {
-                display: true,
-                text: 'Order Status',
-                font: {
-                    size: 14,
-                    family: "'Arial', sans-serif",
-                    weight: 'bold'
-                },
-                color: 'black'
-            },
-            legend: {
-                display:  false,
-                position: 'bottom',
-                labels: {
-                    font: {
-                        size: 12,
-                        weight: 'normal'
-                    }
-                }
-            },
-            tooltip: {
-                enabled: true,
-             
-                titleFont: {
-                    size: 12,
-                    weight: 'bold'
-                },
-                bodyFont: {
-                    size: 12
-                }
-                
-            }
-        }
-    }
-    
+            
+        });
+
+
+
+                            var encodedPaymentData = document.getElementById("paymentObject").value;
+                            var paymentMethodData = JSON.parse(encodedPaymentData);
+
+                            // Extracting labels and data points from paymentMethodData
+                            var labels = Object.keys(paymentMethodData);
+                            var dataPoints = Object.values(paymentMethodData);
+
+                            // below a pie chart
+                            var ctxPieChart = document.getElementById('myChart2').getContext('2d');
+                            var myPieChart = new Chart(ctxPieChart, {
+                                type: 'doughnut',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: 'Sales by Payment Method',
+                                        data: dataPoints,
+                                        backgroundColor: [
+                                            'rgba(255, 165, 0, 0.6)',   // Orange
+                                            'rgba(57, 255, 20, 0.6)',   // Neon Green
+                                            'rgba(255, 115, 125, 0.6)'  // Light Red
+                                        ],
+                                        borderColor: [
+                                            'rgba(0, 0, 0, 1)',  // Black
+                                            'rgba(0, 0, 0, 1)',  // Black
+                                            'rgba(0, 0, 0, 1)'   // Black
+                                        ],
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    title: {
+                                        display: true,
+                                        text: 'Payment Mode',
+                                        font: {
+                                            size: 14,
+                                            family: "'Arial', sans-serif",
+                                            weight: 'bold'
+                                        },
+                                        color: 'black'
+                                    },
+                                    legend: {
+                                        display: true,
+                                        position: 'bottom',
+                                        labels: {
+                                            fontColor: 'black'
+                                        }
+                                    },
+                                
+                                }
+                            });
+
+
+
+
+                                    
 });
-
-
-
-var encodedPaymentData = document.getElementById("paymentObject").value;
-var paymentMethodData = JSON.parse(encodedPaymentData);
-
-// Extracting labels and data points from paymentMethodData
-var labels = Object.keys(paymentMethodData);
-var dataPoints = Object.values(paymentMethodData);
-
-// below a pie chart
-var ctxPieChart = document.getElementById('myChart2').getContext('2d');
-var myPieChart = new Chart(ctxPieChart, {
-    type: 'doughnut',
-    data: {
-        labels: labels,
-        datasets: [{
-            label: 'Sales by Payment Method',
-            data: dataPoints,
-            backgroundColor: [
-                'rgba(255, 165, 0, 0.6)',   // Orange
-                'rgba(57, 255, 20, 0.6)',   // Neon Green
-                'rgba(255, 115, 125, 0.6)'  // Light Red
-            ],
-            borderColor: [
-                'rgba(0, 0, 0, 1)',  // Black
-                'rgba(0, 0, 0, 1)',  // Black
-                'rgba(0, 0, 0, 1)'   // Black
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        title: {
-            display: true,
-            text: 'Payment Mode',
-            font: {
-                size: 14,
-                family: "'Arial', sans-serif",
-                weight: 'bold'
-            },
-            color: 'black'
-        },
-        legend: {
-            display: true,
-            position: 'bottom',
-            labels: {
-                fontColor: 'black'
-            }
-        },
-        // Add more options here as needed
-    }
-});
-
-
-
-
-        
-    });
 
 
 
@@ -230,97 +246,134 @@ var myPieChart = new Chart(ctxPieChart, {
 
 //sales quantity chart.....
 
+                        
+                        var encodedSalesCount = document.getElementById("daywiseSoldItemsObject").value;
+                        var salesCount = JSON.parse(encodedSalesCount);
+
+                        // Extracting labels and data points from paymentMethodData
+                        var salesCountlabels = Object.keys(salesCount);
+                        var salesCountdataPoints = Object.values(salesCount);
+
+
+                    // below a bar chart using Chart.js
+                    const ctx = document.getElementById('myChart3').getContext('2d');
+
+                    const myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: salesCountlabels,
+                        datasets: [{
+                            label: 'Order details',
+                            data: salesCountdataPoints,
+                            backgroundColor: 'rgba(255, 99, 132, 1)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 2,
+                            barThickness: 80
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                stacked: true,
+                                ticks: {
+                                    color: 'black',
+                                    font: {
+                                        size: 11,
+                                        family: "'Arial', sans-serif",
+                                        style: ''
+                                    }
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)',
+                                    lineWidth: 1
+                                },
+                                ticks: {
+                                    color: 'black',
+                                    font: {
+                                        size: 11,
+                                        family: "'Arial', sans-serif",
+                                        style: ''
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Sales per day',
+                                font: {
+                                    size: 14,
+                                    family: "'Arial', sans-serif",
+                                    weight: 'bold'
+                                },
+                                color: 'black'
+                            },
+                            legend: {
+                                display:  false,
+                                position: 'bottom',
+                                labels: {
+                                    font: {
+                                        size: 12,
+                                        weight: 'normal'
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                enabled: true,
+                            
+                                titleFont: {
+                                    size: 12,
+                                    weight: 'bold'
+                                },
+                                bodyFont: {
+                                    size: 12
+                                }
+                                
+                            }
+                        }
+                    }
+
+                    });
+
+
+
+
+
+document.getElementById('selectOption').addEventListener('change', function() {
+    var selectedValue = this.value;
+    fetch("/admin/adjustGraph", {
+        method: "POST",
+        headers: { 
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+        body: JSON.stringify( {selectedValue} ) 
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log("Response data:", data);
+ 
+
+    })
+    .catch(error => {
     
-    var encodedSalesCount = document.getElementById("daywiseSoldItemsObject").value;
-    var salesCount = JSON.parse(encodedSalesCount);
-
-    // Extracting labels and data points from paymentMethodData
-    var salesCountlabels = Object.keys(salesCount);
-    var salesCountdataPoints = Object.values(salesCount);
+        console.error('Fetch error:', error);
+    });
+    
 
 
-// below a bar chart using Chart.js
-const ctx = document.getElementById('myChart3').getContext('2d');
-
-const myChart = new Chart(ctx, {
-type: 'line',
-data: {
-    labels: salesCountlabels,
-    datasets: [{
-        label: 'Order details',
-        data: salesCountdataPoints,
-        backgroundColor: 'rgba(255, 99, 132, 1)',
-        borderColor: 'rgba(255, 99, 132, 1)',
-        borderWidth: 2,
-        barThickness: 80
-    }]
-},
-options: {
-    scales: {
-        x: {
-            stacked: true,
-            ticks: {
-                color: 'black',
-                font: {
-                    size: 11,
-                    family: "'Arial', sans-serif",
-                    style: ''
-                }
-            }
-        },
-        y: {
-            beginAtZero: true,
-            grid: {
-                color: 'rgba(0, 0, 0, 0.1)',
-                lineWidth: 1
-            },
-            ticks: {
-                color: 'black',
-                font: {
-                    size: 11,
-                    family: "'Arial', sans-serif",
-                    style: ''
-                }
-            }
-        }
-    },
-    plugins: {
-        title: {
-            display: true,
-            text: 'Sales per day',
-            font: {
-                size: 14,
-                family: "'Arial', sans-serif",
-                weight: 'bold'
-            },
-            color: 'black'
-        },
-        legend: {
-            display:  false,
-            position: 'bottom',
-            labels: {
-                font: {
-                    size: 12,
-                    weight: 'normal'
-                }
-            }
-        },
-        tooltip: {
-            enabled: true,
-         
-            titleFont: {
-                size: 12,
-                weight: 'bold'
-            },
-            bodyFont: {
-                size: 12
-            }
-            
-        }
-    }
-}
 
 });
+
+
 </script>
 
 <style>
@@ -350,4 +403,12 @@ options: {
         text-align: right;
     }
     
+
+
+    #bestSeller{
+        background-color: #eff7d3;
+        box-shadow: 2px 2px 8px rgba(0.1, 0.1, 0.1, 0.2);
+        padding: 10px;
+        
+    }
 </style>

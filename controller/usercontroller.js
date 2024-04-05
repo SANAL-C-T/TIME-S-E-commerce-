@@ -409,10 +409,32 @@ const productdetail = async (req, res) => {
         }
         {}
 
-    
-    
 
-        res.render("user/productdetail.ejs", { pdetail });
+
+//geting the average review
+const getAvg=await reviewData.find({product:pId}).populate({
+    path:'product',
+    model:"products",
+    select:"_id"
+})
+    console.log("avggg:",getAvg)
+    let totalRating = 0;
+let reviewCount = getAvg.length;
+
+// Iterate through each review and sum up the ratings
+getAvg.forEach(review => {
+  totalRating += review.rating;
+});
+
+// Calculate the average rating
+const averageRating = reviewCount > 0 ? totalRating / reviewCount : 0;
+let roundedaverageRating = averageRating.toFixed(2);
+console.log("Average Rating:",roundedaverageRating);
+
+
+
+
+        res.render("user/productdetail.ejs", { pdetail,roundedaverageRating });
     } catch (error) {
         console.log(error.message);
         res.status(500).send('Internal Server Error');
@@ -748,7 +770,7 @@ const editprofile = async (req, res) => {
 const saveEditProfile = async (req, res) => {
     try {
        let user;
-        let token=req.cookies.usertoken;
+        const token=req.cookies.usertoken;
 
         JWTtoken.verify(token,jwtcode,(err,decoded)=>{
         if(err){
@@ -758,11 +780,11 @@ const saveEditProfile = async (req, res) => {
         user=usersdetail
         console.log(user)
        }})
+//................................................................
 
-
-        let pImage = `/${req.file.filename}`;
+        const pImage = `/${req.file.filename}`;
        
-        let address = {
+        const address = {
             houseNo: req.body.house,
             street: req.body.street,
             location: req.body.location,
@@ -934,13 +956,13 @@ const viewAllReview = async (req, res) => {
         const selectedProduct= req.params.id;
         // console.log("gd", selectedProduct,usersid)
 
-        const viewRev=await reviewData.find({product:selectedProduct})
+        let viewRev=await reviewData.find({product:selectedProduct})
         // console.log("viewRev::",viewRev)
         //we are just changing the time format in the array
         viewRev.forEach(review => {
             review.formattedTime = moment(review.Time).format('MMMM Do YYYY, h:mm:ss a');
         });
-        
+        console.log("viewRevinnnn::",viewRev)
         res.render("user/allreview.ejs",{viewRev,selectedProduct})
 
     }
@@ -958,9 +980,11 @@ const sortNewReview = async (req, res) => {
         const productIdNow = req.params.selectedProduct;
         console.log("productIdNow:", productIdNow);
 
-        const viewRev = await reviewData.find({ product: productIdNow }).sort({Time: -1 });
-
-// console.log(viewRev)
+        let viewRev = await reviewData.find({ product: productIdNow }).sort({Time: -1 });
+        viewRev.forEach(review => {
+            review.formattedTime = moment(review.Time).format('MMMM Do YYYY, h:mm:ss a');
+        });
+console.log(viewRev)
         res.status(200).json({ viewRev });
 
     } catch (error) {
@@ -974,8 +998,10 @@ const sorthighestStar= async (req, res) => {
         const productIdNow = req.params.selectedProduct;
         console.log("productIdNow:", productIdNow);
 
-        const viewRev = await reviewData.find({ product: productIdNow }).sort({rating: 1 });
-
+        let viewRev = await reviewData.find({ product: productIdNow }).sort({rating: 1 });
+        viewRev.forEach(review => {
+            review.formattedTime = moment(review.Time).format('MMMM Do YYYY, h:mm:ss a');
+        });
 // console.log(viewRev)
         res.status(200).json({ viewRev });
 
@@ -993,8 +1019,10 @@ const sortLowestStar= async (req, res) => {
         const productIdNow = req.params.selectedProduct;
         console.log("productIdNow:", productIdNow);
 
-        const viewRev = await reviewData.find({ product: productIdNow }).sort({rating: -1 });
-
+        let viewRev = await reviewData.find({ product: productIdNow }).sort({rating: -1 });
+        viewRev.forEach(review => {
+            review.formattedTime = moment(review.Time).format('MMMM Do YYYY, h:mm:ss a');
+        });
 console.log(viewRev)
         res.status(200).json({ viewRev });
 

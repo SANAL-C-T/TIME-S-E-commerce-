@@ -494,6 +494,8 @@ const addAddressToPurchase = async (req, res) => {
         var mob;
 
         const savedAddress = req.body.Value;
+
+
         var paymentMode = req.body.paymentMethod;
         const tosaveaddressCheckbox = req.body.saveaddressCheckbox;
 
@@ -536,17 +538,22 @@ const addAddressToPurchase = async (req, res) => {
         name = userD.username;
         email = userD.email;
         mob = userD.phone;
+
         if (saveaddressCheckbox == true) {
-            const addressFromSaved = req.body.Value;
-            // console.log(" >><<<>><<user need to save the address to db, now in saveaddressCheckbox:true")
+            // const addressFromSaved = req.body.Value;
+            console.log(" >><<<>><<user need to save the address to db, now in saveaddressCheckbox:true")
             //it is stored in users database.
+            //it takes address as a object
             await userData.findOneAndUpdate({ _id: usersid }, { $push: { Address: addresssss } },
                 { new: true } // Return the modified document
             );
 
+            let strAddAddresstodb = `phoneNo:${addresssss.phoneNo} houseNo:${addresssss.houseNo} street:${addresssss.street} location:${addresssss.location} landmark:${addresssss.landmark} city:${addresssss.city} state:${addresssss.state} Country:${addresssss.Country} pincode:${addresssss.pincode}`;
+          
+            //it takes address as a string.
             await cartData.findOneAndUpdate(
                 { userid: usersid },
-                { $set: { Address: addressFromSaved } },
+                { $set: { Address: strAddAddresstodb } },
             );
         }               //below code takes address from the database.
 

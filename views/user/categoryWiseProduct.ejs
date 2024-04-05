@@ -6,33 +6,7 @@
             <div class="sideMenu mt-3 mx-3">
                 <ul class="nav flex-column">
                     <h6 class="text-center mt-3  text-light">FILTER</h6>
-                <!--     <li class="nav-item  ">
-                            <label class="nav-link" for="allproducts">
-                                <input type="radio" id="allproducts" name="productType" class="form-check-input">
-                                ALL PRODUCT
-                            </label>
-                         </li>
-
-                        <li class="nav-item  ">
-                                <label class="nav-link" for="APPLE">
-                                    <input type="radio" id="APPLE" name="productType" class="form-check-input" <%= comingCategory === "APPLE" ? 'checked' : '' %>>
-                                    APPLE
-                                </label>
-                        </li>
-
-                        <li class="nav-item">
-                            <label class="nav-link" for="GARMIN">
-                                <input type="radio" id="GARMIN" name="productType" class="form-check-input" <%= comingCategory === "GARMIN" ? 'checked' : '' %>>
-                                GARMIN
-                            </label>
-                        </li>
-
-                        <li class="nav-item">
-                            <label class="nav-link" for="SAMSUNG">
-                                <input type="radio" id="SAMSUNG" name="productType" class="form-check-input" <%= comingCategory === "SAMSUNG" ? 'checked' : '' %>>
-                                SAMSUNG
-                            </label>
-                        </li> -->
+             
                     
                     <input type="checkbox" id="APPLE" name="productType" class="form-check-input" <%= comingCategory === "APPLE" ? 'checked' : '' %>>
                     <label class="form-check-label" for="APPLE">APPLE</label>
@@ -235,7 +209,7 @@ let usersearch;
                     console.log("frontend",data)
                     updateTitle(data);//updating the page title
 
-                    updateProductHTML(data);//updating the page content.==
+                    updateProductHTML(data);//updating the page content.
                    
                 }
                 catch(error){
@@ -276,7 +250,7 @@ let usersearch;
                 let cards=[] 
 
                 if (data.products != undefined && data.SortByPrice == undefined) {  // when user enter to the page, it wont have any sorting.
-                    console.log("workingggggggggg   in line 292")
+                    console.log("working   in line 253 of ejs category wise product")
                 
                     data.products.forEach(product => { //it shows the offer tag on the image
                         let highestDiscount = 0;
@@ -303,46 +277,92 @@ let usersearch;
                 
                         if (highestDiscount > 0) {
                             // Product has a discount
-                            const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
-                                <div class="card h-100">
-                                    <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
-                                        <div id="discount" style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 255, 0, 0.8); padding: 5px 10px; border-radius: 5px;">${highestDiscount}% OFF</div>
-                                        <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
-                                    </div>
-                                    <div class="card-body">
-                                        <button class="btn btn-link position-absolute start-0 top-0" onclick="toggleWishlist('${product._id}', this)">
-                                            <i class="fas fa-heart" style="color: #63E6BE;"></i>
-                                        </button>
 
-                                        <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
-                                        <a href="/productpage/${product._id}" class="text-reset">
-                                            <button class="m-2 bg-warning px-4">BUY NOW</button>
-                                        </a>
-                                        <h6 class="mb-3">₹ ${product.productPrice}</h6>
+
+                            if (product.stockCount > 0) {
+                                cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
+                                    <div class="card h-100">
+                                        <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                                            <div id="discount" style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 255, 0, 0.8); padding: 5px 10px; border-radius: 5px;">${highestDiscount}% OFF</div>
+                                            <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
+                                        </div>
+                                        <div class="card-body">
+                                            <button class="btn btn-link position-absolute start-0 top-0" onclick="toggleWishlist('${product._id}', this)">
+                                                <i class="fas fa-heart" style="color: #63E6BE;"></i>
+                                            </button>
+                                            <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
+                                            <a href="/productpage/${product._id}" class="text-reset">
+                                                <button class="m-2 bg-warning px-4">BUY NOW</button>
+                                            </a>
+                                            <h6 class="mb-3" style="color: green;">In stock</h6>
+                                            <h6 class="mb-3">₹ ${product.productPrice}</h6>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>`;
+                                </div>`;
+                            } else if (product.stockCount <= 0) {
+                                cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
+                                    <div class="card h-100">
+                                        <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                                            <div id="discount" style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 255, 0, 0.8); padding: 5px 10px; border-radius: 5px;">${highestDiscount}% OFF</div>
+                                            <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
+                                        </div>
+                                        <div class="card-body">
+                                            <button class="btn btn-link position-absolute start-0 top-0" onclick="toggleWishlist('${product._id}', this)">
+                                                <i class="fas fa-heart" style="color: #63E6BE;"></i>
+                                            </button>
+                                            <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
+                                            <h6 class="mb-3" style="color: red;" >Out of Stock</h6>
+                                        </div>
+                                    </div>
+                                </div>`;
+                            }
+
+
+
+
+                          
             
                             cards.push(cardHTML);
                         } else {
                             // Product has no discount
-                            const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
-                                <div class="card h-100">
-                                    <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
-                                        <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
+                            if (product.stockCount > 0) {
+                                cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
+                                    <div class="card h-100">
+                                        <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                                            
+                                            <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
+                                        </div>
+                                        <div class="card-body">
+                                            <button class="btn btn-link position-absolute start-0 top-0" onclick="toggleWishlist('${product._id}', this)">
+                                                <i class="fas fa-heart" style="color: #63E6BE;"></i>
+                                            </button>
+                                            <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
+                                            <a href="/productpage/${product._id}" class="text-reset">
+                                                <button class="m-2 bg-warning px-4">BUY NOW</button>
+                                            </a>
+                                            <h6 class="mb-3" style="color: green;">In stock</h6>
+                                            <h6 class="mb-3">₹ ${product.productPrice}</h6>
+                                        </div>
                                     </div>
-                                    <div class="card-body">
-                                        <button class="btn btn-link position-absolute start-0 top-0" onclick="toggleWishlist('${product._id}', this)">
-                                            <i class="fas fa-heart" style="color: #63E6BE;"></i>
-                                        </button>
-                                        <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
-                                        <a href="/productpage/${product._id}" class="text-reset">
-                                            <button class="m-2 bg-warning px-4">BUY NOW</button>
-                                        </a>
-                                        <h6 class="mb-3">₹ ${product.productPrice}</h6>
+                                </div>`;
+                            } else if (product.stockCount <= 0) {
+                                cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
+                                    <div class="card h-100">
+                                        <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                                     
+                                            <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
+                                        </div>
+                                        <div class="card-body">
+                                            <button class="btn btn-link position-absolute start-0 top-0" onclick="toggleWishlist('${product._id}', this)">
+                                                <i class="fas fa-heart" style="color: #63E6BE;"></i>
+                                            </button>
+                                            <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
+                                            <h6 class="mb-3" style="color: red;" >Out of Stock</h6>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>`;
+                                </div>`;
+                            }
+
             
                             cards.push(cardHTML);
                         }
@@ -383,45 +403,85 @@ let usersearch;
                 
                         if (highestDiscount > 0) {
                             // Product has a discount
-                            const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
-                                <div class="card h-100">
-                                    <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
-                                        <div id="discount" style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 255, 0, 0.8); padding: 5px 10px; border-radius: 5px;">${highestDiscount}% OFF</div>
-                                        <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
+                            if (product.stockCount > 0) {
+                                cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
+                                    <div class="card h-100">
+                                        <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                                            <div id="discount" style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 255, 0, 0.8); padding: 5px 10px; border-radius: 5px;">${highestDiscount}% OFF</div>
+                                            <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
+                                        </div>
+                                        <div class="card-body">
+                                            <button class="btn btn-link position-absolute start-0 top-0" onclick="toggleWishlist('${product._id}', this)">
+                                                <i class="fas fa-heart" style="color: #63E6BE;"></i>
+                                            </button>
+                                            <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
+                                            <a href="/productpage/${product._id}" class="text-reset">
+                                                <button class="m-2 bg-warning px-4">BUY NOW</button>
+                                            </a>
+                                            <h6 class="mb-3" style="color: green;">In stock</h6>
+                                            <h6 class="mb-3">₹ ${product.productPrice}</h6>
+                                        </div>
                                     </div>
-                                    <div class="card-body">
-                                        <button class="btn btn-link position-absolute start-0 top-0" onclick="toggleWishlist('${product._id}', this)">
-                                            <i class="fas fa-heart" style="color: #63E6BE;"></i>
-                                        </button>
-                                        <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
-                                        <a href="/productpage/${product._id}" class="text-reset">
-                                            <button class="m-2 bg-warning px-4">BUY NOW</button>
-                                        </a>
-                                        <h6 class="mb-3">₹ ${product.productPrice}</h6>
+                                </div>`;
+                            } else if (product.stockCount <= 0) {
+                                cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
+                                    <div class="card h-100">
+                                        <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                                            <div id="discount" style="position: absolute; top: 10px; right: 10px; background-color: rgba(255, 255, 0, 0.8); padding: 5px 10px; border-radius: 5px;">${highestDiscount}% OFF</div>
+                                            <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
+                                        </div>
+                                        <div class="card-body">
+                                            <button class="btn btn-link position-absolute start-0 top-0" onclick="toggleWishlist('${product._id}', this)">
+                                                <i class="fas fa-heart" style="color: #63E6BE;"></i>
+                                            </button>
+                                            <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
+                                            <h6 class="mb-3" style="color: red;" >Out of Stock</h6>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>`;
-            
+                                </div>`;
+                            }
+
                             cards.push(cardHTML);
                         } else {
                             // Product has no discount
-                            const cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
-                                <div class="card h-100">
-                                    <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
-                                        <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
+                            if (product.stockCount > 0) {
+                                cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
+                                    <div class="card h-100">
+                                        <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                                         
+                                            <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
+                                        </div>
+                                        <div class="card-body">
+                                            <button class="btn btn-link position-absolute start-0 top-0" onclick="toggleWishlist('${product._id}', this)">
+                                                <i class="fas fa-heart" style="color: #63E6BE;"></i>
+                                            </button>
+                                            <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
+                                            <a href="/productpage/${product._id}" class="text-reset">
+                                                <button class="m-2 bg-warning px-4">BUY NOW</button>
+                                            </a>
+                                            <h6 class="mb-3" style="color: green;">In stock</h6>
+                                            <h6 class="mb-3">₹ ${product.productPrice}</h6>
+                                        </div>
                                     </div>
-                                    <div class="card-body">
-                                        <button class="btn btn-link position-absolute start-0 top-0" onclick="toggleWishlist('${product._id}', this)">
-                                            <i class="fas fa-heart" style="color: #63E6BE;"></i>
-                                        </button>
-                                        <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
-                                        <a href="/productpage/${product._id}" class="text-reset">
-                                            <button class="m-2 bg-warning px-4">BUY NOW</button>
-                                        </a>
-                                        <h6 class="mb-3">₹ ${product.productPrice}</h6>
+                                </div>`;
+                            } else if (product.stockCount <= 0) {
+                                cardHTML = `<div class="col-lg-3 col-md-12 mb-4">
+                                    <div class="card h-100">
+                                        <div class="bg-image hover-zoom ripple ripple-surface ripple-surface-light" data-mdb-ripple-color="light">
+                            
+                                            <img src="${product.productImage[0].image1}" class="w-100" id="proimg" style="height: 250px;"/>
+                                        </div>
+                                        <div class="card-body">
+                                            <button class="btn btn-link position-absolute start-0 top-0" onclick="toggleWishlist('${product._id}', this)">
+                                                <i class="fas fa-heart" style="color: #63E6BE;"></i>
+                                            </button>
+                                            <div><h5 class="card-title mb-3" id="txtcrd">${product.productName}</h5></div>
+                                            <h6 class="mb-3" style="color: red;" >Out of Stock</h6>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>`;
+                                </div>`;
+                            }
+
             
                             cards.push(cardHTML);
                         }

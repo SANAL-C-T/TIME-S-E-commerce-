@@ -23,11 +23,6 @@ userUrlRouter.get("/about", userBlock.active, jwtauth.aboutToken2, user.aboutb)
 userUrlRouter.get("/contact.", user.contact)
 userUrlRouter.get("/contact", userBlock.active, user.contactb)
 userUrlRouter.get("/signup", user.signup)
-
-
-
-
-
 userUrlRouter.post("/signup", otpMailer.sentEmail, otpOptions.otpEntryForm)//from here i can give a middleware for sending otp.
 //so otp will be in email before the user goes to verficationpage.
 userUrlRouter.post("/verifyOtp", otpOptions.otpVerify)//after verification the user will
@@ -37,6 +32,7 @@ userUrlRouter.get("/resentOtp", otpMailer.sentEmail, otpOptions.otpEntryForm)
 //from there he can go to product list page
 userUrlRouter.post("/api/productfilter", user.filter)
 userUrlRouter.get("/productpage", jwtauth.userhaveToken1, user.allproductPage)
+//review below
 userUrlRouter.get("/productpage/:productId", jwtauth.userhaveToken1, user.productdetail)
 userUrlRouter.get("/buyproduct", jwtauth.userhaveToken1, user.buyProduct)
 userUrlRouter.get("/product/:proid", jwtauth.userhaveToken1, user.categoryWiseProduct)
@@ -51,9 +47,6 @@ userUrlRouter.post("/changepassword", jwtauth.userhaveToken1, user.changesavedpa
 userUrlRouter.get("/savedaddress", jwtauth.userhaveToken1, cart.savedAddress)
 userUrlRouter.post("/deleteAddress/:index", jwtauth.userhaveToken1, cart.deleteAddress)
 userUrlRouter.post("/inviteNewUser",jwtauth.userhaveToken1, user.convertInviteLink)
-
-
-
 //wishlist
 userUrlRouter.get("/wishlist", jwtauth.userhaveToken1, user.showWishlist)
 userUrlRouter.post("/wishlistadd", jwtauth.userhaveToken1, user.wishtoadd)
@@ -68,12 +61,9 @@ userUrlRouter.post("/stockDown", jwtauth.userhaveToken1, cart.stockdown)
 userUrlRouter.post("/itemdelete", jwtauth.userhaveToken1, cart.itemdel)
 userUrlRouter.get("/paynow", jwtauth.userhaveToken1, cart.proceedToaddress)
 userUrlRouter.post("/paynow", jwtauth.userhaveToken1, cart.addAddressToPurchase)
-
 userUrlRouter.get("/successpage",jwtauth.userhaveToken1,  cart.sendSuccess)
 userUrlRouter.get("/failedpage", jwtauth.userhaveToken1, cart.sendfailed)
 userUrlRouter.post("/paymentData",jwtauth.userhaveToken1,  cart.handlePaymentData)
-
-
 userUrlRouter.get("/orderHistory", jwtauth.userhaveToken1, cart.history)
 userUrlRouter.post("/orderCancel/:id", jwtauth.userhaveToken1, cart.cancelOrder)
 userUrlRouter.post("/orderReturn/:id", jwtauth.userhaveToken1, cart.ReturnOrder)
@@ -82,18 +72,15 @@ userUrlRouter.get("/review/:id", jwtauth.userhaveToken1, user.addReview)
 // userUrlRouter.get("/review/:id", jwtauth.userhaveToken1, user.viewReview)
 userUrlRouter.post("/saveReview/:id", jwtauth.userhaveToken1, user.saveReview)
 userUrlRouter.get("/viewreview/:id", jwtauth.userhaveToken1, user.viewAllReview)
-
+//sort review
 userUrlRouter.post("/sortNew/:selectedProduct", jwtauth.userhaveToken1, user.sortNewReview);
 userUrlRouter.post("/sortLowestStar/:selectedProduct", jwtauth.userhaveToken1, user.sortLowestStar);
 userUrlRouter.post("/sorthighestStar/:selectedProduct", jwtauth.userhaveToken1, user.sorthighestStar);
-
 //wallet
 userUrlRouter.get("/wallet", jwtauth.userhaveToken1, user.wallet)
 //COUPON
 userUrlRouter.post("/applyCoupon", jwtauth.userhaveToken1, cart.couponAdd)
 userUrlRouter.post("/removeCoupon", jwtauth.userhaveToken1, cart.couponremove)
-
-
 //universal route for 404
 userUrlRouter.get("/*", user.notfound)
 

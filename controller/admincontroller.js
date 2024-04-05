@@ -129,7 +129,7 @@ const adminDashboard = async (req, res) => {
             return acc;
         }, {});
 
-        // console.log("paymentMethod:",reducedPaymentMethods)
+        console.log("paymentMethod11111:",reducedPaymentMethods)
 
         const salesStatusCount = await orderData.aggregate([
             { $group: { _id: "$Status", count: { $sum: 1 } } }
@@ -140,7 +140,7 @@ const adminDashboard = async (req, res) => {
             return acc;
         }, {})
 
-        console.log("StatusCount:", reducedSalesCounts)
+        // console.log("StatusCount:", reducedSalesCounts)
 
         const salesRevenue = await orderData.aggregate([
             { $group: { _id: null, totalAmount: { $sum: "$OrderTotalPrice" } } }
@@ -166,7 +166,7 @@ const adminDashboard = async (req, res) => {
             { $sort: { _id: 1 } } // Sort the grouped data by _id (OrderDate) in ascending order
         ]);
 
-        console.log("SaleGraph:::", SaleGraph)
+        // console.log("SaleGraph:::", SaleGraph)
 
         const reduceQyt = SaleGraph.reduce((acc, { _id, totalQuantity }) => {
             const formattedDate = moment(_id).format('DD/MM/YYYY');
@@ -178,10 +178,28 @@ const adminDashboard = async (req, res) => {
             return acc;
         }, {});
 
-        console.log("SaleGraph:::", reduceQyt)
+        // console.log("SaleGraph:::", reduceQyt)
 
         const orderCount = await orderData.find({}).count()
         //console.log(" order::", orderCount)
+
+
+
+        const bestSellingProduct = await orderData.aggregate([
+            { $unwind: "$items" }, // Unwind the items array
+            {
+                $group: {
+                    _id: "$items.productName",
+                    totalQuantity: { $sum: "$items.quantity" }
+                }
+            },
+            { $sort: { totalQuantity: -1 } } 
+        ]);
+
+        // console.log("bestSellingProduct:", bestSellingProduct)
+
+
+
 
 
         const urlData = {
@@ -191,7 +209,8 @@ const adminDashboard = async (req, res) => {
             revenue: salesRevenue,
             userCount: userCount,
             daywiseSoldItems: reduceQyt,
-            order: orderCount
+            order: orderCount,
+            bestseller:bestSellingProduct
         };
 
         res.render("admin/adminDashboard", { urlData })
@@ -199,6 +218,138 @@ const adminDashboard = async (req, res) => {
         console.log(error.message)
     }
 }
+
+
+const renderDashboard=async(req,res)=>{
+    try{
+    
+        const dataOfChoice=req.body.selectedValue;
+
+        if(dataOfChoice=="daywise"){
+            console.log(dataOfChoice) 
+            const todaysDate = moment(Date.now()).format("D-MM-YYYY");
+            // console.log(todaysDate)
+            //THIS GETS PAYMENT METHODE RELATED DATA............
+            const salesPaymentMethod = await orderData.aggregate([
+                {$match:{OrderDate: { $eq: todaysDate }}},
+                { $group: { _id: "$paymentMethod", count: { $sum: 1 } } }
+            ]);
+            const reducedPaymentMethods = salesPaymentMethod.reduce((acc, { _id, count }) => {
+                acc[_id] = count;
+                return acc;
+            }, {});
+    
+            console.log("paymentMethod:",reducedPaymentMethods,"salesPaymentMethod:",salesPaymentMethod)
+    //...............................................................
+
+
+
+            const salesStatusCount = await orderData.aggregate([
+                {$match:{OrderDate: { $eq: todaysDate }}},
+                { $group: { _id: "$Status", count: { $sum: 1 } } }
+            ])
+            const reducedSalesCounts = salesStatusCount.reduce((acc, { _id, count }) => {
+                acc[_id] = count;
+                return acc;
+            }, {})
+    
+            console.log("StatusCount:", reducedSalesCounts)
+    
+            const salesRevenue = await orderData.aggregate([
+                {$match:{OrderDate: { $eq: todaysDate }}},
+                { $group: { _id: null, totalAmount: { $sum: "$OrderTotalPrice" } } }
+            ]);
+    
+            console.log("sales revenue:",salesRevenue[0].totalAmount)
+    
+          
+    
+            //this will give the count of sold items, it maybe higher than the order history, as a single order contain many item.
+            const SaleGraph = await orderData.aggregate([
+                {$match:{OrderDate: { $eq: todaysDate }}},
+                { $unwind: "$items" }, // Unwind the items array
+                { $group: {_id: "$OrderDateGraph", totalQuantity: { $sum: "$items.quantity" }}},
+                { $sort: { _id: 1 } } // Sort the grouped data by _id (OrderDate) in ascending order
+            ]);
+    
+            console.log("SaleGraph:::", SaleGraph)
+    
+            const reduceQyt = SaleGraph.reduce((acc, { _id, totalQuantity }) => {
+                const formattedDate = moment(_id).format('DD/MM/YYYY');
+                if (acc[formattedDate]) {
+                    acc[formattedDate] += totalQuantity;
+                } else {
+                    acc[formattedDate] = totalQuantity;
+                }
+                return acc;
+            }, {});
+    
+            console.log("SaleGraph:::", reduceQyt)
+    
+            const orderCount = await orderData.find({}).count()
+            console.log(" order::", orderCount)
+    
+    
+    
+            const bestSellingProduct = await orderData.aggregate([
+                {$match:{OrderDate: { $eq: todaysDate }}},
+                { $unwind: "$items" }, // Unwind the items array
+                { $group: { _id: "$items.productName",totalQuantity: { $sum: "$items.quantity" }} },
+                { $sort: { totalQuantity: -1 } } 
+            ]);
+    
+             console.log("bestSellingProduct:", bestSellingProduct)
+    
+    
+    
+
+                const todaysData = {
+            
+                    // paymentMethod: reducedPaymentMethods,
+                    // StatusCount: reducedSalesCounts,
+                    // revenue: salesRevenue,
+                    // daywiseSoldItems: reduceQyt,
+                    // order: orderCount,
+                    // bestseller:bestSellingProduct
+
+                    paymentMethod: { COD: 14, MyWallet: 111, razorpay: 112 },
+                    StatusCount: reducedSalesCounts,
+                    revenue: salesRevenue,
+                    daywiseSoldItems: reduceQyt,
+                    order: orderCount,
+                    bestseller:bestSellingProduct
+
+
+                };
+
+            res.status(200).json(todaysData)
+
+
+        }
+        else if(dataOfChoice=="monthwise"){
+            console.log(dataOfChoice)
+        }
+        else if(dataOfChoice=="yearwise"){
+            console.log(dataOfChoice)
+        }
+        else if(dataOfChoice=="overall"){
+            console.log(dataOfChoice)
+        }
+
+
+
+    
+        res.status(200)
+    }
+    catch(error){
+        console.log(error.message)
+    }
+}
+
+
+
+
+
 
 /* ------------------------------------------------------------ */
 const adminbanner = async (req, res) => {
@@ -658,7 +809,7 @@ const downloadoption = async (req, res) => {
             { $group: { _id: null, count: { $sum: 1 } } }
         ]).exec();
 
-//............................
+        //............................
         if (totalReturnedCount === null || totalReturnedCount.length === 0) {
             console.log("No documents match the criteria for totalReturnedCount.");
             totalReturnedCount = 0;
@@ -670,18 +821,18 @@ const downloadoption = async (req, res) => {
             ]).exec();
         }
         console.log(totalReturnedCount)
-//........................................
+        //........................................
         // console.log("return count:::", totalReturnedCount[0].count);
 
 
 
-       
+
         let totalDeliveredCount = await orderData.aggregate([
             { $match: { Status: "delivered" } },
             { $group: { _id: null, count: { $sum: 1 } } }
         ]).exec();
 
-//............................
+        //............................
         if (totalDeliveredCount === null || totalDeliveredCount.length === 0) {
             console.log("No documents match the criteria for totalReturnedCount.");
             totalDeliveredCount = 0;
@@ -698,44 +849,44 @@ const downloadoption = async (req, res) => {
 
 
 
-///...............
-let discountAmount = await orderData.aggregate([
-    { $unwind: "$items" },
-    { $match: { "items.discounted": true } },
-    { $group: { _id: null, totalDiscountAmount: { $sum: "$items.DiscountedAmount" } } }
-]).exec();
+        ///...............
+        let discountAmount = await orderData.aggregate([
+            { $unwind: "$items" },
+            { $match: { "items.discounted": true } },
+            { $group: { _id: null, totalDiscountAmount: { $sum: "$items.DiscountedAmount" } } }
+        ]).exec();
 
-//............................
-if (discountAmount === null || discountAmount.length === 0) {
-    console.log("No documents match the criteria for totalReturnedCount.");
-    discountAmount = 0;
+        //............................
+        if (discountAmount === null || discountAmount.length === 0) {
+            console.log("No documents match the criteria for totalReturnedCount.");
+            discountAmount = 0;
 
-} else {
-    discountAmount= await orderData.aggregate([
-        { $match: { Status: "delivered" } },
-        { $group: { _id: null, count: { $sum: 1 } } }
-    ]).exec();
-}
-// console.log("discount amount", discountAmount[0].totalDiscountAmount);
+        } else {
+            discountAmount = await orderData.aggregate([
+                { $match: { Status: "delivered" } },
+                { $group: { _id: null, count: { $sum: 1 } } }
+            ]).exec();
+        }
+        // console.log("discount amount", discountAmount[0].totalDiscountAmount);
 
 
 
-//DISCOUNT BY COUPON
+        //DISCOUNT BY COUPON
         let totalcouponDiscount = await orderData.aggregate([
             { $match: { discountedByCoupon: true } },
             { $group: { _id: null, total: { $sum: "$discountgiven" } } }
         ]).exec();
-        
+
         // Check if totalcouponDiscount is null or empty
-        if (totalcouponDiscount==null || totalcouponDiscount.length === 0) {
+        if (totalcouponDiscount == null || totalcouponDiscount.length === 0) {
             totalcouponDiscount = 0;
         } else {
             // Extract the total from the result
             totalcouponDiscount = totalcouponDiscount[0].total;
         }
-        
 
-        console.log("totalcouponDiscount::",totalcouponDiscount)
+
+        console.log("totalcouponDiscount::", totalcouponDiscount)
 
 
         const discountedItemCount = await orderData.aggregate([
@@ -755,7 +906,7 @@ if (discountAmount === null || discountAmount.length === 0) {
             razorpayTotal: totalPAYMENTSum[1],
             count: totalcounts,
             returned: totalReturnedSum[0],
-            discount:  totalcouponDiscount,
+            discount: totalcouponDiscount,
             discountedCount: discountedItemCount[0].discountedItemCount,
             returncount: totalReturnedCount[0].count,
             deliveredCount: totalDeliveredCount[0].count
@@ -769,10 +920,10 @@ if (discountAmount === null || discountAmount.length === 0) {
         downloadrazorpayTotal = totalPAYMENTSum[1].total
         downloadcount = totalcounts;
         downloadreturned = totalReturnedSum[0].total;
-        discount =  totalcouponDiscount;
+        discount = totalcouponDiscount;
         discountedCount = discountedItemCount[0].discountedItemCount;
         // console.log(totalcounts)
-        
+
         res.render("admin/downloadsoption.ejs", { urlData })
     }
     catch (error) {
@@ -984,13 +1135,14 @@ const offerreferal = async (req, res) => {
 
 
 
-
+        const bonusIs = await referData.find({})
+        const bonusavalible = bonusIs[0].bonusAmount;
 
         const urlData = {
             pageTitle: 'ADD REFERAL OFFER',
 
         }
-        res.render("admin/adminreferaladd.ejs", { urlData })
+        res.render("admin/adminreferaladd.ejs", { urlData , bonusavalible})
     }
     catch (error) {
         console.log(error.message)
@@ -998,60 +1150,65 @@ const offerreferal = async (req, res) => {
 }
 
 
-const addReferalOffer=async(req,res)=>{
-    try{
-const bonusAmount=req.body.bonus;
-const createdDate=req.body.refferCreatedDate;
-const expiryDate=req.body.refferExpiryDate;
+const addReferalOffer = async (req, res) => {
+    try {
+        const bonusAmount = req.body.bonus;
+        const createdDate = req.body.refferCreatedDate;
+        const expiryDate = req.body.refferExpiryDate;
 
 
-const referCodeAdd = new referData({
-    bonusAmount: bonusAmount,
-    expiryDate: expiryDate,
-    createdDate: createdDate,
-})
+        const referCodeAdd = new referData({
+            bonusAmount: bonusAmount,
+            expiryDate: expiryDate,
+            createdDate: createdDate,
+        })
 
-referCodeAdd.save()
+        referCodeAdd.save()
 
-const urlData = {
-    pageTitle: 'ADD REFERAL OFFER',
+        const urlData = {
+            pageTitle: 'ADD REFERAL OFFER',
 
-}
+        }
 
-const bonusIs=await referData.find({})
-const bonusavalible=bonusIs[0].bonusAmount;
+        const bonusIs = await referData.find({})
+        const bonusavalible = bonusIs[0].bonusAmount;
 
-res.render("admin/adminreferaladd.ejs", { urlData,bonusavalible })
+        res.render("admin/adminreferaladd.ejs", { urlData, bonusavalible })
     }
-    catch(error){
+    catch (error) {
         console.log(error.message)
     }
 }
 
 
 
-const updateReferalOffer=async(req,res)=>{
-    try{
-const bonusAmounts=req.body.bonus;
-const createdDate=req.body.refferCreatedDate;
-const expiryDate=req.body.refferExpiryDate;
+const updateReferalOffer = async (req, res) => {
+    try {
+        const bonusAmounts = req.body.bonus;
+        const createdDate = req.body.refferCreatedDate;
+        const expiryDate = req.body.refferExpiryDate;
 
 
-await referData.findOneAndUpdate({},{$set:{bonusAmount:bonusAmounts,  expiryDate: expiryDate,
-    createdDate: createdDate,}})
+        await referData.findOneAndUpdate({}, {
+            $set: {
+                bonusAmount: bonusAmounts, expiryDate: expiryDate,
+                createdDate: createdDate,
+            }
+        })
 
 
-const urlData = {
-    pageTitle: 'ADD REFERAL OFFER',
+        const urlData = {
+            pageTitle: 'ADD REFERAL OFFER',
 
-}
+        }
 
-const bonusIs=await referData.find({})
-const bonusavalible=bonusIs[0].bonusAmount;
-
-res.render("admin/adminreferaladd.ejs", { urlData,bonusavalible })
+        const bonusIs = await referData.find({})
+        console.log("bonusavalible:",bonusIs)
+        const bonusavalible = bonusIs[0].bonusAmount;
+console.log("bonusavalible:",bonusavalible)
+        res.render("admin/adminreferaladd.ejs", { urlData, bonusavalible })
     }
-    catch(error){
+    catch (error) {
         console.log(error.message)
     }
 }
@@ -1238,9 +1395,9 @@ const postbydate = async (req, res) => {
             { $group: { _id: "$paymentMethod", total: { $sum: "$OrderTotalPrice" } } }
         ]).exec();
 
-         console.log("razerpay::::", razerpayAmountSum)
-         console.log("cod::::", codAmountSum)
-         console.log("wallet::::", walletAmountSum)
+        console.log("razerpay::::", razerpayAmountSum)
+        console.log("cod::::", codAmountSum)
+        console.log("wallet::::", walletAmountSum)
 
         const raz = razerpayAmountSum[0].total;
         const cod = codAmountSum[0].total;
@@ -1254,8 +1411,8 @@ const postbydate = async (req, res) => {
         ]).exec();
 
 
-        if (totalReturnedamount=== null || totalReturnedamount.length === 0) {
-            totalReturnedamount= 0;
+        if (totalReturnedamount === null || totalReturnedamount.length === 0) {
+            totalReturnedamount = 0;
 
         } else {
             totalReturnedamount = await orderData.aggregate([
@@ -1265,7 +1422,7 @@ const postbydate = async (req, res) => {
         }
 
         const returned = totalReturnedamount[0].total;
-        console.log("totalReturnedamount::",returned) 
+        console.log("totalReturnedamount::", returned)
 
 
 
@@ -1275,7 +1432,7 @@ const postbydate = async (req, res) => {
             { $match: { OrderDate: { $gte: sDate, $lte: eDate }, discountedByCoupon: true } },
             { $group: { _id: null, total: { $sum: "$discountgiven" } } }
         ]).exec();
-        
+
         // Check if totalcouponDiscount is null or empty
         if (!totalcouponDiscount || totalcouponDiscount.length === 0) {
             totalcouponDiscount = 0;
@@ -1283,9 +1440,9 @@ const postbydate = async (req, res) => {
             // Extract the total from the result
             totalcouponDiscount = totalcouponDiscount[0].total;
         }
-        
 
-        console.log("totalcouponDiscount::",totalcouponDiscount)
+
+        console.log("totalcouponDiscount::", totalcouponDiscount)
 
 
 
@@ -1294,7 +1451,7 @@ const postbydate = async (req, res) => {
         }
 
 
-        res.render("admin/bydate.ejs", { urlData, orders, revenue, raz, cod, walletss,returned ,totalcouponDiscount})
+        res.render("admin/bydate.ejs", { urlData, orders, revenue, raz, cod, walletss, returned, totalcouponDiscount })
     }
     catch (error) {
         console.log(error.message)
@@ -1594,7 +1751,8 @@ module.exports = {
     storebanner,
     chartData,
     addReferalOffer,
-    updateReferalOffer
+    updateReferalOffer,
+    renderDashboard
 
 
 }

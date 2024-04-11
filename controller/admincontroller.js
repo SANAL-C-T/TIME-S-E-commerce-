@@ -3,6 +3,7 @@ const adminData = require("../model/adminSchema")
 const productData = require("../model/productSchema")
 const categoryData = require("../model/categorySchema")
 const bannerData = require("../model/bannerSchema")
+const bannerTextData = require("../model/bannerText")
 const userDatas = require("../model/userSchema")
 const orderData = require("../model/orderhistoryschema")
 const couponData = require("../model/couponSchema")
@@ -129,7 +130,7 @@ const adminDashboard = async (req, res) => {
             return acc;
         }, {});
 
-        console.log("paymentMethod11111:",reducedPaymentMethods)
+        console.log("paymentMethod11111:", reducedPaymentMethods)
 
         const salesStatusCount = await orderData.aggregate([
             { $group: { _id: "$Status", count: { $sum: 1 } } }
@@ -193,7 +194,7 @@ const adminDashboard = async (req, res) => {
                     totalQuantity: { $sum: "$items.quantity" }
                 }
             },
-            { $sort: { totalQuantity: -1 } } 
+            { $sort: { totalQuantity: -1 } }
         ]);
 
         // console.log("bestSellingProduct:", bestSellingProduct)
@@ -210,7 +211,7 @@ const adminDashboard = async (req, res) => {
             userCount: userCount,
             daywiseSoldItems: reduceQyt,
             order: orderCount,
-            bestseller:bestSellingProduct
+            bestseller: bestSellingProduct
         };
 
         res.render("admin/adminDashboard", { urlData })
@@ -219,61 +220,55 @@ const adminDashboard = async (req, res) => {
     }
 }
 
+//dashboard graph functions for fetch API.................
+const renderDashboard = async (req, res) => {
+    try {
 
-const renderDashboard=async(req,res)=>{
-    try{
-    
-        const dataOfChoice=req.body.selectedValue;
-
-        if(dataOfChoice=="daywise"){
-            console.log(dataOfChoice) 
+        const dataOfChoice = req.body.selectedValue;
+        //for daywise data to dashboard................................
+        if (dataOfChoice == "daywise") {
+            console.log(dataOfChoice)
             const todaysDate = moment(Date.now()).format("D-MM-YYYY");
-            // console.log(todaysDate)
             //THIS GETS PAYMENT METHODE RELATED DATA............
             const salesPaymentMethod = await orderData.aggregate([
-                {$match:{OrderDate: { $eq: todaysDate }}},
+                { $match: { OrderDate: { $eq: todaysDate } } },
                 { $group: { _id: "$paymentMethod", count: { $sum: 1 } } }
             ]);
             const reducedPaymentMethods = salesPaymentMethod.reduce((acc, { _id, count }) => {
                 acc[_id] = count;
                 return acc;
             }, {});
-    
-            console.log("paymentMethod:",reducedPaymentMethods,"salesPaymentMethod:",salesPaymentMethod)
-    //...............................................................
 
-
-
+            // console.log("paymentMethod:",reducedPaymentMethods,"salesPaymentMethod:",salesPaymentMethod)
+            //...............................................................
             const salesStatusCount = await orderData.aggregate([
-                {$match:{OrderDate: { $eq: todaysDate }}},
+                { $match: { OrderDate: { $eq: todaysDate } } },
                 { $group: { _id: "$Status", count: { $sum: 1 } } }
             ])
             const reducedSalesCounts = salesStatusCount.reduce((acc, { _id, count }) => {
                 acc[_id] = count;
                 return acc;
             }, {})
-    
-            console.log("StatusCount:", reducedSalesCounts)
-    
+
+            // console.log("StatusCount:", reducedSalesCounts)
+
             const salesRevenue = await orderData.aggregate([
-                {$match:{OrderDate: { $eq: todaysDate }}},
+                { $match: { OrderDate: { $eq: todaysDate } } },
                 { $group: { _id: null, totalAmount: { $sum: "$OrderTotalPrice" } } }
             ]);
-    
-            console.log("sales revenue:",salesRevenue[0].totalAmount)
-    
-          
-    
+
+            // console.log("sales revenue:",salesRevenue[0].totalAmount)
+
             //this will give the count of sold items, it maybe higher than the order history, as a single order contain many item.
             const SaleGraph = await orderData.aggregate([
-                {$match:{OrderDate: { $eq: todaysDate }}},
+                { $match: { OrderDate: { $eq: todaysDate } } },
                 { $unwind: "$items" }, // Unwind the items array
-                { $group: {_id: "$OrderDateGraph", totalQuantity: { $sum: "$items.quantity" }}},
+                { $group: { _id: "$OrderDateGraph", totalQuantity: { $sum: "$items.quantity" } } },
                 { $sort: { _id: 1 } } // Sort the grouped data by _id (OrderDate) in ascending order
             ]);
-    
-            console.log("SaleGraph:::", SaleGraph)
-    
+
+            // console.log("SaleGraph:::", SaleGraph)
+
             const reduceQyt = SaleGraph.reduce((acc, { _id, totalQuantity }) => {
                 const formattedDate = moment(_id).format('DD/MM/YYYY');
                 if (acc[formattedDate]) {
@@ -283,65 +278,322 @@ const renderDashboard=async(req,res)=>{
                 }
                 return acc;
             }, {});
-    
-            console.log("SaleGraph:::", reduceQyt)
-    
+
+            // console.log("SaleGraph:::", reduceQyt)
+
             const orderCount = await orderData.find({}).count()
-            console.log(" order::", orderCount)
-    
-    
-    
+            // console.log(" order::", orderCount)
+
+
+
             const bestSellingProduct = await orderData.aggregate([
-                {$match:{OrderDate: { $eq: todaysDate }}},
+                { $match: { OrderDate: { $eq: todaysDate } } },
                 { $unwind: "$items" }, // Unwind the items array
-                { $group: { _id: "$items.productName",totalQuantity: { $sum: "$items.quantity" }} },
-                { $sort: { totalQuantity: -1 } } 
+                { $group: { _id: "$items.productName", totalQuantity: { $sum: "$items.quantity" } } },
+                { $sort: { totalQuantity: -1 } }
             ]);
-    
-             console.log("bestSellingProduct:", bestSellingProduct)
-    
-    
-    
 
-                const todaysData = {
-            
-                    // paymentMethod: reducedPaymentMethods,
-                    // StatusCount: reducedSalesCounts,
-                    // revenue: salesRevenue,
-                    // daywiseSoldItems: reduceQyt,
-                    // order: orderCount,
-                    // bestseller:bestSellingProduct
+            //  console.log("bestSellingProduct:", bestSellingProduct)
+            const todaysData = {
 
-                    paymentMethod: { COD: 14, MyWallet: 111, razorpay: 112 },
-                    StatusCount: reducedSalesCounts,
-                    revenue: salesRevenue,
-                    daywiseSoldItems: reduceQyt,
-                    order: orderCount,
-                    bestseller:bestSellingProduct
+                paymentMethod: reducedPaymentMethods,
+                StatusCount: reducedSalesCounts,
+                revenue: salesRevenue,
+                daywiseSoldItems: reduceQyt,
+                order: orderCount,
+                bestseller: bestSellingProduct,
+                Choice: dataOfChoice
 
+            };
 
-                };
-
+            console.log(JSON.stringify(todaysData))
             res.status(200).json(todaysData)
+        }
+        //.............................................................
+
+        //for monthwise data to dashboard.....................
+        else if (dataOfChoice == "monthwise") {
+
+            console.log(dataOfChoice)
+            //THIS GETS PAYMENT METHODE RELATED DATA............
+
+            const salesPaymentMethod = await orderData.aggregate([
+                {
+                    $group: {
+                        _id: {
+                            month: { $month: "$OrderDateGraph" },
+                            paymentMethod: "$paymentMethod" // Group by paymentMethod
+                        },
+                        count: { $sum: 1 } // Count the occurrences of each paymentMethod in each month
+                    }
+                }
+            ]);
+            console.log("salesPaymentMethod:::", salesPaymentMethod);
+            const groupedDatasets = salesPaymentMethod.reduce((acc, dataset) => {
+                const month = dataset._id.month;
+                if (!acc[month]) {
+                    acc[month] = [];
+                }
+                acc[month].push({ paymentMethod: dataset._id.paymentMethod, count: dataset.count });
+                return acc;
+            }, {});
+
+            console.log("groupedDatasets::", groupedDatasets);//true
+
+
+            const salesPaymentMethodObject = Object.keys(groupedDatasets).reduce((acc, key) => {
+                acc[key] = groupedDatasets[key].reduce((result, entry) => {
+                    result[entry.paymentMethod] = entry.count;
+                    return result;
+                }, {});
+                return acc;
+            }, {});
+
+            console.log("salesPaymentMethodObject:", salesPaymentMethodObject);
+
+
+            //...............................................................
+            //This will get the status of each month.
+            const salesStatusCount = await orderData.aggregate([
+                {
+                    $group: {
+                        _id: { month: { $month: "$OrderDateGraph" }, status: "$Status" },
+                        count: { $sum: 1 }
+                    }
+                }
+            ]);
+
+
+            const processedData = salesStatusCount.reduce((acc, dataset) => {
+                const month = dataset._id.month;
+                if (!acc[month]) {
+                    acc[month] = [];
+                }
+                acc[month].push({ status: dataset._id.status, count: dataset.count });
+                return acc;
+            }, {});
+
+            // console.log("processedData:",processedData);
+
+
+            const statusAndCountObject = Object.keys(processedData).reduce((acc, key) => {
+                acc[key] = processedData[key].reduce((result, entry) => {
+                    result[entry.status] = entry.count;
+                    return result;
+                }, {});
+                return acc;
+            }, {});
+
+            //   console.log(statusAndCountObject);
+
+            //.........................................................................
+            // const salesRevenue = await orderData.aggregate([
+            //     {$match:{OrderDate: { $eq: todaysDate }}},
+            //     { $group: { _id: null, totalAmount: { $sum: "$OrderTotalPrice" } } }
+            // ]);
+
+            // console.log("sales revenue:",salesRevenue[0].totalAmount)
+
+
+
+            // this will give the count of sold items, it maybe higher than the order history, as a single order contain many item.
+            const MonthWiseSaleGraph = await orderData.aggregate([
+
+                { $unwind: "$items" }, // Unwind the items array
+                { $group: { _id: "$OrderDateGraph", totalQuantity: { $sum: "$items.quantity" } } },
+                { $sort: { _id: 1 } } // Sort the grouped data by _id (OrderDate) in ascending order
+            ]);
+
+            console.log("MonthWiseSaleGraph:::", MonthWiseSaleGraph)
+
+            const MonthWiseSaleGraphReduceQyt = MonthWiseSaleGraph.reduce((acc, { _id, totalQuantity }) => {
+                const formattedDate = moment(_id).format('MM/YYYY');
+                if (acc[formattedDate]) {
+                    acc[formattedDate] += totalQuantity;
+                } else {
+                    acc[formattedDate] = totalQuantity;
+                }
+                return acc;
+            }, {});
+
+            console.log("MonthWiseSaleGraph reduceQyt:::", MonthWiseSaleGraphReduceQyt)
+
+
+
+            const orderCount = await orderData.find({}).count()
+            // console.log(" order::", orderCount)
+
+
+
+            // const bestSellingProductperMonth = await orderData.aggregate([
+            //     { $unwind: "$items" }, // Unwind the items array
+            //     { $group: { _id:"$OrderDateGraph", "$items.productName",totalQuantity: { $sum: "$items.quantity" }} },
+            //     { $sort: { totalQuantity: -1 } } 
+            // ]);
+
+            //  console.log("bestSellingProductperMonth:", bestSellingProductperMonth)
+
+            const monthwiseData = {
+                paymentMethod: salesPaymentMethodObject,
+                StatusCount: statusAndCountObject,
+                //  revenue: salesRevenue,
+                monthwiseSoldItems: MonthWiseSaleGraphReduceQyt,
+                order: orderCount,
+                Choice: dataOfChoice,
+                // bestseller:bestSellingProduct
+            };
+
+            // console.log(JSON.stringify(todaysData))
+            res.status(200).json(monthwiseData)
+        }
+        //...........................................
+        else if (dataOfChoice == "yearwise") {
+            console.log(dataOfChoice)
+
+
+            //THIS GETS PAYMENT METHODE RELATED DATA............
+
+            const salesPaymentMethodYearwise = await orderData.aggregate([
+                {
+                    $group: {
+                        _id: {
+                            year: { $year: "$OrderDateGraph" },
+                            paymentMethod: "$paymentMethod" // Group by paymentMethod
+                        },
+                        count: { $sum: 1 } // Count the occurrences of each paymentMethod in each month
+                    }
+                }
+            ]);
+            console.log("salesPaymentMethodYearwise:::", salesPaymentMethodYearwise);
+            const groupedDatasets = salesPaymentMethodYearwise.reduce((acc, dataset) => {
+                const year = dataset._id.year;
+                if (!acc[year]) {
+                    acc[year] = [];
+                }
+                acc[year].push({ paymentMethod: dataset._id.paymentMethod, count: dataset.count });
+                return acc;
+            }, {});
+
+            console.log("groupedDatasetsYearwise::", groupedDatasets);//true
+
+
+            const salesPaymentMethodObjectyearWise = Object.keys(groupedDatasets).reduce((acc, key) => {
+                acc[key] = groupedDatasets[key].reduce((result, entry) => {
+                    result[entry.paymentMethod] = entry.count;
+                    return result;
+                }, {});
+                return acc;
+            }, {});
+
+            console.log("salesPaymentMethodObjectyearwise:", salesPaymentMethodObjectyearWise);
+
+
+            //...............................................................
+            // This will get the status of each month.
+            const salesStatusCountYearWise = await orderData.aggregate([
+                {
+                    $group: {
+                        _id: { year: { $year: "$OrderDateGraph" }, status: "$Status" },
+                        count: { $sum: 1 }
+                    }
+                }
+            ]);
+
+
+            const processedDataYearwise = salesStatusCountYearWise.reduce((acc, dataset) => {
+                const year = dataset._id.year;
+                if (!acc[year]) {
+                    acc[year] = [];
+                }
+                acc[year].push({ status: dataset._id.status, count: dataset.count });
+                return acc;
+            }, {});
+
+            // console.log("processedData:",processedData);
+
+
+            const statusAndCountObjectYearwise = Object.keys(processedDataYearwise).reduce((acc, key) => {
+                acc[key] = processedDataYearwise[key].reduce((result, entry) => {
+                    result[entry.status] = entry.count;
+                    return result;
+                }, {});
+                return acc;
+            }, {});
+
+            //   console.log(statusAndCountObject);
+
+            // //.........................................................................
+            //             // const salesRevenue = await orderData.aggregate([
+            //             //     {$match:{OrderDate: { $eq: todaysDate }}},
+            //             //     { $group: { _id: null, totalAmount: { $sum: "$OrderTotalPrice" } } }
+            //             // ]);
+
+            //             // console.log("sales revenue:",salesRevenue[0].totalAmount)
+
+
+
+            //             // this will give the count of sold items, it maybe higher than the order history, as a single order contain many item.
+            const YearWiseSaleGraph = await orderData.aggregate([
+
+                { $unwind: "$items" }, // Unwind the items array
+                { $group: { _id: "$OrderDateGraph", totalQuantity: { $sum: "$items.quantity" } } },
+                { $sort: { _id: 1 } } // Sort the grouped data by _id (OrderDate) in ascending order
+            ]);
+
+            console.log("YearWiseSaleGraph:::", YearWiseSaleGraph)
+
+            const YearWiseSaleGraphReduceQyt = YearWiseSaleGraph.reduce((acc, { _id, totalQuantity }) => {
+                const formattedDate = moment(_id).format('YYYY');
+                if (acc[formattedDate]) {
+                    acc[formattedDate] += totalQuantity;
+                } else {
+                    acc[formattedDate] = totalQuantity;
+                }
+                return acc;
+            }, {});
+
+            console.log("YearWiseSaleGraphReduceQyt reduceQyt:::", YearWiseSaleGraphReduceQyt)
+
+
+
+            //             const orderCount = await orderData.find({}).count()
+            // console.log(" order::", orderCount)
+
+
+
+            // const bestSellingProductperMonth = await orderData.aggregate([
+            //     { $unwind: "$items" }, // Unwind the items array
+            //     { $group: { _id:"$OrderDateGraph", "$items.productName",totalQuantity: { $sum: "$items.quantity" }} },
+            //     { $sort: { totalQuantity: -1 } } 
+            // ]);
+
+            //  console.log("bestSellingProductperMonth:", bestSellingProductperMonth)
+
+            const monthwiseData = {
+                paymentMethod: salesPaymentMethodObjectyearWise,
+                StatusCount: statusAndCountObjectYearwise,
+                // //  revenue: salesRevenue,
+                yearwiseSoldItems: YearWiseSaleGraphReduceQyt,
+                // order: orderCount,
+                Choice: dataOfChoice,
+                // bestseller:bestSellingProduct
+            };
+
+            // console.log(JSON.stringify(todaysData))
+            res.status(200).json(monthwiseData)
 
 
         }
-        else if(dataOfChoice=="monthwise"){
+        else if (dataOfChoice == "overall") {
             console.log(dataOfChoice)
         }
-        else if(dataOfChoice=="yearwise"){
-            console.log(dataOfChoice)
-        }
-        else if(dataOfChoice=="overall"){
-            console.log(dataOfChoice)
-        }
 
 
 
-    
+
         res.status(200)
     }
-    catch(error){
+    catch (error) {
         console.log(error.message)
     }
 }
@@ -354,8 +606,13 @@ const renderDashboard=async(req,res)=>{
 /* ------------------------------------------------------------ */
 const adminbanner = async (req, res) => {
     try {
+
+        const dataBanner = await bannerData.find({})
         const urlData = {
             pageTitle: 'ADMIN BANNER SETTING',
+            firstBanner: dataBanner[0],
+            SecondBanner: dataBanner[1],
+            ThirdBanner: dataBanner[2]
         };
         res.render("admin/adminBanner.ejs", { urlData })
     } catch (error) {
@@ -665,16 +922,31 @@ const addcoupons = async (req, res) => {
         // console.log("code:",code)
         // console.log("value:",value)
 
-        const addCoupon = new couponData({
-            couponCode: code,
-            offerType: offerType,
-            OfferDescription: couponCodeDescription,
-            discount: value,
-            expiryDate: expiryOn,
-            createdDate: addedOn,
-        })
-        addCoupon.save()
-        res.render("admin/couponPage.ejs", { urlData })
+
+        const alreadyCode = await couponData.findOne({ couponCode: code });
+
+        if (alreadyCode == null) {
+            const addCoupon = new couponData({
+                couponCode: code,
+                offerType: offerType,
+                OfferDescription: couponCodeDescription,
+                discount: value,
+                expiryDate: expiryOn,
+                createdDate: addedOn,
+            })
+            addCoupon.save()
+            res.render("admin/couponPage.ejs", { urlData })
+        }
+
+        else {
+
+            res.locals.errorMessage = 'THE CODE ALREADY EXISTS';
+            res.render("admin/couponPage.ejs", { urlData });
+        }
+
+
+
+
     }
     catch (error) {
         console.log(error.message)
@@ -1142,7 +1414,7 @@ const offerreferal = async (req, res) => {
             pageTitle: 'ADD REFERAL OFFER',
 
         }
-        res.render("admin/adminreferaladd.ejs", { urlData , bonusavalible})
+        res.render("admin/adminreferaladd.ejs", { urlData, bonusavalible })
     }
     catch (error) {
         console.log(error.message)
@@ -1203,9 +1475,9 @@ const updateReferalOffer = async (req, res) => {
         }
 
         const bonusIs = await referData.find({})
-        console.log("bonusavalible:",bonusIs)
+        console.log("bonusavalible:", bonusIs)
         const bonusavalible = bonusIs[0].bonusAmount;
-console.log("bonusavalible:",bonusavalible)
+        console.log("bonusavalible:", bonusavalible)
         res.render("admin/adminreferaladd.ejs", { urlData, bonusavalible })
     }
     catch (error) {
@@ -1666,39 +1938,354 @@ const bannerdatabse = async (req, res) => {
 
 const storebanner = async (req, res) => {
     try {
-        const imgId = req.params.imgg;
-        const imgfile = req.file
-        console.log("img:::", imgId)
-        console.log("imgFile:::", imgfile.path)
+        const imgId = req.params.section;
+        const imgfile = req.files
+        const mainText = req.body.mainText;
+        const subText = req.body.subText;
+        const introText = req.body.introText;
+        const subHeadingText = req.body.subHeadingText;
+        const HeadingText = req.body.HeadingText;
 
-        let newPath = imgfile.path.substring(imgfile.path.indexOf('\\') + 1);
-        console.log(newPath);
+        const img1 = imgfile.bannerImage1[0].path.substring(imgfile.bannerImage1[0].path.indexOf('\\') + 1);
+        const img2 = imgfile.bannerImage2[0].path.substring(imgfile.bannerImage2[0].path.indexOf('\\') + 1);
+        const img3 = imgfile.bannerImage3[0].path.substring(imgfile.bannerImage3[0].path.indexOf('\\') + 1);
 
-
-        const image = new bannerData({
-            bannerImage: `/${newPath}`,
-            TextContent: req.body.title,
-            SubTextContent: req.body.subtitle
+        const bannerConfig = new bannerData({
+            sectionName: imgId,
+            bannerImage1: `/${img1}`,
+            bannerImage2: `/${img2}`,
+            bannerImage3: `/${img3}`,
+            MainTextContent: mainText,
+            SubTextContent: subText,
+            introductionTextContent: introText,
+            heading: HeadingText,
+            subHeading: subHeadingText
         })
-
-        image.save()
-
+        bannerConfig.save()
     }
     catch (error) {
         console.log(error.message)
     }
 }
+
+
+
+
+const updateBanner = async (req, res) => {
+    try {
+        console.log("in update")
+        let sections = req.params.section;
+        const imgfile = req.files
+        const mainText = req.body.mainText;
+        const subText = req.body.subText;
+        const introText = req.body.introText;
+        const subHeadingText = req.body.subHeadingText;
+        const HeadingText = req.body.HeadingText;
+        // console.log("updateImage::::", imgfile)
+        // console.log("updateData::::", req.body)
+        // console.log("section:", sections)
+
+        if (sections == "sectionOne") {
+            let img1;
+            if (imgfile.bannerImage1 && imgfile.bannerImage1.length > 0) {
+                img1 = imgfile.bannerImage1[0].path.substring(imgfile.bannerImage1[0].path.indexOf('\\') + 1);
+            } else {
+
+                img1 = "";
+            }
+            if (img1 != "") {
+                await bannerData.findOneAndUpdate(
+                    { sectionName: "sectionOne" },
+                    {
+                        $set: {
+                            bannerImage1: `/${img1}`,
+                            MainTextContent: mainText,
+                            SubTextContent: subText,
+                            introductionTextContent: introText,
+                            heading: subHeadingText,
+                            subHeading: HeadingText
+                        }
+                    }
+                )
+            } { }
+
+            let img2;
+            if (imgfile.bannerImage2 && imgfile.bannerImage2.length > 0) {
+                img2 = imgfile.bannerImage2[0].path.substring(imgfile.bannerImage2[0].path.indexOf('\\') + 1);
+            } else {
+
+                img2 = "";
+            }
+
+            if (img2 != "") {
+                await bannerData.findOneAndUpdate(
+                    { sectionName: "sectionOne" },
+                    {
+                        $set: {
+
+                            bannerImage2: `/${img2}`,
+                            MainTextContent: mainText,
+                            SubTextContent: subText,
+                            introductionTextContent: introText,
+                            heading: subHeadingText,
+                            subHeading: HeadingText
+                        }
+                    }
+                )
+            } { }
+
+
+
+            let img3;
+            if (imgfile.bannerImage3 && imgfile.bannerImage3.length > 0) {
+                img3 = imgfile.bannerImage3[0].path.substring(imgfile.bannerImage3[0].path.indexOf('\\') + 1);
+            } else {
+
+                img3 = "";
+            }
+
+            if (img3 != "") {
+                await bannerData.findOneAndUpdate(
+                    { sectionName: "sectionOne" },
+                    {
+                        $set: {
+                            bannerImage3: `/${img3}`,
+                            MainTextContent: mainText,
+                            SubTextContent: subText,
+                            introductionTextContent: introText,
+                            heading: subHeadingText,
+                            subHeading: HeadingText
+                        }
+                    }
+                )
+            } { }
+
+            if (img1 == "" && img2 == "" && img3 == "") {
+                await bannerData.findOneAndUpdate(
+                    { sectionName: "sectionOne" },
+                    {
+                        $set: {
+                            MainTextContent: mainText,
+                            SubTextContent: subText,
+                            introductionTextContent: introText,
+                            heading: subHeadingText,
+                            subHeading: HeadingText
+                        }
+                    }
+                )
+            }
+
+        }
+
+
+
+
+        else if (sections == "sectionTwo") {
+
+            let img1;
+            if (imgfile.bannerImage1 && imgfile.bannerImage1.length > 0) {
+                img1 = imgfile.bannerImage1[0].path.substring(imgfile.bannerImage1[0].path.indexOf('\\') + 1);
+            } else {
+
+                img1 = "";
+            }
+            if (img1 != "") {
+                await bannerData.findOneAndUpdate(
+                    { sectionName: "sectionTwo" },
+                    {
+                        $set: {
+                            bannerImage1: `/${img1}`,
+                            MainTextContent: mainText,
+                            SubTextContent: subText,
+                            introductionTextContent: introText,
+                            heading: subHeadingText,
+                            subHeading: HeadingText
+                        }
+                    }
+                )
+            } { }
+
+            let img2;
+            if (imgfile.bannerImage2 && imgfile.bannerImage2.length > 0) {
+                img2 = imgfile.bannerImage2[0].path.substring(imgfile.bannerImage2[0].path.indexOf('\\') + 1);
+            } else {
+
+                img2 = "";
+            }
+
+            if (img2 != "") {
+                await bannerData.findOneAndUpdate(
+                    { sectionName: "sectionTwo" },
+                    {
+                        $set: {
+
+                            bannerImage2: `/${img2}`,
+                            MainTextContent: mainText,
+                            SubTextContent: subText,
+                            introductionTextContent: introText,
+                            heading: subHeadingText,
+                            subHeading: HeadingText
+                        }
+                    }
+                )
+            } { }
+
+
+
+            let img3;
+            if (imgfile.bannerImage3 && imgfile.bannerImage3.length > 0) {
+                img3 = imgfile.bannerImage3[0].path.substring(imgfile.bannerImage3[0].path.indexOf('\\') + 1);
+            } else {
+
+                img3 = "";
+            }
+
+            if (img3 != "") {
+                await bannerData.findOneAndUpdate(
+                    { sectionName: "sectionTwo" },
+                    {
+                        $set: {
+                            bannerImage3: `/${img3}`,
+                            MainTextContent: mainText,
+                            SubTextContent: subText,
+                            introductionTextContent: introText,
+                            heading: subHeadingText,
+                            subHeading: HeadingText
+                        }
+                    }
+                )
+            } { }
+
+            if (img1 == "" && img2 == "" && img3 == "") {
+                await bannerData.findOneAndUpdate(
+                    { sectionName: "sectionTwo" },
+                    {
+                        $set: {
+                            MainTextContent: mainText,
+                            SubTextContent: subText,
+                            introductionTextContent: introText,
+                            heading: subHeadingText,
+                            subHeading: HeadingText
+                        }
+                    }
+                )
+            }
+        }
+        else if (sections == "sectionThree") {
+
+            let img1;
+            if (imgfile.bannerImage1 && imgfile.bannerImage1.length > 0) {
+                img1 = imgfile.bannerImage1[0].path.substring(imgfile.bannerImage1[0].path.indexOf('\\') + 1);
+            } else {
+
+                img1 = "";
+            }
+            if (img1 != "") {
+                await bannerData.findOneAndUpdate(
+                    { sectionName: "sectionThree" },
+                    {
+                        $set: {
+                            bannerImage1: `/${img1}`,
+                            MainTextContent: mainText,
+                            SubTextContent: subText,
+                            introductionTextContent: introText,
+                            heading: subHeadingText,
+                            subHeading: HeadingText
+                        }
+                    }
+                )
+            } { }
+
+            let img2;
+            if (imgfile.bannerImage2 && imgfile.bannerImage2.length > 0) {
+                img2 = imgfile.bannerImage2[0].path.substring(imgfile.bannerImage2[0].path.indexOf('\\') + 1);
+            } else {
+
+                img2 = "";
+            }
+
+            if (img2 != "") {
+                await bannerData.findOneAndUpdate(
+                    { sectionName: "sectionThree" },
+                    {
+                        $set: {
+
+                            bannerImage2: `/${img2}`,
+                            MainTextContent: mainText,
+                            SubTextContent: subText,
+                            introductionTextContent: introText,
+                            heading: subHeadingText,
+                            subHeading: HeadingText
+                        }
+                    }
+                )
+            } { }
+
+
+
+            let img3;
+            if (imgfile.bannerImage3 && imgfile.bannerImage3.length > 0) {
+                img3 = imgfile.bannerImage3[0].path.substring(imgfile.bannerImage3[0].path.indexOf('\\') + 1);
+            } else {
+
+                img3 = "";
+            }
+
+            if (img3 != "") {
+                await bannerData.findOneAndUpdate(
+                    { sectionName: "sectionThree" },
+                    {
+                        $set: {
+                            bannerImage3: `/${img3}`,
+                            MainTextContent: mainText,
+                            SubTextContent: subText,
+                            introductionTextContent: introText,
+                            heading: subHeadingText,
+                            subHeading: HeadingText
+                        }
+                    }
+                )
+            } { }
+
+            if (img1 == "" && img2 == "" && img3 == "") {
+                await bannerData.findOneAndUpdate(
+                    { sectionName: "sectionThree" },
+                    {
+                        $set: {
+                            MainTextContent: mainText,
+                            SubTextContent: subText,
+                            introductionTextContent: introText,
+                            heading: subHeadingText,
+                            subHeading: HeadingText
+                        }
+                    }
+                )
+            }
+        }
+
+
+        res.redirect("/admin/banner")
+    }
+    catch (error) {
+        console.log(error.message)
+    }
+}
+
+
+
+
+
 
 
 //banner change function......
-const chartData = async (req, res) => {
-    try {
+// const chartData = async (req, res) => {
+//     try {
 
-    }
-    catch (error) {
-        console.log(error.message)
-    }
-}
+//     }
+//     catch (error) {
+//         console.log(error.message)
+//     }
+// }
 
 
 
@@ -1749,10 +2336,12 @@ module.exports = {
     bannerConfigur,
     bannerdatabse,
     storebanner,
-    chartData,
+
     addReferalOffer,
     updateReferalOffer,
-    renderDashboard
+    renderDashboard,
+    updateBanner,
+    // chartData,
 
 
 }

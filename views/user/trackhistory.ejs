@@ -207,7 +207,7 @@
                                                                     <div id="sl">SL NO</div>
                                                                     <div id="item">ITEM</div>
                                                                     <div id="qyt">QTY</div>
-                                                                    <div id="delivery">DELIVERY CHARGES</div>
+                                                                 
                                                                     <div id="cgst">CGST</div>
                                                                     <div id="sgst">SGST</div>
                                                                     <div id="price">PRICE</div>
@@ -220,7 +220,7 @@
                                                                         <div id="sl"><%=index + 1%></div>
                                                                         <div id="item"><%= item.productName %></div>
                                                                         <div id="qyt" class="text-danger"><%= item.quantity %></div>
-                                                                        <div id="delivery">&#8377; 40</div>
+                                                                   
                                                                         <div id="cgst">CGST</div>
                                                                         <div id="sgst">SGST</div>
                                                                         <div class="text-danger">&#8377; <%= item.price %></div>
@@ -231,7 +231,8 @@
                                                                 <hr>
                                                                 
                                                                 <div>
-                                                                    <div><b>Grand Total: </b> &#8377;  <%= order.OrderTotalPrice %></div>
+                                                                    <div><b>Delivery charge: </b> &#8377;  <%= order.DeliveryCharge %></div>
+                                                                    <div><b>Grand Total: </b> &#8377;  <%= order.grandTotal %></div>
                                                                 </div>
                                                                 
                                                                 <hr>

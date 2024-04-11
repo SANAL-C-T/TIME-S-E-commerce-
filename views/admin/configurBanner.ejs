@@ -1,532 +1,177 @@
 <%- include("../partials/adminheader.ejs") %>
 
-    <div class="container m-4">
-
-        <div class="mb-4 samsung">
-            <h4>SECTION SAMSUNG</h4>
-            <div class="d-flex flex-wrap">
-               
-                <form action="/admin/save/img1" method="POST" enctype="multipart/form-data" class="section-form w-100 ">
-                    <div class="form-group">
-                        <p>BANNER ONE</p>
-                        <img src="" id="img1" style="width:220px;height:150px;" class="img-thumbnail me-3 mb-3">
-                        <input type="file" name="bannerImage" id="banner1" class="form-control-file me-3 mb-3">
-                    </div>
-                    <div class="form-group">
-                        <label for="title">Content on Banner</label>
-                        <input type="text" name="title" id="title" class="form-control me-3 mb-3">
-                    </div>
-                    <div class="form-group">
-                        <label for="subtitle">Sub content on Banner</label>
-                        <input type="text" name="subtitle" id="subtitle" class="form-control me-3 mb-3">
-                    </div>
-                    <button type="submit" class="btn btn-primary">SAVE SECTION</button>
-                </form>
-                <script>
-         
-                    // Add event listener to the file input
-                    document.getElementById('banner1').addEventListener('change', function(event) {
-                        // Get the selected file
-                        const file = event.target.files[0];
-                        
-                        if (file) {
-                            // Create a FileReader object
-                            const reader = new FileReader();
-                            
-                            // Set up the FileReader onload event
-                            reader.onload = function(e) {
-                                // Update the image source with the selected file
-                                document.getElementById('img1').src = e.target.result;
-                                // Display the image
-                                document.getElementById('img1').style.display = 'block';
-                            };
-                            
-                            // Read the selected file as a data URL
-                            reader.readAsDataURL(file);
-                        }
-                    });
-                </script>
-
-                <form action="/admin/save/img2" method="POST" enctype="multipart/form-data" class="section-form w-100 ">
-
-                    <div class="form-group">
-                        <img src="" id="img2" style="width:220px;height:150px;" class="img-thumbnail me-3 mb-3">
-                        <input type="file" name="bannerImage" id="banner2" class="form-control-file me-3 mb-3" class="me-3 mb-3">
-                    </div>
-
-
-                    <div class="form-group">
-                        <label for="title">Content on Banner</label>
-                        <input type="text" name="title" class="form-control me-3 mb-3">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="subtitle">Sub content on Banner</label>
-                        <input type="text" name="subtitle" class="form-control me-3 mb-3">
-                    </div>
-
-
-                    <div>
-                        <button type="submit">SAVE SECTION</button>
-                    </div>
-                </form>
-
-
-                <script>
-         
-                    // Add event listener to the file input
-                    document.getElementById('banner2').addEventListener('change', function(event) {
-                        // Get the selected file
-                        const file = event.target.files[0];
-                        
-                        if (file) {
-                            // Create a FileReader object
-                            const reader = new FileReader();
-                            
-                            // Set up the FileReader onload event
-                            reader.onload = function(e) {
-                                // Update the image source with the selected file
-                                document.getElementById('img2').src = e.target.result;
-                                // Display the image
-                                document.getElementById('img2').style.display = 'block';
-                            };
-                            
-                            // Read the selected file as a data URL
-                            reader.readAsDataURL(file);
-                        }
-                    });
-                </script>
-
-
-
-                
-                <form action="/admin/save/img3" method="POST" enctype="multipart/form-data" class="section-form w-100 ">
-
-                    <div>
-                        <img src="" id="img3" style="width:220px;height:150px;" class="img-thumbnail me-3 mb-3">
-                        <input type="file" name="bannerImage" id="banner3" class="form-control-file me-3 mb-3" class="me-3 mb-3">
-                    </div>
-
-                    <div>
-                        <label for="title">Content on Banner</label>
-                        <input type="text" name="title" class="form-control me-3 mb-3">
-                    </div>
-
-
-                    <div>
-                        <label for="subtitle">Sub content on Banner</label>
-                        <input type="text" name="subtitle" class="form-control me-3 mb-3">
-                    </div>
-
-
-                    <div>
-                        <button type="submit">SAVE SECTION</button>
-                    </div>
-
-                </form>
-
-                <script>
-         
-                    // Add event listener to the file input
-                    document.getElementById('banner3').addEventListener('change', function(event) {
-                        // Get the selected file
-                        const file = event.target.files[0];
-                        
-                        if (file) {
-                            // Create a FileReader object
-                            const reader = new FileReader();
-                            
-                            // Set up the FileReader onload event
-                            reader.onload = function(e) {
-                                // Update the image source with the selected file
-                                document.getElementById('img3').src = e.target.result;
-                                // Display the image
-                                document.getElementById('img3').style.display = 'block';
-                            };
-                            
-                            // Read the selected file as a data URL
-                            reader.readAsDataURL(file);
-                        }
-                    });
-                </script>
-
-
-
+<div class="container">
+    <!-- Section One -->
+    <div class="sectionOne">
+        <h2>SECTION ONE</h2>
+        <form action="/admin/save/sectionOne" method="post" enctype="multipart/form-data">
+            <h3>Add banner Images for section one</h3>
+            <div class="d-flex justify-content-between flex-wrap">
+                <!-- Image placeholders -->
+                <div>
+                <div class="image-placeholder"><img src="" alt="Banner Image 1"></div>
+                <input type="file" name="bannerImage1" class="form-control-file mt-3 mb-3 " accept="image/*">
             </div>
-        </div>
-
-
-
-
-
-
-
-
-        <div class="mb-4 apple">
-            <h4>SECTION APPLE</h4>
-            <div class="d-flex flex-wrap">
-                <form action="/admin/save/img4" method="POST" enctype="multipart/form-data" class="section-form w-100 ">
-                    <div>
-
-                    </div>
-                    <img src="" id="img4" style="width:220px;height:150px;" class="img-thumbnail me-3 mb-3">
-                    <input type="file" name="bannerImage" id="banner4" class="form-control-file me-3 mb-3" class="me-3 mb-3">
-                    <div>
-
-                    </div>
-                    <label for="title">Content on Banner</label>
-                    <input type="text" name="title" class="form-control me-3 mb-3">
-                    <div>
-
-                    </div>
-                    <label for="subtitle">Sub content on Banner</label>
-                    <input type="text" name="subtitle" class="form-control me-3 mb-3">
-                    <div>
-
-                    </div>
-                    <button type="submit">SAVE SECTION</button>
-
-                </form>
-
-                <script>
-         
-                    // Add event listener to the file input
-                    document.getElementById('banner4').addEventListener('change', function(event) {
-                        // Get the selected file
-                        const file = event.target.files[0];
-                        
-                        if (file) {
-                            // Create a FileReader object
-                            const reader = new FileReader();
-                            
-                            // Set up the FileReader onload event
-                            reader.onload = function(e) {
-                                // Update the image source with the selected file
-                                document.getElementById('img4').src = e.target.result;
-                                // Display the image
-                                document.getElementById('img4').style.display = 'block';
-                            };
-                            
-                            // Read the selected file as a data URL
-                            reader.readAsDataURL(file);
-                        }
-                    });
-                </script>
-
-
-
-                <form action="/admin/save/img5" method="POST" enctype="multipart/form-data" class="section-form w-100 ">
-                    <div>
-
-                    </div>
-
-                    <img src="" id="img5" style="width:220px;height:150px;" class="img-thumbnail me-3 mb-3">
-                    <input type="file" name="bannerImage" id="banner5" class="form-control-file me-3 mb-3" class="me-3 mb-3">
-                    <div>
-
-                    </div>
-                    <label for="title">Content on Banner</label>
-
-                    <input type="text" name="title" class="form-control  me-3 mb-3">
-
-                    <div>
-
-                    </div>
-                    <label for="subtitle">Sub content on Banner</label>
-
-                    <input type="text" name="subtitle" class="form-control me-3 mb-3">
-
-                    <div>
-
-                    </div>
-                    <button type="submit">SAVE SECTION</button>
-                </form>
-
-                <script>
-         
-                    // Add event listener to the file input
-                    document.getElementById('banner5').addEventListener('change', function(event) {
-                        // Get the selected file
-                        const file = event.target.files[0];
-                        
-                        if (file) {
-                            // Create a FileReader object
-                            const reader = new FileReader();
-                            
-                            // Set up the FileReader onload event
-                            reader.onload = function(e) {
-                                // Update the image source with the selected file
-                                document.getElementById('img5').src = e.target.result;
-                                // Display the image
-                                document.getElementById('img5').style.display = 'block';
-                            };
-                            
-                            // Read the selected file as a data URL
-                            reader.readAsDataURL(file);
-                        }
-                    });
-                </script>
-
-
-
-
-                <form action="/admin/save/img6" method="POST" enctype="multipart/form-data" class="section-form w-100 ">
-
-                    <div>
-                        <img src="" id="img6" style="width:220px;height:150px;" class="img-thumbnail me-3 mb-3">
-                        <input type="file" name="bannerImage" id="banner6" class="form-control-file me-3 mb-3" class="me-3 mb-3">
-                    </div>
-
-                   
-                    <div>
-                        <label for="title">Content on Banner</label>
-                        <input type="text" name="title" class="form-control  me-3 mb-3">
-                    </div>
-                  
-
-                    <div>
-                        <label for="subtitle">Sub content on Banner</label>
-
-                        <input type="text" name="subtitle" class="form-control me-3 mb-3">
-                    </div>
-                    
-                    <div>
-                        <button type="submit">SAVE SECTION</button>
-                    </div>
-                   
-                </form>
-
-
-                <script>
-         
-                    // Add event listener to the file input
-                    document.getElementById('banner6').addEventListener('change', function(event) {
-                        // Get the selected file
-                        const file = event.target.files[0];
-                        
-                        if (file) {
-                            // Create a FileReader object
-                            const reader = new FileReader();
-                            
-                            // Set up the FileReader onload event
-                            reader.onload = function(e) {
-                                // Update the image source with the selected file
-                                document.getElementById('img6').src = e.target.result;
-                                // Display the image
-                                document.getElementById('img6').style.display = 'block';
-                            };
-                            
-                            // Read the selected file as a data URL
-                            reader.readAsDataURL(file);
-                        }
-                    });
-                </script>
-
+            <div>
+                <div class="image-placeholder"><img src="" alt="Banner Image 2"></div>
+                <input type="file" name="bannerImage2" class="form-control-file mt-3 mb-3 " accept="image/*">
             </div>
-        </div>
-
-        <div class="mb-4 garmin">
-            <h4>SECTION GARMIN</h4>
-            <div class="d-flex flex-wrap">
-                <form action="/admin/save/img7" method="POST" enctype="multipart/form-data" class="section-form w-100 ">
-
-                    <div>
-                        <img src="" id="img7" style="width:220px;height:150px;" class="img-thumbnail me-3 mb-3">
-                        <input type="file" name="bannerImage" id="banner7 class="form-control-file me-3 mb-3" class="me-3 mb-3">
-                    </div>
-
-
-                    <div>
-                        <label for="title">Content on Banner</label>
-                        <input type="text" name="title" class="form-control me-3 mb-3">
-                    </div>
-
-                    <div>
-                        <label for="subtitle">Sub content on Banner</label>
-                        <input type="text" name="subtitle" class="form-control me-3 mb-3">
-                    </div>
-
-                    <div>
-                        <button type="submit">SAVE SECTION</button>
-                    </div>
-
-                </form>
-
-
-                <script>
-         
-                    // Add event listener to the file input
-                    document.getElementById('banner7').addEventListener('change', function(event) {
-                        // Get the selected file
-                        const file = event.target.files[0];
-                        
-                        if (file) {
-                            // Create a FileReader object
-                            const reader = new FileReader();
-                            
-                            // Set up the FileReader onload event
-                            reader.onload = function(e) {
-                                // Update the image source with the selected file
-                                document.getElementById('img7').src = e.target.result;
-                                // Display the image
-                                document.getElementById('img7').style.display = 'block';
-                            };
-                            
-                            // Read the selected file as a data URL
-                            reader.readAsDataURL(file);
-                        }
-                    });
-                </script>
-
-
-
-                <form action="/admin/save/img8" method="POST" enctype="multipart/form-data" class="section-form w-100 " >
-
-                    <div>
-                        <img src="" id="img8" style="width:220px;height:150px;" class="img-thumbnail me-3 mb-3">
-                        <input type="file" name="bannerImage" id="banner8" class="form-control-file me-3 mb-3" class="me-3 mb-3">
-                    </div>
-
-
-                    <div>
-                        <label for="title">Content on Banner</label>
-                        <input type="text" name="title" class="form-control me-3 mb-3">
-                    </div>
-
-
-
-                    <div>
-                        <label for="subtitle">Sub content on Banner</label>
-                        <input type="text" name="subtitle" class="form-control me-3 mb-3">
-                    </div>
-
-
-                    <div>
-                        <button type="submit">SAVE SECTION</button>
-                    </div>
-
-                </form>
-
-
-
-
-
-                <script>
-         
-                    // Add event listener to the file input
-                    document.getElementById('banner8').addEventListener('change', function(event) {
-                        // Get the selected file
-                        const file = event.target.files[0];
-                        
-                        if (file) {
-                            // Create a FileReader object
-                            const reader = new FileReader();
-                            
-                            // Set up the FileReader onload event
-                            reader.onload = function(e) {
-                                // Update the image source with the selected file
-                                document.getElementById('img8').src = e.target.result;
-                                // Display the image
-                                document.getElementById('img8').style.display = 'block';
-                            };
-                            
-                            // Read the selected file as a data URL
-                            reader.readAsDataURL(file);
-                        }
-                    });
-                </script>
-                <form action="/admin/save/img9" method="POST" enctype="multipart/form-data" class="section-form  w-100 ">
-
-                    <div>
-                        <img src="" id="img9" style="width:220px;height:150px;" class="img-thumbnail me-3 mb-3">
-                        <input type="file" name="bannerImage" id="banner9" class="form-control-file me-3 mb-3" class="me-3 mb-3">
-                    </div>
-
-
-                    <div>
-                        <label for="title">Content on Banner</label>
-                        <input type="text" name="title" class="form-control me-3 mb-3">
-                    </div>
-
-
-                    <div>
-                        <label for="subtitle">Sub content on Banner</label>
-                        <input type="text" name="subtitle" class="form-control me-3 mb-3">
-                    </div>
-
-
-                    <div>
-                        <button type="submit">SAVE SECTION</button>
-                    </div>
-
-                </form>
-
-                <script>
-         
-                    // Add event listener to the file input
-                    document.getElementById('banner9').addEventListener('change', function(event) {
-                        // Get the selected file
-                        const file = event.target.files[0];
-                        
-                        if (file) {
-                            // Create a FileReader object
-                            const reader = new FileReader();
-                            
-                            // Set up the FileReader onload event
-                            reader.onload = function(e) {
-                                // Update the image source with the selected file
-                                document.getElementById('img9').src = e.target.result;
-                                // Display the image
-                                document.getElementById('img9').style.display = 'block';
-                            };
-                            
-                            // Read the selected file as a data URL
-                            reader.readAsDataURL(file);
-                        }
-                    });
-                </script>
-
-
-
+            <div>
+                <div class="image-placeholder"><img src="" alt="Banner Image 3"></div>
+                <input type="file" name="bannerImage3" class="form-control-file mt-3 mb-3 " accept="image/*">
             </div>
-        </div>
-
+            </div>
+        
+            
+            <!-- Add text for the banner -->
+            <h3>Add text for the banner</h3>
+            <div>
+                <label for="mainText">MAIN TEXT</label>
+                <input type="text" id="mainText" name="mainText">
+                <label for="subText">SUB TEXT</label>
+                <input type="text" id="subText" name="subText">
+                <label for="introText">INTRODUCTION</label>
+                <input type="text" id="introText" name="introText">
+                <label for="HeadingText">HEADING TEXT</label>
+                <input type="text" id="HeadingText" name="HeadingText">
+                <label for="subHeadingText">SUB HEADING</label>
+                <input type="text" id="subHeadingText" name="subHeadingText">
+            </div>
+            <!-- Save button -->
+            <button type="submit" class="btn-save">SAVE</button>
+        </form>
     </div>
 
+    <!-- Section Two -->
+    <div class="sectionTwo">
+        <h2>SECTION TWO</h2>
+        <form action="/admin/save/sectionTwo" method="post" enctype="multipart/form-data">
+            <h3>Add banner Images for section Two</h3>
+            <div class="d-flex justify-content-between flex-wrap">
+                <!-- Image placeholders -->
+                <div>
+                <div class="image-placeholder"><img src="" alt="Banner Image 1"></div>
+                <input type="file" name="bannerImage1" class="form-control-file mt-3 mb-3 " accept="image/*">
+            </div>
+            <div>
+                <div class="image-placeholder"><img src="" alt="Banner Image 2"></div>
+                <input type="file" name="bannerImage2"  class="form-control-file mt-3 mb-3 " accept="image/*">
+            </div>
+            <div>
+                <div class="image-placeholder"><img src="" alt="Banner Image 3"></div>
+                <input type="file" name="bannerImage3" class="form-control-file mt-3 mb-3 " accept="image/*">
+            </div>
+            </div>
+            
+            
+            <!-- Add text for the banner -->
+            <h3>Add text for the banner</h3>
+            <div>
+                <label for="mainText">MAIN TEXT</label>
+                <input type="text" id="mainText" name="mainText">
+                <label for="subText">SUB TEXT</label>
+                <input type="text" id="subText" name="subText">
+                <label for="introText">INTRODUCTION</label>
+                <input type="text" id="introText" name="introText">
+                <label for="HeadingText">HEADING TEXT</label>
+                <input type="text" id="HeadingText" name="HeadingText">
+                <label for="subHeadingText">SUB HEADING</label>
+                <input type="text" id="subHeadingText" name="subHeadingText">
+            </div>
+            <!-- Save button -->
+            <button type="submit" class="btn-save">SAVE</button>
+        </form>
+    </div>
+
+    <!-- Section Three -->
+    <div class="sectionThree">
+        <h2>SECTION THREE</h2>
+        <form action="/admin/save/sectionThree" method="post" enctype="multipart/form-data">
+            <h3>Add banner Images for section Three</h3>
+            <div class="d-flex justify-content-between flex-wrap">
+                <!-- Image placeholders -->
+                <div>
+                <div class="image-placeholder"><img src="" alt="Banner Image 1"></div>
+                <input type="file" name="bannerImage1" class="form-control-file mt-3 mb-3 " accept="image/*">
+            </div>
+            <div>
+                <div class="image-placeholder"><img src="" alt="Banner Image 2"></div>
+                <input type="file" name="bannerImage2" class="form-control-file mt-3 mb-3 " accept="image/*">
+            </div>
+            <div>
+                <div class="image-placeholder"><img src="" alt="Banner Image 3"></div>
+                <input type="file" name="bannerImage3" class="form-control-file mt-3 mb-3 " accept="image/*">
+            </div>
+            </div>
+            <!-- Add text for the banner -->
+            <h3>Add text for the banner</h3>
+            <div>
+                <label for="mainText">MAIN TEXT</label>
+                <input type="text" id="mainText" name="mainText">
+                <label for="subText">SUB TEXT</label>
+                <input type="text" id="subText" name="subText">
+                <label for="introText">INTRODUCTION</label>
+                <input type="text" id="introText" name="introText">
+                <label for="HeadingText">HEADING TEXT</label>
+                <input type="text" id="HeadingText" name="HeadingText">
+                <label for="subHeadingText">SUB HEADING</label>
+                <input type="text" id="subHeadingText" name="subHeadingText">
+            </div>
+            <!-- Save button -->
+            <button type="submit" class="btn-save">SAVE</button>
+        </form>
+    </div>
+</div>
+
 <style>
+    .container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
 
-
-
-    .section-form {
-        margin-bottom: 20px;
+    .sectionOne, .sectionTwo, .sectionThree {
+        margin-bottom: 40px;
         padding: 20px;
         border: 1px solid #ccc;
         border-radius: 5px;
     }
-    
-    .form-group {
-        margin-bottom: 15px;
+
+    .image-placeholder {
+        width: 200px;
+        height: 150px;
+        border: 1px solid black;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
     }
-    
-    .form-control {
+
+    .image-placeholder img {
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    input[type="text"] {
         width: 100%;
         padding: 8px;
+        margin-bottom: 10px;
         border: 1px solid #ccc;
-        border-radius: 4px;
+        border-radius: 5px;
     }
-    
-    .btn-primary {
+
+    .btn-save {
+        width: 100%;
+        padding: 10px;
         background-color: #007bff;
         color: #fff;
         border: none;
-        padding: 8px 20px;
-        border-radius: 4px;
+        border-radius: 5px;
         cursor: pointer;
     }
-    
-    .btn-primary:hover {
-        background-color: #0056b3;
-    }
-    
 </style>
-    

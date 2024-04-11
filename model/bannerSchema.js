@@ -2,10 +2,15 @@
 const mangoose = require("mongoose")
 require("../model/config")
 const bannerCollection = mangoose.Schema({
-
-    TextContent: String,
+    sectionName: String,
+    bannerImage1: String,
+    bannerImage2: String,
+    bannerImage3: String,
+    MainTextContent: String,
     SubTextContent: String,
-    bannerImage: String,
+    introductionTextContent: String,
+    heading:String,
+    subHeading:String
 
 
 });

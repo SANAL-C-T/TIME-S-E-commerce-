@@ -9,6 +9,7 @@ const orderHistorySchema = mongoose.Schema({
     DeliveredDate: String,
     OrderDateGraph: Date,
     paymentMethod: String,
+    DeliveryCharge:String,
     address: String,
     userid: ObjectId,
     items: [],
@@ -24,7 +25,8 @@ const orderHistorySchema = mongoose.Schema({
     },
     CouponUsed: String,
     discountgiven: Number,
-    couponCode: String
+    couponCode: String,
+    grandTotal:Number
 });
 
 const orderData = mongoose.model('orderHistory', orderHistorySchema);

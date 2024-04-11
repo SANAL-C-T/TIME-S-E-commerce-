@@ -84,6 +84,10 @@ userUrlRouter.post("/removeCoupon", jwtauth.userhaveToken1, cart.couponremove)
 //universal route for 404
 userUrlRouter.get("/*", user.notfound)
 
+
+
+userUrlRouter.post("/getdeliveryCost",jwtauth.userhaveToken1,user.getTransportationCost)
+
 module.exports = {
     userUrlRouter,
 }

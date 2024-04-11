@@ -16,6 +16,7 @@ const razKey = process.env.RAZORPAY_ID_KEY;
 const razSec = process.env.RAZORPAY_SECRET_KEY;
 const secret = process.env.jwt_user_secret;
 
+
 var instance = new Razorpay({
     key_id: razKey,
     key_secret: razSec,
@@ -485,17 +486,18 @@ const proceedToaddress = async (req, res) => {
 //.................................................
 //storing the incoming data from checkout page
 var razOrderID;
+var deleiveryCHarge;
 const addAddressToPurchase = async (req, res) => {
 
-    console.log("//////add address to purchase in cart controller is runing now////")
+    console.log(":::::add address to purchase in cart controller is runing now::::")
     try {
         var name;
         var email;
         var mob;
-
+     
         const savedAddress = req.body.Value;
 
-
+        deleiveryCHarge= req.body.deliveryCharge;
         var paymentMode = req.body.paymentMethod;
         const tosaveaddressCheckbox = req.body.saveaddressCheckbox;
 
@@ -509,7 +511,7 @@ const addAddressToPurchase = async (req, res) => {
         const Country = req.body.Country
         const pincode = req.body.pincode
 
-
+    
         // console.log("===savedAddress coming to try block of add address to purchase::", savedAddress)
         // console.log("////paymentMode coming to try block of add address to purchase:::::", paymentMode)
 
@@ -541,7 +543,7 @@ const addAddressToPurchase = async (req, res) => {
 
         if (saveaddressCheckbox == true) {
             // const addressFromSaved = req.body.Value;
-            console.log(" >><<<>><<user need to save the address to db, now in saveaddressCheckbox:true")
+            console.log(" :::::user need to save the address to db, now in saveaddressCheckbox:true")
             //it is stored in users database.
             //it takes address as a object
             await userData.findOneAndUpdate({ _id: usersid }, { $push: { Address: addresssss } },
@@ -549,7 +551,6 @@ const addAddressToPurchase = async (req, res) => {
             );
 
             let strAddAddresstodb = `phoneNo:${addresssss.phoneNo} houseNo:${addresssss.houseNo} street:${addresssss.street} location:${addresssss.location} landmark:${addresssss.landmark} city:${addresssss.city} state:${addresssss.state} Country:${addresssss.Country} pincode:${addresssss.pincode}`;
-          
             //it takes address as a string.
             await cartData.findOneAndUpdate(
                 { userid: usersid },
@@ -557,12 +558,8 @@ const addAddressToPurchase = async (req, res) => {
             );
         }               //below code takes address from the database.
 
-
-
         else if (addresssss.phoneNo === undefined) { //this is because, when saved address is used there wont be any data in new address form.
             // console.log("%%%% user id using saved address from database  , now in else if block of add address to purchase")
-
-            const addressFromSaved = req.body.Value;
 
             try {
                 const updatedCartData = await cartData.findOneAndUpdate(
@@ -597,7 +594,7 @@ const addAddressToPurchase = async (req, res) => {
             let strAddress = `phoneNo:${addresssss.phoneNo} houseNo:${addresssss.houseNo} street:${addresssss.street} location:${addresssss.location} landmark:${addresssss.landmark} city:${addresssss.city} state:${addresssss.state} Country:${addresssss.Country} pincode:${addresssss.pincode}`;
             // console.log("@@@@@ str OF typedAddress:::", strAddress)  //true
 
-
+    
 
             await cartData.findOneAndUpdate({ userid: usersid }, { $set: { Address: strAddress } },
 
@@ -606,8 +603,12 @@ const addAddressToPurchase = async (req, res) => {
 
         // console.log("$$$$ paymentMode in else block of add address to purchase:::", paymentMode)
 
+//function to get deliveryCharge
+
+
+
         if (paymentMode == "COD") {
-            const success = await cartEraseAccording("COD", usersid, req, res);
+            const success = await cartEraseAccording("COD",deleiveryCHarge, usersid, req, res);
             if (success) {
                 console.log("passed cod")
 
@@ -625,22 +626,24 @@ const addAddressToPurchase = async (req, res) => {
 
 
             var instance = new Razorpay({ key_id: razKey, key_secret: razSec })
+            let price=(inCart.OrderTotalPrice + Number(deleiveryCHarge))
+console.log(price)
 
             var options = {
-                amount: inCart.OrderTotalPrice * 100,  // amount in the smallest currency unit
+                amount: price*100,  // amount in the smallest currency unit
                 currency: "INR",
                 receipt: inCart._id
             };
 
-            instance.orders.create(options, function (err, order) {
-                // console.log("razorpay sending order", order);
+            instance.orders.create(options, function (err, order) { //this is sending the order data to razerpay server, the url is abstracted.
+                // console.log("razorpay sending order", order); 
                 if (!err) {
                     razOrderID = order.id;
                     res.status(200).send({ //the data is being send to the frontend, for showing the payment interface.
                         success: true,
                         msg: "order created",
                         order_id: order.id, //yes id is received in frontend.
-                        amount: inCart.OrderTotalPrice * 100,
+                        amount: price*100,
                         key_id: razKey,
                         username: name,
                         email: email,
@@ -651,15 +654,7 @@ const addAddressToPurchase = async (req, res) => {
                     res.status(400)
                 }
             });
-            // 
 
-            // if (onlinePay) {
-            //     console.log("passed onlinePay")
-            //     res.json({razPay:true});
-            // } else {
-            //     console.log("failed onlinePay"); // Failure case
-            //     res.json({ razPay: false });
-            // }
         }
 
         else if (paymentMode == "MyWallet") {
@@ -667,13 +662,13 @@ const addAddressToPurchase = async (req, res) => {
             const balance = await walletData.findOne({ userId: usersid }, { avaliable: 1 })
             const netBalance = balance.avaliable;
             let inCart = await cartData.findOne({ userid: usersid })
-            let amount = inCart.OrderTotalPrice;
+            let amount = (inCart.OrderTotalPrice + Number(deleiveryCHarge));
             console.log("balance::::", netBalance)
             // console.log("paymentamount::::", amount)
             if (netBalance >= amount && netBalance != "undefined") {
                 let newNalance = netBalance - amount;
                 await walletData.findOneAndUpdate({ userId: usersid }, { $set: { avaliable: newNalance, remark: "Product purchased" } })
-                const walletPay = await cartEraseAccording("MyWallet", usersid, req, res);
+                const walletPay = await cartEraseAccording("MyWallet",deleiveryCHarge, usersid, req, res);
                 res.json({ wallet: true });
             }
             else {
@@ -683,6 +678,8 @@ const addAddressToPurchase = async (req, res) => {
 
         }
         //here we are adding all the data to the order history collection.
+
+
 
     }
     catch (error) {
@@ -714,7 +711,7 @@ const handlePaymentData = async (req, res) => {
 
         if (generated_signature === signature) {
             console.log('Payment verification is successful');
-            const clearCart = await cartEraseAccording("razorpay", usersid, req, res);
+            const clearCart = await cartEraseAccording("razorpay",deleiveryCHarge, usersid, req, res);
             if (clearCart == true) {
                 res.status(200).json("payment verified");
             } else {
@@ -724,9 +721,6 @@ const handlePaymentData = async (req, res) => {
         } else {
             console.log('Payment verification failed');
         }
-
-
-
     }
     catch (error) {
         console.log(error.message)
@@ -735,7 +729,7 @@ const handlePaymentData = async (req, res) => {
 
 
 
-async function cartEraseAccording(PayMode, usersid, req, res) {
+async function cartEraseAccording(PayMode, deleiveryCHarge, usersid, req, res) {
 
     try {
 
@@ -744,24 +738,25 @@ async function cartEraseAccording(PayMode, usersid, req, res) {
         // console.log("presentCart:::",presentCart)
         // console.log("usersid:::",usersid)
         // console.log("PayMode:::",PayMode)
-
         let date = Date.now()
         var formatedDate = moment(date).format('D-MM-YYYY')
         // console.log("DATEEEE:::",formatedDate)
-
+const includingDeliveryCharge=presentCart.OrderTotalPrice + Number(deleiveryCHarge);
         const purchaseHistory = new orderHistoryData({
             userid: usersid,
             OrderDate: formatedDate,
             OrderDateGraph: date,
             orderId: presentCart._id,
             paymentMethod: PayMode,
+            DeliveryCharge:deleiveryCHarge,
             address: presentCart.Address,
             items: presentCart.items,
             OrderTotalPrice: presentCart.OrderTotalPrice,
             Status: "pending",
             couponCode: presentCart.CouponCode,
             discountedByCoupon: presentCart.couponApplied,
-            discountgiven: presentCart.couponValue
+            discountgiven: presentCart.couponValue,
+            grandTotal:includingDeliveryCharge
         });
 
         await purchaseHistory.save(); //save the data.
@@ -800,18 +795,6 @@ async function cartEraseAccording(PayMode, usersid, req, res) {
 //     }
 
 // }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //....................... logic to get user order history..........................................
@@ -880,10 +863,6 @@ const cancelOrder = async (req, res) => {
                 { new: true }
             );
         }
-
-
-
-
 
         // let statusFromDb=await orderHistoryData.findOne({ _id: orderId }).select("Status")
 
@@ -1038,11 +1017,6 @@ const savedAddress = async (req, res) => {
         console.log(error.message)
     }
 }
-
-
-
-
-
 
 
 //COUPON APPLYING.....

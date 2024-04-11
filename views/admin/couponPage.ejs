@@ -59,6 +59,16 @@
   <br>
 
   <button type="submit" class="btn btn-success px-5">ADD COUPON</button>
+
+  <br>
+  <% if (locals.errorMessage) { %>
+    <div id="errorAlert" class="alert alert-danger" role="alert">
+        <%= locals.errorMessage %>
+    </div>
+    
+<% } %>
+
+
 </form>
 
 <%- include("../partials/adminfooter.ejs") %>

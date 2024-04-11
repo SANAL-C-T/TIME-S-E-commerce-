@@ -5,9 +5,11 @@ const reviewData = require("../model/reviewschema")
 const wishData = require("../model/wishlist")
 const productData = require("../model/productSchema")
 const referData = require("../model/refferschems")
+const bannerData = require("../model/bannerSchema")
 const promoCodeGenerator = require('otp-generator');
 const bcrypt = require("bcrypt")
 const moment = require("moment");
+const axios = require("axios");
 const { render } = require("ejs")
 // const session = require("express-session")
 const JWTtoken = require("jsonwebtoken")
@@ -17,7 +19,7 @@ const { values } = require("pdf-lib")
 
 require('dotenv').config();
 const jwtcode = process.env.jwt_user_secret
-
+const zipPinCodeKey = process.env.ZIPCODE_API_KEY;
 
 //control function begins here
 const homeNotLog = async (req, res) => {
@@ -77,7 +79,17 @@ const homeNotLog = async (req, res) => {
             loadProductG = 0;
         }
 
-        res.render("user/userHomeNotlog.ejs", { loadProduct, loadProductA, loadProductG });
+
+
+        const bannerImage = await bannerData.find({})
+        console.log("bannerImage:", bannerImage)
+        const Banner1 = bannerImage[0];
+        const Banner2 = bannerImage[1];
+        const Banner3 = bannerImage[2];
+
+
+
+        res.render("user/userHomeNotlog.ejs", { loadProduct, loadProductA, loadProductG, Banner1, Banner2, Banner3 });
 
     } catch (error) {
         console.error(error.message);
@@ -200,8 +212,14 @@ const home = async (req, res) => {
         console.log("AAAAAA::::", loadProduct, loadProductA, loadProductG)
 
 
+        const bannerImage = await bannerData.find({})
+        console.log("bannerImage:", bannerImage)
+        const Banner1 = bannerImage[0];
+        const Banner2 = bannerImage[1];
+        const Banner3 = bannerImage[2];
+        console.log("Banner1:", Banner1)
 
-        res.render("user/userHomepage.ejs", { loadProduct, loadProductA, loadProductG });
+        res.render("user/userHomepage.ejs", { loadProduct, loadProductA, loadProductG, Banner1, Banner2, Banner3 });
 
     } catch (error) {
         console.log(error.message)
@@ -407,34 +425,34 @@ const productdetail = async (req, res) => {
         if (!pdetail) {
             return res.status(404).send('Product not found');
         }
-        {}
+        { }
 
 
 
-//geting the average review
-const getAvg=await reviewData.find({product:pId}).populate({
-    path:'product',
-    model:"products",
-    select:"_id"
-})
-    console.log("avggg:",getAvg)
-    let totalRating = 0;
-let reviewCount = getAvg.length;
+        //geting the average review
+        const getAvg = await reviewData.find({ product: pId }).populate({
+            path: 'product',
+            model: "products",
+            select: "_id"
+        })
+        console.log("avggg:", getAvg)
+        let totalRating = 0;
+        let reviewCount = getAvg.length;
 
-// Iterate through each review and sum up the ratings
-getAvg.forEach(review => {
-  totalRating += review.rating;
-});
+        // Iterate through each review and sum up the ratings
+        getAvg.forEach(review => {
+            totalRating += review.rating;
+        });
 
-// Calculate the average rating
-const averageRating = reviewCount > 0 ? totalRating / reviewCount : 0;
-let roundedaverageRating = averageRating.toFixed(2);
-console.log("Average Rating:",roundedaverageRating);
-
-
+        // Calculate the average rating
+        const averageRating = reviewCount > 0 ? totalRating / reviewCount : 0;
+        let roundedaverageRating = averageRating.toFixed(2);
+        console.log("Average Rating:", roundedaverageRating);
 
 
-        res.render("user/productdetail.ejs", { pdetail,roundedaverageRating });
+
+
+        res.render("user/productdetail.ejs", { pdetail, roundedaverageRating });
     } catch (error) {
         console.log(error.message);
         res.status(500).send('Internal Server Error');
@@ -574,7 +592,7 @@ const categoryWiseProduct = async (req, res) => {
 
 
 
-   
+
 
 
         let pageStartindex = (pageNumber - 1) * itemsPerPage;
@@ -769,21 +787,22 @@ const editprofile = async (req, res) => {
 //...............................................
 const saveEditProfile = async (req, res) => {
     try {
-       let user;
-        const token=req.cookies.usertoken;
+        let user;
+        const token = req.cookies.usertoken;
 
-        JWTtoken.verify(token,jwtcode,(err,decoded)=>{
-        if(err){
-              console.log("user not verified")
-        }else{
-        const usersdetail=decoded._id;
-        user=usersdetail
-        console.log(user)
-       }})
-//................................................................
+        JWTtoken.verify(token, jwtcode, (err, decoded) => {
+            if (err) {
+                console.log("user not verified")
+            } else {
+                const usersdetail = decoded._id;
+                user = usersdetail
+                console.log(user)
+            }
+        })
+        //................................................................
 
         const pImage = `/${req.file.filename}`;
-       
+
         const address = {
             houseNo: req.body.house,
             street: req.body.street,
@@ -849,7 +868,7 @@ const showWishlist = async (req, res) => {
         const usersid = req.userid;//this is comming from jwt authentication
 
         const totalCount = await wishData.findOne({ userId: usersid }).countDocuments();
-        const page = parseInt(req.query.page) || 1; 
+        const page = parseInt(req.query.page) || 1;
         const limit = 5;
 
 
@@ -860,8 +879,8 @@ const showWishlist = async (req, res) => {
                 model: "products",
                 match: { isDeleted: false }
             })
-            .skip(startIndex) 
-            .limit(limit); 
+            .skip(startIndex)
+            .limit(limit);
 
         res.render("user/wishlist.ejs", {
             wishList,
@@ -928,7 +947,7 @@ const saveReview = async (req, res) => {
 
         const getUserName = await userData.find({ _id: usersid }, { username: 1 });
         console.log("getUserName:", getUserName[0].username);
-        
+
 
         const saveRev = new reviewData({
             comment: req.body.reviewDescription,
@@ -940,7 +959,7 @@ const saveReview = async (req, res) => {
         })
         saveRev.save()
         res.redirect("/home")
-       
+
     }
     catch (error) {
         console.log(error.message)
@@ -953,17 +972,17 @@ const saveReview = async (req, res) => {
 const viewAllReview = async (req, res) => {
     try {
         const usersid = req.userid;//from JWT AUTHENTICATION
-        const selectedProduct= req.params.id;
+        const selectedProduct = req.params.id;
         // console.log("gd", selectedProduct,usersid)
 
-        let viewRev=await reviewData.find({product:selectedProduct})
+        let viewRev = await reviewData.find({ product: selectedProduct })
         // console.log("viewRev::",viewRev)
         //we are just changing the time format in the array
         viewRev.forEach(review => {
             review.formattedTime = moment(review.Time).format('MMMM Do YYYY, h:mm:ss a');
         });
-        console.log("viewRevinnnn::",viewRev)
-        res.render("user/allreview.ejs",{viewRev,selectedProduct})
+        console.log("viewRevinnnn::", viewRev)
+        res.render("user/allreview.ejs", { viewRev, selectedProduct })
 
     }
     catch (error) {
@@ -976,15 +995,15 @@ const viewAllReview = async (req, res) => {
 
 const sortNewReview = async (req, res) => {
     try {
-      
+
         const productIdNow = req.params.selectedProduct;
         console.log("productIdNow:", productIdNow);
 
-        let viewRev = await reviewData.find({ product: productIdNow }).sort({Time: -1 });
+        let viewRev = await reviewData.find({ product: productIdNow }).sort({ Time: -1 });
         viewRev.forEach(review => {
             review.formattedTime = moment(review.Time).format('MMMM Do YYYY, h:mm:ss a');
         });
-console.log(viewRev)
+        console.log(viewRev)
         res.status(200).json({ viewRev });
 
     } catch (error) {
@@ -992,17 +1011,17 @@ console.log(viewRev)
     }
 };
 
-const sorthighestStar= async (req, res) => {
+const sorthighestStar = async (req, res) => {
     try {
         console.log("hello sorthighestStar");
         const productIdNow = req.params.selectedProduct;
         console.log("productIdNow:", productIdNow);
 
-        let viewRev = await reviewData.find({ product: productIdNow }).sort({rating: 1 });
+        let viewRev = await reviewData.find({ product: productIdNow }).sort({ rating: 1 });
         viewRev.forEach(review => {
             review.formattedTime = moment(review.Time).format('MMMM Do YYYY, h:mm:ss a');
         });
-// console.log(viewRev)
+        // console.log(viewRev)
         res.status(200).json({ viewRev });
 
     } catch (error) {
@@ -1013,17 +1032,17 @@ const sorthighestStar= async (req, res) => {
 
 
 
-const sortLowestStar= async (req, res) => {
+const sortLowestStar = async (req, res) => {
     try {
         console.log("hello sortLowestStar");
         const productIdNow = req.params.selectedProduct;
         console.log("productIdNow:", productIdNow);
 
-        let viewRev = await reviewData.find({ product: productIdNow }).sort({rating: -1 });
+        let viewRev = await reviewData.find({ product: productIdNow }).sort({ rating: -1 });
         viewRev.forEach(review => {
             review.formattedTime = moment(review.Time).format('MMMM Do YYYY, h:mm:ss a');
         });
-console.log(viewRev)
+        console.log(viewRev)
         res.status(200).json({ viewRev });
 
     } catch (error) {
@@ -1238,6 +1257,57 @@ const convertInviteLink = async (emailToSentInvitation, name) => {
 };
 
 
+//............................fFUNCTION TO GET DISTANCE USING POSTAL LOCATION API.......................
+
+
+
+
+const getTransportationCost = async (req, res) => {
+    try {
+        const pincodes = req.body.pin;
+
+        const chargePerKm = 0.50;
+
+        console.log("in coming pincode::", Number(pincodes))
+
+        const params = {
+            "code": "673001",//fixed code of hub.
+            "compare": pincodes,
+            "country": "IN",
+            "unit": "km"
+        };
+
+        const headers = {
+            "apikey": zipPinCodeKey,
+            "Accept": "application/json"
+        };
+
+        axios.get("https://api.zipcodestack.com/v1/distance", {//going to another server
+            params: params,
+            headers: headers
+        })
+            .then(response => {
+                const responseData = response.data;
+                const results = responseData.results;
+                const distances = Object.values(results);
+
+                console.log("Distances:", distances[0]);
+                const DeliveryCharge = distances * chargePerKm;
+                console.log("DeliveryCharge:", Math.ceil(DeliveryCharge))
+                res.status(200).json({ DeliveryCharge: Math.ceil(DeliveryCharge) });
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
+
+
+    }
+    catch (error) {
+        console.log(error.message)
+    }
+}
+
 
 //...........exports..................................................................................................
 module.exports = {
@@ -1276,5 +1346,6 @@ module.exports = {
     convertInviteLink,
     sortNewReview,
     sortLowestStar,
-    sorthighestStar
+    sorthighestStar,
+    getTransportationCost
 }

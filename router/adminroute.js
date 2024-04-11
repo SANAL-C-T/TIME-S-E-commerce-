@@ -71,10 +71,12 @@ adminUrlRouter.get("/bannerConfig",adminin.bannerConfigur)
 adminUrlRouter.post("/save/samsung",bannerUP.multiBanner,adminin.bannerdatabse)
 
 
-adminUrlRouter.post("/save/:imgg",bannerUP.singleBanner,adminin.storebanner)
+adminUrlRouter.post("/save/:section",bannerUP.multiBanner,adminin.storebanner)
 
 
-adminUrlRouter.post("/salesChart",adminin.chartData)
+// adminUrlRouter.post("/salesChart",adminin.chartData)
+adminUrlRouter.post("/update/:section",bannerUP.multiBanner,adminin.updateBanner)
+
 
 
 module.exports = {

@@ -200,6 +200,37 @@ const adminDashboard = async (req, res) => {
         // console.log("bestSellingProduct:", bestSellingProduct)
 
 
+        const bestSellerCategory = await orderData.aggregate([
+            { $unwind: "$items" }, // Unwind the items array
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "items.products",
+                    foreignField: "_id",
+                    as: "product"
+                }
+            },
+            { $unwind: "$product" }, // Unwind the product array
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "product.productCategory",
+                    foreignField: "_id",
+                    as: "category"
+                }
+            },
+            { $unwind: "$category" }, // Unwind the category array
+            {
+                $group: {
+                    _id: "$category.categoryName", // Group by category name
+                    totalQuantity: { $sum: "$items.quantity" } // Sum the quantity for each category
+                }
+            },
+            { $sort: { totalQuantity: -1 } } // Sort by total quantity in descending order
+        ]);
+
+console.log("bestSellerCategory::",bestSellerCategory)
+
 
 
 
@@ -211,7 +242,8 @@ const adminDashboard = async (req, res) => {
             userCount: userCount,
             daywiseSoldItems: reduceQyt,
             order: orderCount,
-            bestseller: bestSellingProduct
+            bestseller: bestSellingProduct,
+            bestSellercategory:bestSellerCategory
         };
 
         res.render("admin/adminDashboard", { urlData })

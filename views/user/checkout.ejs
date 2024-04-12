@@ -200,12 +200,21 @@
       </div>
       <hr>
       <div class="payment-option d-flex  justify-content-between  ">
-        <div>
-          <label for="COD1">Cash on delivery</label>
-        </div>
-        <div>
-          <input type="radio" id="COD1" name="paymentMethod" value="COD">
-        </div>
+       
+        <% if (database.cartdata.OrderTotalPrice <= 30000) { %>
+          <div>
+            <label for="COD1">Cash on delivery</label>
+          </div>
+          <div>
+            <input type="radio" id="COD1" name="paymentMethod" value="COD">
+          </div>
+        <% } 
+        else { %>
+        
+        <% } %>
+        
+
+        
       </div>
       <hr>
       <div class="payment-option d-flex  justify-content-between  ">

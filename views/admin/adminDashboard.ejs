@@ -9,7 +9,6 @@
             <select id="selectOption">
                 <option value="overall"> OVERALL DATA </option>
                 <option value="daywise"> TODAYS DATA </option>
-                <option value="weekwise"> WEEKLY DATA </option>
                 <option value="monthwise"> MONTHLY DATA </option>
                 <option value="yearwise"> YEARLY DATA </option>
             </select>
@@ -116,7 +115,14 @@
 
         <hr>
         <h3>Top Best selling Category</h3>
-
+        <div class="mb-5" id="bestSellerContainer">
+            <% for (let i = 0; i < 3 && i < urlData.bestSellercategory.length; i++) { %>
+                <div class="m-3 bestSellerItem">
+                    <%= urlData.bestSellercategory[i]._id %>
+                </div>
+            <% } %>
+        </div>
+        
 
     </div>
 
@@ -466,6 +472,9 @@
                         doughnutGraphOfPaymentMethod(paymentMethodData);
                         lineGraph(daywiseSoldItem);
                         salesStatusGraph(daywiseStatus);
+
+                        let revenuez=document.getElementById("totalRevenue");
+                        revenuez.innerText=`${receivedTotalRevenue[0].totalAmount}`
 
                         const monthwiseGraph = document.getElementById("monthwiseGraph");
                         monthwiseGraph.style.display = "none";
@@ -1088,6 +1097,13 @@ myLineChart = new Chart(ctxsalesCount, {
             background-color: #eff7d3;
             box-shadow: 2px 2px 8px rgba(0.1, 0.1, 0.1, 0.2);
             padding: 10px;
+            justify-content:space-evenly
 
         }
+        .bestSellerItem {
+            background-color: #b7dbf0;
+            box-shadow: 2px 2px 8px rgba(0.1, 0.1, 0.1, 0.2);
+            padding: 10px;
+        }
+        
     </style>

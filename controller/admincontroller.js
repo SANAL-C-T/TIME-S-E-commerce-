@@ -229,7 +229,7 @@ const adminDashboard = async (req, res) => {
             { $sort: { totalQuantity: -1 } } // Sort by total quantity in descending order
         ]);
 
-console.log("bestSellerCategory::",bestSellerCategory)
+// console.log("bestSellerCategory::",bestSellerCategory)
 
 
 
@@ -847,8 +847,23 @@ const editedCategory = async (req, res) => {
         let newcategoryname = req.body.categoryName;
         let newstatus = req.body.Categorystatus;
         const ids = req.params.id;
-        await categoryData.updateOne({ _id: ids }, { $set: { categoryName: newcategoryname, Categorystatus: newstatus } })
-        res.redirect("/admin/category")
+
+const alreadyExist=await categoryData.findOne({categoryName:newcategoryname})
+
+if(alreadyExist==null){
+    await categoryData.updateOne({ _id: ids }, { $set: { categoryName: newcategoryname, Categorystatus: newstatus } })
+    res.redirect("/admin/category")
+}else{
+  
+    let catedata = await categoryData.findOne({ _id: ids })
+        const toEjs = {
+            catsdata: catedata
+        }
+        res.locals.errorMessage = 'Name already exist';
+        res.render("admin/admineditcategory.ejs", { toEjs })
+}
+
+      
     }
     catch (error) {
         console.log(error.message)
@@ -943,8 +958,8 @@ const addcoupons = async (req, res) => {
         const code = req.body.couponCode;
         let offerType = req.body.offerType;
         let couponCodeDescription = req.body.couponCodeDescription;
-        let addedOn = moment(req.body.addDate).format('DD-MM-YYYY');
-        let expiryOn = moment(req.body.ExpiryDate).format('DD-MM-YYYY');
+        let addedOn = req.body.addDate
+        let expiryOn = req.body.ExpiryDate
         const value = req.body.couponValue;
 
         // console.log("expiryOn:",expiryOn)
@@ -1011,8 +1026,8 @@ const changecoupons = async (req, res) => {
         const code = req.body.couponCode;
         let offerType = req.body.offerType;
         let couponCodeDescription = req.body.couponCodeDescription;
-        let addedOn = moment(req.body.addDate).format('MMMM D, YYYY, h:mm A');
-        let expiryOn = moment(req.body.ExpiryDate).format('MMMM D, YYYY, h:mm A');
+        let addedOn = req.body.addDate
+        let expiryOn = req.body.ExpiryDate
         let value = req.body.couponValue;
 
         //    console.log("expiryOn:",expiryOn)
@@ -1614,39 +1629,41 @@ const offerproductwise = async (req, res) => {
 }
 
 // here is the logic for controlling the offer after expirydate.....
-
 async function checkDate() {
     try {
-        let todayDate = moment(Date.now()).format('YYYY-MM-DD');
-        console.log("CHECKING OFFER AND COUPON EXPIRED:::", todayDate);
-        const getTheExpiryDate = await productData.find({}, { offer: 1 });
-        for (const product of getTheExpiryDate) {
-            if (product.offer.length > 0) {
-                for (const offer of product.offer) {
-                    console.log(offer.endDate);
-                    // Compare expiry date with today's date so as to remove it
-                    if (todayDate > offer.endDate) {
-                        await productData.findOneAndUpdate(
-                            { _id: product._id },
-                            { $unset: { offer: 1 } },
-                            { new: true }
-                        );
+        let todayDate = Date.now() // Get today's date
+        console.log("CHECKING OFFER AND COUPON EXPIRED ?");
 
-                        await productData.findOneAndUpdate(
-                            { _id: product._id },
-                            { $set: { haveProductOffer: false } }
-                        );
-                        console.log("product offer removed......");
-                    }
+        // Removing expired product offers
+        const productsWithOffers = await productData.find({ offer: { $exists: true, $not: { $size: 0 } } });
+        for (const product of productsWithOffers) {
+            for (const offer of product.offer) {
+                if ((offer.endDate)<(todayDate)) {
+                    await productData.updateOne(
+                        { _id: product._id },
+                        { $pull: { offer: { endDate: offer.endDate } }, $set: { haveProductOffer: false } }
+                    );
+                    console.log("Product offer removed for product:", product._id);
                 }
             }
+        }
+
+        // Removing expired coupons
+        const couponExpire = await couponData.find({});
+        for (const coupon of couponExpire) {
+            if ((coupon.expiryDate)<(todayDate)) {
+                await couponData.deleteOne({ _id: coupon._id });
+                
+            }
+        
+        
         }
     } catch (error) {
         console.error("Error:", error.message);
     }
 }
 
-cron.schedule('*/10 * * * * ', () => {
+cron.schedule('*/10 * * * * *', () => {
     checkDate();
 });
 
@@ -1677,8 +1694,8 @@ const postbydate = async (req, res) => {
             { $group: { _id: null, total: { $sum: "$OrderTotalPrice" } } }
         ]).exec();
 
-        const revenue = totalgenerated[0].total;
-        console.log("totalgenerated:::", totalgenerated[0].total)
+        const revenue = totalgenerated[0]?.total;
+        console.log("totalgenerated:::", totalgenerated[0]?.total)
 
 
         let razerpayAmountSum = await orderData.aggregate([
@@ -1703,9 +1720,9 @@ const postbydate = async (req, res) => {
         console.log("cod::::", codAmountSum)
         console.log("wallet::::", walletAmountSum)
 
-        const raz = razerpayAmountSum[0].total;
-        const cod = codAmountSum[0].total;
-        const walletss = walletAmountSum[0].total;
+        const raz = razerpayAmountSum[0]?.total;
+        const cod = codAmountSum[0]?.total;
+        const walletss = walletAmountSum[0]?.total;
 
 
 
@@ -1725,12 +1742,8 @@ const postbydate = async (req, res) => {
             ]).exec();
         }
 
-        const returned = totalReturnedamount[0].total;
+        const returned = totalReturnedamount[0]?.total;
         console.log("totalReturnedamount::", returned)
-
-
-
-
 
         let totalcouponDiscount = await orderData.aggregate([
             { $match: { OrderDate: { $gte: sDate, $lte: eDate }, discountedByCoupon: true } },
@@ -1738,17 +1751,15 @@ const postbydate = async (req, res) => {
         ]).exec();
 
         // Check if totalcouponDiscount is null or empty
-        if (!totalcouponDiscount || totalcouponDiscount.length === 0) {
+        if (!totalcouponDiscount || totalcouponDiscount.length === 0 || totalcouponDiscount[0].total === undefined) {
             totalcouponDiscount = 0;
         } else {
             // Extract the total from the result
-            totalcouponDiscount = totalcouponDiscount[0].total;
+            totalcouponDiscount = totalcouponDiscount[0]?.total;
         }
 
 
         console.log("totalcouponDiscount::", totalcouponDiscount)
-
-
 
         const urlData = {
             pageTitle: 'SALES REPORT BY DATE',
@@ -2294,8 +2305,6 @@ const updateBanner = async (req, res) => {
                 )
             }
         }
-
-
         res.redirect("/admin/banner")
     }
     catch (error) {

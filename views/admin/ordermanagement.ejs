@@ -4,7 +4,7 @@
     <br>
     <div class="table-responsive mt-3 ">
         
-            <table id="example" class="table table-striped" style="width:100%">
+            <table id="example" class="table table-bordered table-hover table-sm table-responsive" style="width:100%">
                 <thead>
                     <tr>
                      
@@ -52,8 +52,14 @@
 
 <%- include("../partials/adminfooter.ejs") %>
 <script>
-    new DataTable("#example");
-    //new DataTable("#orderManagementTable");
+    new DataTable("#example", {
+        ordering: false // Disable sorting
+    });
+
+
+ 
+    
+    
 </script>
 
 

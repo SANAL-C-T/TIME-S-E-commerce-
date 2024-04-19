@@ -79,16 +79,11 @@ const homeNotLog = async (req, res) => {
             loadProductG = 0;
         }
 
-
-
         const bannerImage = await bannerData.find({})
         console.log("bannerImage:", bannerImage)
         const Banner1 = bannerImage[0];
         const Banner2 = bannerImage[1];
         const Banner3 = bannerImage[2];
-
-
-
         res.render("user/userHomeNotlog.ejs", { loadProduct, loadProductA, loadProductG, Banner1, Banner2, Banner3 });
 
     } catch (error) {
@@ -105,8 +100,6 @@ const home = async (req, res) => {
         let loadProduct = 0;
         let loadProductG = 0;
         let loadProductA = 0;
-
-
 
         const HavesamsungProduct = await productDatas.find({
             productCategory: '65ae1ded74d4441c5067ee22', // Replace with the actual category ID
@@ -132,21 +125,15 @@ const home = async (req, res) => {
             } else {
                 loadProduct = 0;
             }
-
-
         }
         else {
             loadProduct = 0
         }
 
-
-
-
         const HaveappleProduct = await productDatas.find({
             productCategory: '65ae1df474d4441c5067ee24', // Replace with the actual category ID
             isDeleted: false,
         })
-
 
         if (HaveappleProduct.length > 0) {
             const appleProduct = await productDatas.find({
@@ -165,15 +152,10 @@ const home = async (req, res) => {
             } else {
                 loadProductA = 0;
             }
-
-
         }
         else {
             loadProductA = 0
         }
-
-
-
 
         const HavegarminProduct = await productDatas.find({
             productCategory: '65ae1e0674d4441c5067ee26', // Replace with the actual category ID
@@ -198,19 +180,12 @@ const home = async (req, res) => {
             } else {
                 loadProductG = 0;
             }
-
-
-
         }
         else {
             loadProductG = 0
         }
 
-
-
-
         console.log("AAAAAA::::", loadProduct, loadProductA, loadProductG)
-
 
         const bannerImage = await bannerData.find({})
         console.log("bannerImage:", bannerImage)
@@ -225,8 +200,6 @@ const home = async (req, res) => {
         console.log(error.message)
     }
 }
-
-
 
 
 // for taking the user to login page on clickig any buy now on home page
@@ -281,9 +254,6 @@ const loginVerify = async (req, res) => {
     }
 }
 
-
-
-
 //if user is not signedup take to signup page
 const signup = async (req, res) => {
     try {
@@ -292,7 +262,6 @@ const signup = async (req, res) => {
         console.log(error.message)
     }
 }
-
 
 
 const secretPass = async (password) => {
@@ -377,12 +346,40 @@ const storeData = async (req, res) => {
 
             const newbalance = promotedPersonsWallet.avaliable + referBonus[0].bonusAmount
 
-            await walletData.findOneAndUpdate({ userId: usedReferenceCode._id }, { $set: { avaliable: newbalance } })
+            await walletData.findOneAndUpdate(
+                { userId: usedReferenceCode._id },
+                { 
+                    $set: { 
+                        avaliable: newbalance
+                    },  
+                    $push: { 
+                        Transaction: { 
+                            remark: "Referral Bonus",
+                            creditAmount: referBonus[0].bonusAmount,
+                            CreditDate: moment(Date.now()).format('DD/MM/YYYY HH:mm:ss') 
+                        }
+                    }
+                }
+            );
+            
             if (referBonus[0].block_promotion == false) {
-                await walletData.findOneAndUpdate({ userId: userdetails._id }, { $set: { avaliable: referBonus[0].bonusAmount } });
+                await walletData.findOneAndUpdate(
+                    { userId: userdetails._id },
+                    { 
+                        $set: { 
+                            avaliable: referBonus[0].bonusAmount
+                        },  
+                        $push: { 
+                            Transaction: { 
+                                remark: "Join Bonus",
+                                creditAmount: referBonus[0].bonusAmount,
+                                CreditDate: moment(Date.now()).format('DD/MM/YYYY HH:mm:ss')
+                            }
+                        }
+                    }
+                );
+                
             } else {
-
-
             }
         }
 
@@ -391,11 +388,6 @@ const storeData = async (req, res) => {
         console.log("test", error.message)
     }
 }
-
-
-
-
-
 
 
 const allproductPage = async (req, res) => {
@@ -427,8 +419,6 @@ const productdetail = async (req, res) => {
         }
         { }
 
-
-
         //geting the average review
         const getAvg = await reviewData.find({ product: pId }).populate({
             path: 'product',
@@ -448,10 +438,6 @@ const productdetail = async (req, res) => {
         const averageRating = reviewCount > 0 ? totalRating / reviewCount : 0;
         let roundedaverageRating = averageRating.toFixed(2);
         console.log("Average Rating:", roundedaverageRating);
-
-
-
-
         res.render("user/productdetail.ejs", { pdetail, roundedaverageRating });
     } catch (error) {
         console.log(error.message);
@@ -589,12 +575,6 @@ const categoryWiseProduct = async (req, res) => {
             .exec();
         const docCount = await productDatas.countDocuments({ productCategory: catwise.productCategory, isDeleted: false });
         // console.log("in categorywise product in usercontroller ", docCount);
-
-
-
-
-
-
         let pageStartindex = (pageNumber - 1) * itemsPerPage;
         res.render("user/categoryWiseProduct.ejs", { catlist, catwise, docCount, pageStartindex, comingCategory });
 
@@ -775,8 +755,22 @@ const filter = async (req, res) => {
 
 //.............edit profile...............................
 const editprofile = async (req, res) => {
+
     try {
-        res.render("user/userprofileedit.ejs")
+        // console.log(":::test:::");
+        const user = req.userid;//this is comming from jwt authentication
+        const hasUserAddedDetails = await userData.findOne({ _id: user, first_name: { $exists: true } });
+    //    console.log("userProfile::",hasUserAddedDetails);
+
+if(hasUserAddedDetails==null){
+    res.render("user/userprofileedit.ejs",{hasUserAddedDetails});
+}else{
+    const hasUserAddedDetails = await userData.findOne({ _id: user, });
+    res.render("user/userprofileedit.ejs",{hasUserAddedDetails});
+}
+      
+      
+  
     }
     catch (error) {
         console.log(error.message)
@@ -787,22 +781,9 @@ const editprofile = async (req, res) => {
 //...............................................
 const saveEditProfile = async (req, res) => {
     try {
-        let user;
-        const token = req.cookies.usertoken;
-
-        JWTtoken.verify(token, jwtcode, (err, decoded) => {
-            if (err) {
-                console.log("user not verified")
-            } else {
-                const usersdetail = decoded._id;
-                user = usersdetail
-                console.log(user)
-            }
-        })
-        //................................................................
-
-        const pImage = `/${req.file.filename}`;
-
+        const user = req.userid; // This is coming from JWT authentication
+        const profilePic = req.file ? `/${req.file.filename}` : undefined;
+        
         const address = {
             houseNo: req.body.house,
             street: req.body.street,
@@ -812,26 +793,82 @@ const saveEditProfile = async (req, res) => {
             state: req.body.state,
             country: req.body.Country,
             pincode: req.body.pincode,
+        };
+
+        if (profilePic === undefined && (
+            address.houseNo === undefined || 
+            address.street === undefined ||
+            address.location === undefined ||
+            address.landmark === undefined ||
+            address.city === undefined ||
+            address.state === undefined ||
+            address.country === undefined ||
+            address.pincode === undefined
+        )) {
+            await userData.updateOne({ _id: user }, {
+                $set: {
+                    first_name: req.body.username1,
+                    Last_name: req.body.username2,
+                }
+            });
         }
 
+        if (
+            req.body.username1 === undefined ||
+            req.body.username2 === undefined ||
+            (
+                address.houseNo === undefined || 
+                address.street === undefined ||
+                address.location === undefined ||
+                address.landmark === undefined ||
+                address.city === undefined ||
+                address.state === undefined ||
+                address.country === undefined ||
+                address.pincode === undefined
+            )
+        ) {
+            await userData.updateOne({ _id: user }, {
+                $set: {
+                    profileImage: `/${req.file.filename}`,
+                }
+            });
+        }
 
-        await userData.updateOne({ _id: user }, {
-            $set: {
-                first_name: req.body.username1,
-                Last_name: req.body.username2,
-                phone: req.body.phonenumber,
-                profileImage: pImage,
-                Address: address
-            }
-        })
+     
+        if (
+            address.houseNo === undefined || 
+            address.street === undefined ||
+            address.location === undefined ||
+            address.landmark === undefined ||
+            address.city === undefined ||
+            address.state === undefined ||
+            address.country === undefined ||
+            address.pincode === undefined
+        ) {
+            await userData.updateOne({ _id: user }, {
+                $set: {
+                    first_name: req.body.username1,
+                    Last_name: req.body.username2,
+                    profileImage: profilePic,
+                }
+            });
+        } else {
+            await userData.updateOne({ _id: user }, {
+                $set: {
+                    first_name: req.body.username1,
+                    Last_name: req.body.username2,
+                    phone: req.body.phonenumber,
+                    profileImage: profilePic,
+                    Address: address,
+                }
+            });
+        }
 
-
-        console.log("data saved")
+        console.log("Data saved");
+    } catch (error) {
+        console.error(error.message);
     }
-    catch (error) {
-        console.log(error.message)
-    }
-}
+};
 
 
 
@@ -848,9 +885,6 @@ const profile = async (req, res) => {
         console.log(error.message)
     }
 }
-
-
-
 
 //....change passwword..........
 const changepassword = async (req, res) => {
@@ -1062,13 +1096,8 @@ const wallet = async (req, res) => {
             res.render("user/emptywallet.ejs")
         }
         // console.log("getWWallet", getWWallet)
-        const data = {
-            amount: getWWallet.avaliable,
-            creditedOn: getWWallet.creditedOnDate,
-            credited: getWWallet.creditAmount,
-            debited: getWWallet.debitedAmount
-        }
-        res.render("user/wallet.ejs", { data })
+       
+        res.render("user/wallet.ejs", { getWWallet })
     }
     catch (error) {
         console.log(error.message)
@@ -1139,129 +1168,7 @@ const addtocartAndDeleteWishlist = async (req, res) => {
     }
 }
 
-// const convertInviteLink = async (req, res) => {
-//     try {
-//         const emailToSentInvitation = req.body.refferEmail;
-//         const secretCode=22222
-//         console.log("emailToSentInvitation:", emailToSentInvitation)
-//          const invitationToken = secretCode;
-
-
-//          const siteslink = `http://localhost:3000/signup?invite=${invitationToken}`;
-
-
-//         // url  + encryptedcode of user 
-
-
-//         //now send to the emailToSentInvitation
-
-
-
-//         const transporter = nodemailer.createTransport({
-//             service: 'gmail',
-//             auth: {
-//               user: email,
-//               pass: pass,
-//             }
-//           });
-
-
-
-//           console.log(name)
-//           const code = otpGenerator.generate(5, { upperCaseAlphabets: false, lowerCaseAlphabets: false, specialChars: false });
-
-
-
-//           let mailOptions = {
-//             from: email,
-//             to: emailToSentInvitation,
-//             subject: 'Invitation mail from TIME S ',
-//             html: `
-//                       <h1>Hello friend ${name} you are invited to signup with TIME-S Ecommerce!</h1> 
-
-//                       <h3>Please click on the provided link to signup:${code}.</h3>
-//                   `,
-//           };
-//           console.log("generatedlink:", Number(code))
-//           req.session.otp = Number(code)
-//           transporter.sendMail(mailOptions, function (err, data) {
-//             if (err) {
-//               console.log("Error in sending email:  " + err);
-//             } else {
-//               console.log("Email sent successfully");
-//             }
-//           });
-
-//         }
-//         catch (error) {
-//           console.log("email not sent catched error:", error.message)
-//         }
-
-
-
-
-
-
-
-//     }
-//     catch (error) {
-//         console.log(error.message)
-//     }
-// }
-
-
-const convertInviteLink = async (emailToSentInvitation, name) => {
-    try {
-        // Generate a secret code for the invitation
-        const secretCode = otpGenerator.generate(5, { upperCaseAlphabets: false, lowerCaseAlphabets: false, specialChars: false });
-
-        // Construct the invitation link with the secret code
-        const invitationToken = secretCode;
-        const siteslink = `http://localhost:3000/signup?invite=${invitationToken}`;
-
-        // Create a Nodemailer transporter
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: email,
-                pass: pass,
-            }
-        });
-
-        // Compose the email message
-        const mailOptions = {
-            from: email,
-            to: emailToSentInvitation,
-            subject: 'Invitation mail from TIME S',
-            html: `
-                <h1>Hello friend ${name}, you are invited to signup with TIME-S Ecommerce!</h1> 
-                <h3>Please click on the provided link to signup: <a href="${siteslink}">${siteslink}</a></h3>
-            `,
-        };
-
-        // Send the email
-        await transporter.sendMail(mailOptions);
-        console.log("Email sent successfully");
-
-        // Save the invitation in the database (if needed)
-        const invitation = new Invitation({
-            email: emailToSentInvitation,
-            secretCode: secretCode,
-            // Add other relevant invitation details
-        });
-        await invitation.save();
-    } catch (error) {
-        console.error("Error sending email:", error.message);
-        // Handle error appropriately
-    }
-};
-
-
 //............................fFUNCTION TO GET DISTANCE USING POSTAL LOCATION API.......................
-
-
-
-
 const getTransportationCost = async (req, res) => {
     try {
         const pincodes = req.body.pin;
@@ -1299,9 +1206,6 @@ const getTransportationCost = async (req, res) => {
             .catch(error => {
                 console.error(error);
             });
-
-
-
     }
     catch (error) {
         console.log(error.message)
@@ -1343,7 +1247,6 @@ module.exports = {
     wishtoremove,
     showWishlist,
     addtocartAndDeleteWishlist,
-    convertInviteLink,
     sortNewReview,
     sortLowestStar,
     sorthighestStar,

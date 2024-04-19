@@ -62,7 +62,7 @@ adminUrlRouter.post("/removeOffer", jwtAuth.haveToken1, adminin.removeOffer)
 adminUrlRouter.post("/removeProductOffer", jwtAuth.haveToken1, adminin.removeproductOffer)
 adminUrlRouter.get("/download", jwtAuth.haveToken1, adminin.downloadoption)
 adminUrlRouter.post("/postDate", jwtAuth.haveToken1, adminin.postbydate)
-adminUrlRouter.get("/reportbydates", jwtAuth.haveToken1, adminin.bydate)
+// adminUrlRouter.get("/reportbydates", jwtAuth.haveToken1, adminin.bydate)
 adminUrlRouter.post("/convertToExcel", adminin.downloadDetailExcel)
 adminUrlRouter.post("/convertToPDF", adminin.downloadDetailPdf)
 

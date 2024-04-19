@@ -71,18 +71,9 @@
       <div id="productCategoryMessage" class="text-danger m-3" ></div>
 
 
-      <div class="mb-3">
-        <label for="addedDate" class="form-label">Product Added on</label>
-        <input
-          type="date"
-          class="form-control"
-          id="addedDate"
-          name="addedDate"
-          value="<%=urlData.proData.addedDate%>"
-        />
-      </div>
+   
     </div>
-    <div id="addedDateMessage" class="text-danger m-3" ></div>
+  
 
 
     <div class="d-flex justify-content-between">
@@ -93,7 +84,7 @@
           class="form-control"
           id="productsize"
           name="productsize"
-          value="<%=urlData.proData. variantproductsize%>"
+          value="<%=urlData.proData.variant[0].productsize%>"
         />
       </div>
       <div id="productsizeMessage" class="text-danger m-3" ></div>
@@ -105,7 +96,7 @@
           class="form-control"
           id="productcolour"
           name="productcolour"
-          value="<%=urlData.proData.productcolour%>"
+          value="<%=urlData.proData.variant[0].productcolour%>"
         />
       </div>
       <div id="productcolourMessage" class="text-danger m-3" ></div>
@@ -138,6 +129,8 @@
             accept="image/*"
             onchange="image_select(event, 'img1')"
           />
+
+          <div id="errMessage1" class="text-danger m-3" ></div>
         </div>
 
         <div id="img2">
@@ -151,6 +144,7 @@
             accept="image/*"
             onchange="image_select(event, 'img2')"
           />
+          <div id="errMessage2" class="text-danger m-3" ></div>
         </div>
 
         <div id="img3">
@@ -164,6 +158,7 @@
             accept="image/*"
             onchange="image_select(event, 'img3')"
           />
+          <div id="errMessage3" class="text-danger m-3" ></div>
         </div>
 
         <div id="img4">
@@ -177,6 +172,7 @@
             accept="image/*"
             onchange="image_select(event, 'img4')"
           />
+          <div id="errMessage4" class="text-danger m-3" ></div>
         </div>
 
         <div id="img5">
@@ -190,6 +186,7 @@
             accept="image/*"
             onchange="image_select(event, 'img5')"
           />
+          <div id="errMessage5" class="text-danger m-3" ></div>
         </div>
       </div>
     </div>
@@ -255,7 +252,7 @@
         formData.append('productDescription', document.getElementById('productDescription').value);
         formData.append('productPrice', document.getElementById('productPrice').value);
         formData.append('productCategory', document.getElementById('productCategory').value);
-        formData.append('addedDate', document.getElementById('addedDate').value);
+        
         formData.append('productsize', document.getElementById('productsize').value);
         formData.append('productcolour', document.getElementById('productcolour').value);
         formData.append('stockCount', document.getElementById('stockCount').value);
@@ -297,7 +294,7 @@
         let productDescription = document.getElementById('productDescription').value;
         let productPrice = document.getElementById('productPrice').value;
         let productCategory = document.getElementById("productCategory").value;
-        let addedDate = document.getElementById("addedDate").value;
+       
         let productsize = document.getElementById("productsize").value;
         let productcolour = document.getElementById("productcolour").value;
         let stockCount = document.getElementById("stockCount").value;
@@ -306,13 +303,66 @@
         let productDescriptionMessage = document.getElementById('productDescriptionMessage');
         let productPriceMessage = document.getElementById('productPriceMessage');
         let productCategoryMessage = document.getElementById('productCategoryMessage');
-        let addedDateMessage = document.getElementById('addedDateMessage');
+       
         let productsizeMessage = document.getElementById('productsizeMessage');
         let productcolourMessage = document.getElementById('productcolourMessage');
         let stockCountMessage = document.getElementById('stockCountMessage');
     
-       
+        const validTypes = ['image/jpeg', 'image/png'];
+        let imgz1=document.getElementById("productimg1");
+        let imgz2=document.getElementById("productimg2");
+        let imgz3=document.getElementById("productimg3");
+        let imgz4=document.getElementById("productimg4");
+        let imgz5=document.getElementById("productimg5");
+
+        let errMess1 = document.getElementById('errMessage1');
+        let errMess2 = document.getElementById('errMessage2');
+        let errMess3 = document.getElementById('errMessage3');
+        let errMess4 = document.getElementById('errMessage4');
+        let errMess5 = document.getElementById('errMessage5');
     
+        errMess1.innerText = '';
+        errMess2.innerText = '';
+        errMess3.innerText = '';
+        errMess4.innerText = '';
+        errMess5.innerText = '';
+   // Validate image 1
+   if (imgz1.files.length > 0 && !validTypes.includes(imgz1.files[0].type)) {
+    errMess1.innerText = 'Please select a valid image file (JPEG or PNG).';
+ 
+    isValid = false;
+}
+
+// Validate image 2
+if (imgz2.files.length > 0 && !validTypes.includes(imgz2.files[0].type)) {
+    errMess2.innerText = 'Please select a valid image file (JPEG or PNG).';
+  
+    isValid = false;
+}
+
+// Validate image 3
+if (imgz3.files.length > 0 && !validTypes.includes(imgz3.files[0].type)) {
+    errMess3.innerText = 'Please select a valid image file (JPEG or PNG).';
+
+    isValid = false;
+}
+
+// Validate image 4
+if (imgz4.files.length > 0 && !validTypes.includes(imgz4.files[0].type)) {
+    errMess4.innerText = 'Please select a valid image file (JPEG or PNG).';
+ 
+    isValid = false;
+}
+
+// Validate image 5
+if (imgz5.files.length > 0 && !validTypes.includes(imgz5.files[0].type)) {
+    errMess5.innerText = 'Please select a valid image file (JPEG or PNG).';
+  
+    isValid = false;
+}
+
+
+
         if (productName === "") {
 
             productNameMessage.innerHTML = "Product name cannot be empty";
@@ -333,13 +383,6 @@
             isValid = false;
         } else {
             productDescriptionMessage.innerHTML = "";
-        }
-    
-        if (addedDate === "") {
-            addedDateMessage.innerHTML = "Product addedDate cannot be empty";
-            isValid = false;
-        } else {
-            addedDateMessage.innerHTML = "";
         }
     
         if (productsize === "") {

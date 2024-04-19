@@ -35,21 +35,21 @@ const userhaveToken1 = async (req, res, next) => {
         const usertoken = req.cookies.usertoken;
         JWTtoken.verify(usertoken, secret, (err, decoded) => {
             if (err) {
-                console.error('JWT verification failed, not granted access to cart..', err.message);
+                console.error('JWT verification failed, not granted access..', err.message);
     
-                res.redirect("/login")
+                res.redirect("/login");
             } else {
                 const userdetail = decoded._id;//decoding the user id only
                 req.userid = userdetail;
                 // console.log("userdetail:::::",userdetail)
-                console.log("jwt toke in userhavetoken1,granted add to cart..")
-              
-                next()
+                console.log("jwt toke in userhavetoken1,granted the access..");
+              console.log("----*-------*---------*------")
+              next();
             }
         });
     }
     catch (error) {
-        console.log(error.message)
+        console.log(error.message);
     }
 }
 //........................................................................

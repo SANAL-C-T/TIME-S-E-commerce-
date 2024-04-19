@@ -6,7 +6,7 @@
       
 
         <h5 class="text-center ">SALES REPORT</h5>
-          <table id="example" class="table table-striped" style="width:100%">
+          <table id="example" class="table table-bordered table-hover table-sm table-responsive" style="width:100%">
               <thead>
                   <tr>
                     
@@ -16,17 +16,16 @@
                       <th>INVOICE AMOUNT</th>
                       <th>PAYMENT METHOD</th>
                       
-                  
                   </tr>
               </thead>
               <tbody>
                 <% orders.forEach((order, index) => { %>
                     <tr>
                         <td><%= index + 1 %></td>
-                        <td><%= order.userid.username %></td>
-                        <td><%= order.OrderDate %></td>
-                        <td><%= order.OrderTotalPrice %></td>
-                        <td><%= order.paymentMethod %></td>
+                        <td><%= order.userid?.username %></td>
+                        <td><%= order?.OrderDate %></td>
+                        <td><%= order?.OrderTotalPrice %></td>
+                        <td><%= order?.paymentMethod %></td>
                     </tr>
                 <% }); %>
                 
@@ -119,7 +118,9 @@
   
 
 <script>
-    new DataTable("#example");
+  new DataTable("#example", {
+    ordering: false // Disable sorting
+});
 
 
 
@@ -208,3 +209,9 @@ downloadBtnpdf.addEventListener('click', function() {
 
 
 </script>
+<style>
+  th {
+    background-color: #88a1e0;
+    color: rgb(254, 254, 254);
+}
+</style>

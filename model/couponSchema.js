@@ -5,8 +5,9 @@ const couponSchema = mongoose.Schema({
     offerType: String,
     OfferDescription: String,
     discount: Number,
-    expiryDate: String,
-    createdDate: String,
+    percentageDiscount:Number,
+    expiryDate: Date,
+    createdDate: Date,
     validTime: String,
     productCategory: String
 })

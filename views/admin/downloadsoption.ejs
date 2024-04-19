@@ -4,7 +4,7 @@
   <div class="row">
       <div class="d flex-column ">
       
-<button type="button" class="btn btn-success " data-bs-toggle="modal" data-bs-target="#dateModal">
+<button type="button" class="btn btn-success btn-sm  " data-bs-toggle="modal" data-bs-target="#dateModal">
     By DATE
   </button>
   
@@ -46,7 +46,7 @@
       
 
         <h5 class="text-center ">SALES REPORT</h5>
-          <table id="example" class="table table-striped" style="width:100%">
+          <table id="example" class="table table-bordered table-hover table-sm table-responsive" style="width:100%">
               <thead>
                   <tr>
                     
@@ -63,10 +63,10 @@
                   <% urlData.salesData.forEach((order, index) => { %>
                       <tr>
                           <td><%= index + 1 %></td>
-                          <td><%= order.userid. username %></td>
-                          <td><%= order.OrderDate %></td>
-                          <td>&#8377; <%= order.OrderTotalPrice %></td>
-                          <td><%= order.paymentMethod %></td>
+                          <td><%= order.userid?. username %></td>
+                          <td><%= order?.OrderDate %></td>
+                          <td>&#8377; <%= order?.OrderTotalPrice %></td>
+                          <td><%= order?.paymentMethod %></td>
                          </tr>
                   <% }); %>
               </tbody>
@@ -85,16 +85,11 @@
       <table id="example2"  style="width:100%">
       <thead>
           <tr>
-        
-          
               <th>GENERATED AMOUNT</th>
-            <TH> ACTUAL AMOUNT TO ACCOUNT </TH>
+            <th> ACTUAL AMOUNT TO ACCOUNT </th>
               <th>CASH ON DELIVERY</th>
               <th>ONLINE PAYMENT</th>
               <th>AMOUNT RETURNED</th>
-              
-        
-    
               <th>AMOUNT CREDITED VIA COUPON CODE</th>
           </tr>
       </thead>
@@ -102,12 +97,12 @@
           
               <tr> 
              
-                  <td>&#8377; <%= urlData.total %></td>
-                  <td>&#8377; <%= urlData.CODtotal.total %></td>
-                  <td>&#8377; <%= urlData.razorpayTotal.total %></td>
-                  <td>&#8377; <%= urlData.returned.total %></td>
-                  <td>&#8377; <%= urlData.returned.total %></td>
-                  <td>&#8377; <%= urlData.discount %></td>
+                  <td>&#8377; <%= urlData?.total %></td>
+                  <td>&#8377; <%= urlData.CODtotal?.total %></td>
+                  <td>&#8377; <%= urlData.razorpayTotal?.total %></td>
+                  <td>&#8377; <%= urlData.returned?.total %></td>
+                  <td>&#8377; <%= urlData.returned?.total %></td>
+                  <td>&#8377; <%= urlData?.discount %></td>
                   
                  </tr>
        
@@ -126,9 +121,6 @@
     <table id="example2"  style="width:100%">
     <thead>
         <tr>
-      
-        
-
             <th>SALE COUNT</th>
             <th>RETURN COUNT</th>
             <th>DELIVERED COUNT</th>
@@ -138,8 +130,6 @@
     <tbody>
         
             <tr> 
-           
-             
                 <td><%= urlData.count %></td>
                 <td><%= urlData.returncount %></td>
                 <td><%= urlData.deliveredCount %></td>
@@ -173,5 +163,14 @@
 
 <script>
 
-    new DataTable("#example");
+  new DataTable("#example", {
+    ordering: false // Disable sorting
+});
 </script>
+
+<style>
+  th {
+    background-color: #88a1e0;
+    color: rgb(254, 254, 254);
+}
+</style>

@@ -7,7 +7,7 @@ const otpOptions = require("../controller/otpController")
 const jwtauth = require("../middleware/userJWTmiddleware")
 const userBlock = require("../middleware/blocked")
 const multer = require("../middleware/uploadImage")
-
+const checker=require("../middleware/checkstock")
 //..................... ALL USER RELATED ROUTES..............................................
 userUrlRouter.get("/home.", jwtauth.userhaveToken, user.homeNotLog)//for general home
 userUrlRouter.get("/product1", user.login)
@@ -41,12 +41,12 @@ userUrlRouter.get("/logout", user.logout)
 //profile links
 userUrlRouter.get("/Myprofile", jwtauth.userhaveToken1, user.profile)
 userUrlRouter.get("/profileEdits", jwtauth.userhaveToken1, user.editprofile)
-userUrlRouter.post("/profileEdit", multer.profileimageupload, user.saveEditProfile)
+userUrlRouter.post("/profileEdit",jwtauth.userhaveToken1, multer.profileimageupload, user.saveEditProfile)
 userUrlRouter.get("/changepassword", jwtauth.userhaveToken1, user.changepassword)
 userUrlRouter.post("/changepassword", jwtauth.userhaveToken1, user.changesavedpassword)
 userUrlRouter.get("/savedaddress", jwtauth.userhaveToken1, cart.savedAddress)
 userUrlRouter.post("/deleteAddress/:index", jwtauth.userhaveToken1, cart.deleteAddress)
-userUrlRouter.post("/inviteNewUser",jwtauth.userhaveToken1, user.convertInviteLink)
+userUrlRouter.get("/getFullInfo/:orderId", jwtauth.userhaveToken1, cart.getOrderInforamtion)
 //wishlist
 userUrlRouter.get("/wishlist", jwtauth.userhaveToken1, user.showWishlist)
 userUrlRouter.post("/wishlistadd", jwtauth.userhaveToken1, user.wishtoadd)
@@ -55,11 +55,19 @@ userUrlRouter.post("/removeFromWishList", jwtauth.userhaveToken1, user.addtocart
 //user cart related
 userUrlRouter.get("/cart", jwtauth.userhaveToken1, cart.showcart)
 userUrlRouter.get("/cart/:prodid", jwtauth.userhaveToken1, cart.cartadd)
+userUrlRouter.get("/onloadPrices", jwtauth.userhaveToken1, cart.checkPrices)
+
 userUrlRouter.post("/quantityUpdate", jwtauth.userhaveToken1, cart.qyt)
 userUrlRouter.post("/stockup", jwtauth.userhaveToken1, cart.stockup)
 userUrlRouter.post("/stockDown", jwtauth.userhaveToken1, cart.stockdown)
 userUrlRouter.post("/itemdelete", jwtauth.userhaveToken1, cart.itemdel)
-userUrlRouter.get("/paynow", jwtauth.userhaveToken1, cart.proceedToaddress)
+userUrlRouter.get("/paynow", jwtauth.userhaveToken1, checker. checkHaveStock,cart.proceedToaddress)
+
+//COUPON
+userUrlRouter.post("/applyCoupon", jwtauth.userhaveToken1, cart.couponAdd)
+userUrlRouter.post("/removeCoupon", jwtauth.userhaveToken1, cart.couponremove)
+
+
 userUrlRouter.post("/paynow", jwtauth.userhaveToken1, cart.addAddressToPurchase)
 userUrlRouter.get("/successpage",jwtauth.userhaveToken1,  cart.sendSuccess)
 userUrlRouter.get("/failedpage", jwtauth.userhaveToken1, cart.sendfailed)
@@ -78,16 +86,12 @@ userUrlRouter.post("/sortLowestStar/:selectedProduct", jwtauth.userhaveToken1, u
 userUrlRouter.post("/sorthighestStar/:selectedProduct", jwtauth.userhaveToken1, user.sorthighestStar);
 //wallet
 userUrlRouter.get("/wallet", jwtauth.userhaveToken1, user.wallet)
-//COUPON
-userUrlRouter.post("/applyCoupon", jwtauth.userhaveToken1, cart.couponAdd)
-userUrlRouter.post("/removeCoupon", jwtauth.userhaveToken1, cart.couponremove)
+
 //universal route for 404
-userUrlRouter.get("/*", user.notfound)
-
-
-
 userUrlRouter.post("/getdeliveryCost",jwtauth.userhaveToken1,user.getTransportationCost)
 
+
+userUrlRouter.get("/*", user.notfound)
 module.exports = {
     userUrlRouter,
 }

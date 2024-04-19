@@ -40,18 +40,30 @@
 
       <label for="addDate">OFFER ADDED DATE</label>
       <input type="text" class="text-danger mx-3" id="addDate1" name="addDate1" placeholder="Enter the Code" class="form-control" value="<%=urlData.code[0].createdDate%>">
-      <input type="datetime-local" id="addDate" name="addDate" class="form-control">
+      <input type="date" id="addDate" name="addDate" class="form-control">
       <div id="addDate1ValueError" class="text-danger m-3"></div>
       <br>
 
       <label for="ExpiryDate">OFFER EXPIRY DATE</label>
       <input type="text" class="text-danger mx-3" id="ExpiryDate1" name="ExpiryDate1" placeholder="Enter the Code" class="form-control" value="<%=urlData.code[0].expiryDate%>">
-      <input type="datetime-local" id="ExpiryDate" name="ExpiryDate" class="form-control">
+      <input type="date" id="ExpiryDate" name="ExpiryDate" class="form-control">
       <div id="ExpiryDate1ValueError" class="text-danger m-3"></div>
       <br>
 
       <button type="submit" class="btn btn-success px-5">SAVE</button>
+
+  
+
+
     </form>
+
+
+    <% if (locals.errorMessage) { %>
+      <div id="errorAlert" class="alert alert-danger" role="alert">
+          <%= locals.errorMessage %>
+      </div>
+      
+  <% } %>
   </div>
 </div>
 

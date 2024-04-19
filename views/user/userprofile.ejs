@@ -4,7 +4,7 @@
 
 
 
-<div class="container-fluid  d-flex ">
+<div class="container-fluid  d-flex " id="backgrounImg">
     <div class=" row">
         <nav class="sidebar">
             <ul>
@@ -35,15 +35,15 @@
         <h3 class="mx-4 mb-5">Contact details</h3>
         <div class="d-flex my-4" id="secondline">
             <div class="mb-3 mx-4">
-                <h5>PHONE NUMBER: <%= udata.phone %></h5>
+                <h5><i class="fa-solid fa-phone mx-3 " style="color: #010f1a;"></i>  <%= udata.phone %></h5>
             </div>
             <div class="mb-3 mx-4">
-                <h5>Email: <%= udata.email %></h5>
+                <h5><i class="fa-solid fa-envelope mx-3" style="color: #01090f;"></i>  <%= udata.email %></h5>
             </div>
         </div>
     
         <!-- Third line - Address details -->
-        <h3 class="mx-4 mb-5">Address details</h3>
+        <h3 class="mx-4 mb-5">Primary Address</h3>
         <div class="d-flex my-4" id="thirdline">
             <%if(udata.Address.length>0) {%>
             <div class="mb-3 mx-4">
@@ -95,10 +95,12 @@
         box-sizing: border-box;
     }
     
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: rgb(242, 239, 239);
-        }
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f2efef;
+      
+    }
+    
 
         .sidebar {
             height: auto;
@@ -157,8 +159,13 @@
 
     main {
         padding: 20px;
-        background-color: #f8f9fa;
+     
         flex-grow: 1;
+
+        background-image: linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.5)), url("/image/Group1.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
     }
 
     #firstline {
@@ -180,7 +187,7 @@
     }
 
     h3 {
-        color: #4875a6;
+        color: #4b8bcf;
     }
 
     h5 {
@@ -198,6 +205,7 @@
         top: 0px;
         right: 0px;
       }
+     
 
 
     </style>

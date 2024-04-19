@@ -46,14 +46,14 @@
 
   <div>
     <label for="addDate">OFFER ADDED DATE</label>
-    <input type="datetime-local" id="addDate" name="addDate" class="form-control">
+    <input type="date" id="addDate" name="addDate" class="form-control">
     <div id="addDateError" class="text-danger m-3"></div>
   </div>
   <br>
 
   <div>
     <label for="ExpiryDate">OFFER EXPIRY DATE</label>
-    <input type="datetime-local" id="ExpiryDate" name="ExpiryDate" class="form-control">
+    <input type="date" id="ExpiryDate" name="ExpiryDate" class="form-control">
     <div id="ExpiryDateError" class="text-danger m-3"></div>
   </div>
   <br>
@@ -103,7 +103,11 @@
     if (couponValue.trim() === "") {
       couponValueError.innerHTML = "Code value cannot be empty";
       isValid = false;
-    } else {
+    } else if (couponValue.trim()<=0) {
+      couponValueError.innerHTML = "Code value cannot be negative";
+      isValid = false;
+    }
+    else {
       couponValueError.innerHTML = "";
     }
 

@@ -43,11 +43,7 @@
                 </div>
                 <div id="productCategoryMessage" class="text-danger m-3"></div>
 
-                <div class="mb-3">
-                    <label for="addedDate" class="form-label">Product Added on</label>
-                    <input type="date" class="form-control" id="addedDate" name="addedDate" required>
-                    <div id="addedDateMessage" class="text-danger m-3"></div>
-                </div>
+               
             </div>
 
             <div class="d-flex justify-content-between">
@@ -98,10 +94,6 @@
 
     <!-- Modal for Crop -->
 
-
-
-
-
     <div class="modal fade" id="cropModal" tabindex="-1" role="dialog" aria-labelledby="cropModalLabel"
         aria-hidden="true">
         <div class="modal-dialog custom-modal-dialog" role="document">
@@ -124,9 +116,6 @@
         </div>
     </div>
 
-
-
-
 <!-- success message modal -->
 
 		<div class="modal fade" id="statusSuccessModal" tabindex="-1" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false"> 
@@ -148,9 +137,6 @@
 </div>
 
 
-
-
-
     <%- include("../partials/adminfooter.ejs") %>
 
         <script>
@@ -159,10 +145,7 @@
 //...........form submit...............
 
             function submitForm() {
-               
-
                 if (!addProVlidation()) {
-                    
                     return;
                 }
                 successmessage()
@@ -174,14 +157,10 @@
                 formData.append('productDescription', document.getElementById('productDescription').value);
                 formData.append('productPrice', document.getElementById('productPrice').value);
                 formData.append('productCategory', document.getElementById('productCategory').value);
-                formData.append('addedDate', document.getElementById('addedDate').value);
                 formData.append('productsize', document.getElementById('productsize').value);
                 formData.append('productcolour', document.getElementById('productcolour').value);
                 formData.append('stockCount', document.getElementById('stockCount').value);
                
-               
-             
-            
 if(imgArry.length>0){
     imgArry.forEach((image, index) => {
         formData.append('productImages[]', image.file);
@@ -231,8 +210,6 @@ if(imgArry.length>0){
                 // Update the display
                 document.getElementById("container").innerHTML = image_show();
             }
-
-
             function image_show() {
                 let image = '';
                 images.forEach((i, index) => {
@@ -256,9 +233,6 @@ if(imgArry.length>0){
             function checkDupli(name) {
                 return !images.some(image => image.name === name);
             }
-
-
-
 //........success message modal triger.....
 
 function  successmessage(){
@@ -270,11 +244,7 @@ function cleardata(){
     let formElement = document.getElementById('formclr');
     formElement.reset();
     location.reload();
-   
 }
-
-
-
 
 //...................cropper...............................
 let imgArry=[]
@@ -353,11 +323,7 @@ let imgArry=[]
                     }, 'image/png');
                 });
                 
-            
-                // Event listener for the "SAVE" button
                 saveButton.addEventListener("click", function () {
-                   
-            
                     // Hide the modal
                     modal.modal('hide');
                 });
@@ -366,7 +332,6 @@ let imgArry=[]
                 modal.modal('show');
             }
             
-
 //validation 
 
 function addProVlidation() {
@@ -374,7 +339,7 @@ function addProVlidation() {
     let productDescription = document.getElementById('productDescription').value;
     let productPrice = document.getElementById('productPrice').value;
     let productCategory = document.getElementById("productCategory").value;
-    let addedDate = document.getElementById("addedDate").value;
+   
     let productsize = document.getElementById("productsize").value;
     let productcolour = document.getElementById("productcolour").value;
     let stockCount = document.getElementById("stockCount").value;
@@ -385,7 +350,7 @@ function addProVlidation() {
     let productDescriptionMessage = document.getElementById('productDescriptionMessage');
     let productPriceMessage = document.getElementById('productPriceMessage');
     let productCategoryMessage = document.getElementById('productCategoryMessage');
-    let addedDateMessage = document.getElementById('addedDateMessage');
+    
     let productsizeMessage = document.getElementById('productsizeMessage');
     let productcolourMessage = document.getElementById('productcolourMessage');
     let stockCountMessage = document.getElementById('stockCountMessage');
@@ -402,8 +367,6 @@ function addProVlidation() {
         productNameMessage.innerHTML = "";
     }
     
-    
-
     if (productCategory.trim() === "") {
         productCategoryMessage.innerHTML = "Product category cannot be empty";
         isValid = false;
@@ -416,13 +379,6 @@ function addProVlidation() {
         isValid = false;
     } else {
         productDescriptionMessage.innerHTML = "";
-    }
-
-    if (addedDate === "") {
-        addedDateMessage.innerHTML = "Product addedDate cannot be empty";
-        isValid = false;
-    } else {
-        addedDateMessage.innerHTML = "";
     }
 
     if (productsize.trim() === "") {
@@ -449,7 +405,6 @@ function addProVlidation() {
         productcolourMessage.innerHTML = "";
     }
     
-
     if (stockCount === "") {
         stockCountMessage.innerHTML = "Product stock cannot be empty";
         isValid = false;
@@ -459,17 +414,8 @@ function addProVlidation() {
     } else {
         stockCountMessage.innerHTML = "";
     }
-
-
-
-    
-    
-    
     return isValid;
 }
-
-
-
 
 
         </script>
@@ -504,7 +450,7 @@ function addProVlidation() {
                 position: absolute;
             }
 
-            /* Added styles for the crop button */
+         
             .crop-button {
                 position: absolute;
                 bottom: 5px;
@@ -528,12 +474,6 @@ function addProVlidation() {
                 max-height: 400px;
                 width: auto;
             }
-
-
-
-
-
-
 
 
             .modal#statusSuccessModal .modal-content, 
@@ -621,16 +561,5 @@ function addProVlidation() {
                 height: 100px;
                 border-radius: 50%;
             }
-
-
-
-
-
-
-
-
-
-
-
 
         </style>

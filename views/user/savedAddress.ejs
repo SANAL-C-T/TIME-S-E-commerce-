@@ -20,7 +20,7 @@
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4 d-flex flex-column  mx-3 ">
  
 <h5 class="text-center mt-3 ">ALL SAVED ADDRESS</h5>
-<table id="example" class="table table-hover table-bordered">
+<table id="example" class="table table-bordered table-hover table-sm table-responsive">
     <thead>
         <tr>
             <th>SL NO</th>
@@ -40,7 +40,7 @@
                 <td>
                     <form id="deleteAddress<%= index %>" action="/deleteAddress/<%= index %>" method="POST">
                         <input type="hidden" name="index" value="<%= index %>">
-                        <button type="button" class="btn btn-danger" onclick="showCancelConfirmation(<%= index %>)">DELETE</button>
+                        <button type="button" class="btn btn-danger btn-sm " onclick="showCancelConfirmation(<%= index %>)">DELETE</button>
                     </form>
                 </td>
             </tr>

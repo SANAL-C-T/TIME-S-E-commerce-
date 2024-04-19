@@ -116,7 +116,22 @@
         
         <button type="submit" class="btn btn-primary">Add Category</button>
       </form>
-    
+
+    <br>
+  <% if (locals.errorMessage) { %>
+    <div id="errorAlert" class="alert alert-danger" role="alert">
+        <%= locals.errorMessage %>
+    </div>
+    <script>
+     
+        setTimeout(function() {
+            var errorAlert = document.getElementById('errorAlert');
+            if (errorAlert) {
+                errorAlert.style.display = 'none';
+            }
+        }, 5000); 
+    </script>
+<% } %>
 
   </div>
 

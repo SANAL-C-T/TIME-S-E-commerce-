@@ -2,7 +2,7 @@
 
   <div class="container-fluid d-flex cartpage">
     <div id="leftside" class="" style="width: 80%; min-height: 50vh ">
-      <h5 class="text-center mt-4 "><strong>Enter Shipping Address</strong></h5>
+      <h5 class="text-center mt-4 "><strong>Provide Shipping Address</strong></h5>
       <br>
       <form id="checkoutForm">
 
@@ -164,13 +164,9 @@
           </div>
 
 
-
-
-
-
         </div>
 
-        <button class="btn btn-primary m-3" type="button" id="deliverychrg" onclick="getDeliveryCharge()">GET DELIVERY CHARGES</button>
+        <button class="btn btn-warning  m-3" type="button" id="deliverychrg" onclick="getDeliveryCharge()">GET DELIVERY CHARGES</button>
 
       </form>
 
@@ -187,37 +183,45 @@
           <h5 class="premium-label">PAY:</h5>
         </div>
         <div>
-          <h5 class="premium-value" id="actualPrice"> &#8377; 
-              <%= database.cartdata.OrderTotalPrice %>
-            
-          </h5>
+          <h5 class="premium-value" id="actualPrice">&#8377;<%= database.cartdata.OrderTotalPrice %></h5>
         </div>
       </div>
       <br>
       <div>
-        <h5>Delivery charge: &#8377;<h5 id="deliveryCharge"></h5>
-        </h5>
+        <h5>Delivery charge: &#8377;<h5 id="deliveryCharge"></h5></h5>
       </div>
       <hr>
-      <div class="payment-option d-flex  justify-content-between  ">
-       
-        <% if (database.cartdata.OrderTotalPrice <= 30000) { %>
-          <div>
-            <label for="COD1">Cash on delivery</label>
-          </div>
-          <div>
-            <input type="radio" id="COD1" name="paymentMethod" value="COD">
-          </div>
-        <% } 
-        else { %>
-        
+      <div id="couponSection">
+        <h6 id="question">Have a coupon ?</h6>
+        <% if (database.cartdata.couponApplied == false) { %>
+        <div id="hasapplied">
+          <input type="text" class="w-100" id="couponcode" name="couponcode" placeholder="Enter Coupon Code">
+          <button class="btn btn-success w-100 mt-4" onclick="couponSubmit()">APPLY</button>
+        </div>
+        <% } else if(database.cartdata.couponApplied == true) { %>
+        <div id="hasremoved">
+          <script>
+            var appliedCouponCode = '<%= database.cartdata.couponCode %>';
+          </script>
+          <input type="text" class="w-100" id="removecode" name="removecode" hidden>
+          <button class="btn btn-warning w-100 mt-4" onclick="removeCoupon()">REMOVE COUPON</button>
+        </div>
         <% } %>
-        
-
-        
+      </div>
+      <br>
+      <hr>
+      <div class="payment-option d-flex justify-content-between">
+        <% if (database.cartdata.OrderTotalPrice <= 30000) { %>
+        <div>
+          <label for="COD1">Cash on delivery</label>
+        </div>
+        <div>
+          <input type="radio" id="COD1" name="paymentMethod" value="COD">
+        </div>
+        <% } %>
       </div>
       <hr>
-      <div class="payment-option d-flex  justify-content-between  ">
+      <div class="payment-option d-flex justify-content-between">
         <div>
           <label for="MyWallet">My Wallet</label>
         </div>
@@ -226,7 +230,7 @@
         </div>
       </div>
       <hr>
-      <div class="payment-option  d-flex  justify-content-between ">
+      <div class="payment-option d-flex justify-content-between">
         <div>
           <label for="Razorpay">Razorpay</label>
         </div>
@@ -235,13 +239,13 @@
         </div>
       </div>
       <hr>
-      <div id="">
+      <div>
         <button type="button" id="checkoutButton" class="btn btn-warning w-100" style="display: none;" onclick="paymentprocess()">
           <strong>CHECKOUT</strong>
         </button>
-        
       </div>
     </div>
+    
   </div>
 
 
@@ -331,6 +335,14 @@
 
 
       function paymentprocess() {
+
+
+        if (!validateForm()) {
+          // If form validation fails, do not proceed with the payment process
+          return;
+      }
+
+
         var paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
         var selectedRadio = document.querySelector('input[name="fromDbAddressRadio"]:checked');
         const deliveryChargeElement = document.getElementById('deliveryCharge');
@@ -589,13 +601,6 @@
 
 
 
-
-
-
-
-
-
-
       async function sendRazFailedPaymentDetials(code, description, source, step, reason, order_id, payment_id) {
         fetch("/failedPaymentData", {
           method: "post",
@@ -608,15 +613,6 @@
       }
 
 
-
-
-
-
-
-
-
-
-      //function related to accordian
 
       function clearRadioButtons() {
         var radioButtons = document.getElementsByName("fromDbAddressRadio");
@@ -657,53 +653,196 @@
       }
 
 
-      function fieldValidation() {
 
-        let phonenumber = document.getElementById("phonenumber").value;
-        let house = document.getElementById("house").value;
-        let street = document.getElementById("street").value;
-        let location = document.getElementById("location").value;
-        let landmark = document.getElementById("landmark").value;
-        let city = document.getElementById("city").value;
-        let pincode = document.getElementById("pincode").value;
-
-        let phonenumberMessage = document.getElementById("phonenumberMessage");
-        let houseMessage = document.getElementById("houseMessage");
-        let streetMessage = document.getElementById("streetMessage");
-        let locationMessage = document.getElementById("locationMessage");
-        let landmarkMessage = document.getElementById("landmarkMessage");
-        let cityMessage = document.getElementById("cityMessage");
-        let pincodeMessage = document.getElementById("pincodeMessage");
-
-
-
-        let isValid = true;
-
-        if (phonenumber.trim() === "") {
-          phonenumberMessage.innerHTML = "Mandatory";
-          isValid = false;
-        } else if (/^[a-zA-Z\s]+$/.test(phonenumber)) {
-          phonenumberMessage.innerHTML = "Input must be number";
-          isValid = false;
-        } else {
-          phonenumberMessage.innerHTML = "";
+      function validateForm() {
+        
+        var newAddressRadio = document.getElementById('collapseTwo').classList.contains('show');
+        if (newAddressRadio) {
+            let phonenumber = document.getElementById("phonenumber").value;
+            let house = document.getElementById("house").value;
+            let street = document.getElementById("street").value;
+            let location = document.getElementById("location").value;
+            let landmark = document.getElementById("landmark").value;
+            let city = document.getElementById("city").value;
+            let pincode = document.getElementById("pincode").value;
+    
+            let phonenumberMessage = document.getElementById("phonenumberMessage");
+            let houseMessage = document.getElementById("houseMessage");
+            let streetMessage = document.getElementById("streetMessage");
+            let locationMessage = document.getElementById("locationMessage");
+            let landmarkMessage = document.getElementById("landmarkMessage");
+            let cityMessage = document.getElementById("cityMessage");
+            let pincodeMessage = document.getElementById("pincodeMessage");
+    
+            let isValid = true;
+    
+            if (phonenumber.trim() === "") {
+                phonenumberMessage.innerHTML = "Mandatory";
+                isValid = false;
+            } else if (!/^\d+$/.test(phonenumber)) {
+                phonenumberMessage.innerHTML = "Input must be a number";
+                isValid = false;
+            } else {
+                phonenumberMessage.innerHTML = ""; 
+            }
+    
+           
+            if (house.trim() === "") {
+                houseMessage.innerHTML = "Mandatory";
+                isValid = false;
+            } else {
+                houseMessage.innerHTML = "";
+            }
+    
+            if (street.trim() === "") {
+                streetMessage.innerHTML = "Mandatory";
+                isValid = false;
+            } else {
+                streetMessage.innerHTML = "";
+            }
+    
+            if (location.trim() === "") {
+                locationMessage.innerHTML = "Mandatory";
+                isValid = false;
+            } else {
+                locationMessage.innerHTML = "";
+            }
+    
+            if (landmark.trim() === "") {
+                landmarkMessage.innerHTML = "Mandatory";
+                isValid = false;
+            } else {
+                landmarkMessage.innerHTML = "";
+            }
+    
+            if (city.trim() === "") {
+                cityMessage.innerHTML = "Mandatory";
+                isValid = false;
+            } else {
+                cityMessage.innerHTML = "";
+            }
+    
+            if (pincode.trim() === "") {
+                pincodeMessage.innerHTML = "Mandatory";
+                isValid = false;
+            } else if (!/^\d{6}$/.test(pincode)) {
+                pincodeMessage.innerHTML = "Invalid Pincode (Should be 6 digits)";
+                isValid = false;
+            } else {
+                pincodeMessage.innerHTML = "";
+            }
+    
+            if (!isValid) {
+              
+                document.getElementById('checkoutButton').style.display = 'none';
+                return false;
+            }
         }
+    
+      
+        document.getElementById('checkoutButton').style.display = 'block';
+        return true;
+    }
+    
 
 
-        if (house.trim() === "") {
-          houseMessage.innerHTML = "Mandatory";
-          isValid = false;
-        }
-
-
+      function removeCoupon() {
+        const couponCode = document.getElementById('removecode').value;
+  
+        fetch("/removeCoupon", {
+          method: "POST",
+          headers: {
+            'Content-Type': "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify({
+            couponCode
+          })
+        })
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error('Failed to remove coupon');
+          }
+        })
+        .then(data => {
+          console.log('Success:', data);
+          if(data.message=="Coupon removed successfully."){
+           
+        console.log("removecoupon::",data)
+            const newPriceS=document.getElementById("actualPrice")
+            newPriceS.innerHTML=`<h5><b>&#8377; ${data.grandtotals}<b></h5>`
+         
+            const displayCouponMessage=document.getElementById("question");
+            displayCouponMessage.innerText="Have a coupon ?"
+    
+            const hideRemovebutton=document.getElementById("hasapplied")
+            hideRemovebutton.innerHTML=` <input type="text" class="w-100" id="couponcode" name="couponcode" placeholder="Enter Coupon Code">
+            <button class="btn btn-success w-100 mt-4" onclick="couponSubmit()">APPLY</button>`
+            
+          }
+        
+        })
+        .catch(error => {
+          console.error('Error removing coupon:', error);
+        });
       }
-
-
-
-
-
-
-
+    
+    
+    
+    
+    
+    
+    
+    //coupon spply ...............
+      function couponSubmit() {
+        const couponCode = document.getElementById('couponcode').value;
+     
+        fetch("/applyCoupon", {
+          method: "POST",
+          headers: {
+            'Content-Type': "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify({
+            code: couponCode
+          })
+        })
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error('Failed to apply coupon');
+          }
+        })
+        .then(data => {
+          console.log('Success:', data);
+       
+          if(data.message=="Coupon applied successfully."){
+            const newPrice=document.getElementById("actualPrice")
+            newPrice.innerHTML=`<h5> <b>&#8377; ${data.grandtotal}<b></h5>`
+         
+            const displayCouponMessage=document.getElementById("question");
+            displayCouponMessage.innerText=`Coupon used: ${data.codes}` 
+    
+            const hideapplybutton=document.getElementById("hasapplied")
+            hideapplybutton.innerHTML=` <input type="text" class="w-100" id="removecode" name="removecode" hidden>
+            <button class="btn btn-warning w-100 mt-4 " onclick="removeCoupon()">REMOVE COUPON</button>`
+    
+            
+          }
+        else if(data.message=="Coupon does not exist."){
+          const displayCouponMessage=document.getElementById("question");
+          displayCouponMessage.innerText=`Coupon does not exist ` 
+        }
+              
+    
+        })
+        .catch(error => {
+          console.error('Error applying coupon:', error);
+        });
+      }
 
 
 
@@ -713,22 +852,8 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     <style>
       #rightside {
-
         background-color: #2d2b2b;
         padding: 15px;
         color: #ffffff;
@@ -789,34 +914,26 @@
       }
 
 
-
       .radio-container {
         border: 1px solid #000000;
-        /* Add a border */
         background-color: hsla(216, 46%, 86%, 0.493);
-        /* Add a different background color */
         padding: 10px;
-        /* Add padding for spacing */
         margin-bottom: 10px;
-        /* Add margin between loop elements */
         border-radius: 8px;
-        /* Optional: Add border-radius for rounded corners */
+     
       }
 
       #savedAddress {
         background-color: #fcfcfc;
         max-height: 200px;
-        /* Set the maximum height you want for the container */
         overflow-y: auto;
-        /* Enable vertical scrolling if the content exceeds the container height */
         border: 1px solid #2e2e2e;
-        /* Add a border for visual clarity */
         padding: 10px;
-        /* Add padding for better aesthetics */
+      
       }
 
       .radio-container {
         margin-bottom: 10px;
-        /* Add some margin between each radio container */
+       
       }
     </style>

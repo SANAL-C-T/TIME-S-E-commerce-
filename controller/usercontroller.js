@@ -781,9 +781,9 @@ if(hasUserAddedDetails==null){
 //...............................................
 const saveEditProfile = async (req, res) => {
     try {
+      
         const user = req.userid; // This is coming from JWT authentication
         const profilePic = req.file ? `/${req.file.filename}` : undefined;
-        
         const address = {
             houseNo: req.body.house,
             street: req.body.street,
@@ -795,28 +795,93 @@ const saveEditProfile = async (req, res) => {
             pincode: req.body.pincode,
         };
 
-        if (profilePic === undefined && (
-            address.houseNo === undefined || 
-            address.street === undefined ||
-            address.location === undefined ||
-            address.landmark === undefined ||
-            address.city === undefined ||
-            address.state === undefined ||
-            address.country === undefined ||
-            address.pincode === undefined
-        )) {
-            await userData.updateOne({ _id: user }, {
-                $set: {
-                    first_name: req.body.username1,
-                    Last_name: req.body.username2,
-                }
-            });
-        }
 
-        if (
-            req.body.username1 === undefined ||
-            req.body.username2 === undefined ||
-            (
+
+//case if first name and last name is only comming..
+    //     if (profilePic === undefined && (
+    //         address.houseNo === undefined || 
+    //         address.street === undefined ||
+    //         address.location === undefined ||
+    //         address.landmark === undefined ||
+    //         address.city === undefined ||
+    //         address.state === undefined ||
+    //         address.country === undefined ||
+    //         address.pincode === undefined
+    //     )) {
+    //         await userData.updateOne({ _id: user }, {
+    //             $set: {
+    //                 first_name: req.body.username1,
+    //                 Last_name: req.body.username2,
+    //             }
+    //         });
+
+         
+    //     }
+    //     else{}
+     
+    //     //case  if only profile image is added or updated.
+    //     if (
+    //         req.body.username1 === undefined ||
+    //         req.body.username2 === undefined ||
+    //         (
+    //             address.houseNo === undefined || 
+    //             address.street === undefined ||
+    //             address.location === undefined ||
+    //             address.landmark === undefined ||
+    //             address.city === undefined ||
+    //             address.state === undefined ||
+    //             address.country === undefined ||
+    //             address.pincode === undefined
+    //         )
+    //     ) {
+    //         await userData.updateOne({ _id: user }, {
+    //             $set: {
+    //                 profileImage: `/${req.file.filename}`,
+    //             }
+    //         });
+    //     }else{}
+
+    //  //case if both image and firstname and lastname is present.
+    //     if (
+    //         address.houseNo === undefined || 
+    //         address.street === undefined ||
+    //         address.location === undefined ||
+    //         address.landmark === undefined ||
+    //         address.city === undefined ||
+    //         address.state === undefined ||
+    //         address.country === undefined ||
+    //         address.pincode === undefined
+    //     ) {
+    //         await userData.updateOne({ _id: user }, {
+    //             $set: {
+    //                 first_name: req.body.username1,
+    //                 Last_name: req.body.username2,
+    //                 profileImage: profilePic,
+    //             }
+    //         });
+    //     } 
+    //     //case if everything is present.
+    //     else {
+    //         await userData.updateOne({ _id: user }, {
+    //             $set: {
+    //                 first_name: req.body.username1,
+    //                 Last_name: req.body.username2,
+    //                 phone: req.body.phonenumber,
+    //                 profileImage: profilePic,
+    //                 Address: address,
+    //             }
+    //         });
+    //     }
+    
+    //     console.log("Data saved");
+
+    //     const hasUserAddedDetails = await userData.findOne({ _id: user, });
+    //     res.render("user/userprofileedit.ejs",{hasUserAddedDetails});
+    // } catch (error) {
+    //     console.error(error.message);
+    // }
+
+    if (profilePic === undefined && (
                 address.houseNo === undefined || 
                 address.street === undefined ||
                 address.location === undefined ||
@@ -825,49 +890,89 @@ const saveEditProfile = async (req, res) => {
                 address.state === undefined ||
                 address.country === undefined ||
                 address.pincode === undefined
-            )
-        ) {
-            await userData.updateOne({ _id: user }, {
-                $set: {
-                    profileImage: `/${req.file.filename}`,
-                }
-            });
+            )) {
+                await userData.updateOne({ _id: user }, {
+                    $set: {
+                        first_name: req.body.username1,
+                        Last_name: req.body.username2,
+                    }
+                });
+    
+             
+            }
+            
+         
+            //case  if only profile image is added or updated.
+            else if (
+                req.body.username1 === undefined ||
+                req.body.username2 === undefined ||
+                (
+                    address.houseNo === undefined || 
+                    address.street === undefined ||
+                    address.location === undefined ||
+                    address.landmark === undefined ||
+                    address.city === undefined ||
+                    address.state === undefined ||
+                    address.country === undefined ||
+                    address.pincode === undefined
+                )
+            ) {
+                await userData.updateOne({ _id: user }, {
+                    $set: {
+                        profileImage: `/${req.file.filename}`,
+                    }
+                });
+            }
+    
+         //case if both image and firstname and lastname is present.
+          else if (
+                address.houseNo === undefined || 
+                address.street === undefined ||
+                address.location === undefined ||
+                address.landmark === undefined ||
+                address.city === undefined ||
+                address.state === undefined ||
+                address.country === undefined ||
+                address.pincode === undefined
+            ) {
+                await userData.updateOne({ _id: user }, {
+                    $set: {
+                        first_name: req.body.username1,
+                        Last_name: req.body.username2,
+                        profileImage: profilePic,
+                    }
+                });
+            } 
+            //case if everything is present.
+            else {
+                await userData.updateOne({ _id: user }, {
+                    $set: {
+                        first_name: req.body.username1,
+                        Last_name: req.body.username2,
+                        phone: req.body.phonenumber,
+                        profileImage: profilePic,
+                        Address: address,
+                    }
+                });
+            }
+        
+            console.log("Data saved");
+    
+            const hasUserAddedDetails = await userData.findOne({ _id: user, });
+            res.render("user/userprofileedit.ejs",{hasUserAddedDetails});
+        } catch (error) {
+            console.error(error.message);
         }
+    
+    
+    
 
-     
-        if (
-            address.houseNo === undefined || 
-            address.street === undefined ||
-            address.location === undefined ||
-            address.landmark === undefined ||
-            address.city === undefined ||
-            address.state === undefined ||
-            address.country === undefined ||
-            address.pincode === undefined
-        ) {
-            await userData.updateOne({ _id: user }, {
-                $set: {
-                    first_name: req.body.username1,
-                    Last_name: req.body.username2,
-                    profileImage: profilePic,
-                }
-            });
-        } else {
-            await userData.updateOne({ _id: user }, {
-                $set: {
-                    first_name: req.body.username1,
-                    Last_name: req.body.username2,
-                    phone: req.body.phonenumber,
-                    profileImage: profilePic,
-                    Address: address,
-                }
-            });
-        }
 
-        console.log("Data saved");
-    } catch (error) {
-        console.error(error.message);
-    }
+
+
+
+
+
 };
 
 

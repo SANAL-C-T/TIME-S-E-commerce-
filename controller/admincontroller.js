@@ -1931,6 +1931,8 @@ const bannerConfigur = async (req, res) => {
         console.log(error.message)
     }
 }
+
+
 const bannerdatabse = async (req, res) => {
     try {
         console.log("all  files::::", req.files)
@@ -2011,7 +2013,8 @@ const updateBanner = async (req, res) => {
         const subHeadingText = req.body.subHeadingText;
         const HeadingText = req.body.HeadingText;
         // console.log("updateImage::::", imgfile)
-        // console.log("updateData::::", req.body)
+         console.log("updateData::::", HeadingText )
+         console.log("updateData::::", sections)
         // console.log("section:", sections)
 
         if (sections == "sectionOne") {
@@ -2031,8 +2034,8 @@ const updateBanner = async (req, res) => {
                             MainTextContent: mainText,
                             SubTextContent: subText,
                             introductionTextContent: introText,
-                            heading: subHeadingText,
-                            subHeading: HeadingText
+                            heading: HeadingText,
+                            subHeading: subHeadingText
                         }
                     }
                 )
@@ -2056,8 +2059,8 @@ const updateBanner = async (req, res) => {
                             MainTextContent: mainText,
                             SubTextContent: subText,
                             introductionTextContent: introText,
-                            heading: subHeadingText,
-                            subHeading: HeadingText
+                            heading:  HeadingText,
+                            subHeading: subHeadingText
                         }
                     }
                 )
@@ -2082,8 +2085,8 @@ const updateBanner = async (req, res) => {
                             MainTextContent: mainText,
                             SubTextContent: subText,
                             introductionTextContent: introText,
-                            heading: subHeadingText,
-                            subHeading: HeadingText
+                            heading:  HeadingText,
+                            subHeading: subHeadingText
                         }
                     }
                 )
@@ -2097,8 +2100,8 @@ const updateBanner = async (req, res) => {
                             MainTextContent: mainText,
                             SubTextContent: subText,
                             introductionTextContent: introText,
-                            heading: subHeadingText,
-                            subHeading: HeadingText
+                            heading:  HeadingText,
+                            subHeading: subHeadingText
                         }
                     }
                 )

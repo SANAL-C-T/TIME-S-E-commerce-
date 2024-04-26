@@ -85,44 +85,52 @@ const productCollection = mangoose.Schema({
     uniqueID: {// for checking status
         type: Number
     },
-    specification: [{
+    dialShape: {
+        type: String
+    },
+    MadeIn: {
+        type: String
+    },
+    StrapMaterial: {
+        type: String
+    },
+    StrapColour: {
+        type: String
+    },
+    waterResistant: {
+        type: String
+    },
+    display: {
+        type: String
+    },
+    screenSize: {
+        type: String
+    },
+    fastCharge: {
+        type: String
+    },
+    battery: {
+        type: String
+    },
+    weight: {
+        type: String
+    },
+    call: {
+        type: String
+    },
+    bluetooth: {
+        type: String
+    },
+    wifi: {
+        type: String
+    },
+    display: {
+        type: String
+    },
 
-        brand: {
-            type: String
-        },
-        MadeIn: {
-            type: String
-        },
-        StrapMaterial: {
-            type: String
-        },
-        waterResistant: {
-            type: Boolean
-        },
-        display: {
-            type: String
-        },
-        screenSize: {
-            type: String
-        },
-        fastCharge: {
-            type: Boolean
-        },
-        battery: {
-            type: String
-        },
-        weight: {
-            type: String
-        },
-        sleepTracker: {
-            type: Boolean
-        },
-        warranty: {
-            type: String
-        },
-
-    }]
-    ,
+    Warranty: {
+        type: String
+    },
     productPrice: {
         type: Number,
         required: true

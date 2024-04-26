@@ -33,7 +33,7 @@ const addproduct = async (req, res) => {
         // console.log("incoming:",req.body.productCategory)
         const category = await categData.findOne({ _id: req.body.productCategory });
         // console.log("category data in addproduct::::", category)
-
+console.log(req.body)
 
         const addproductDetails = new productData({
             productName: req.body.productName,
@@ -42,8 +42,20 @@ const addproduct = async (req, res) => {
             productPrice: req.body.productPrice,
             variant: vari,
             productImage: productImageObject,
-            stockCount: req.body.stockCount
-
+            stockCount: req.body.stockCount,
+            dialShape:req.body.productDialShape,
+            MadeIn:req.body.productMadeIn,
+            StrapMaterial:req.body.strapmaterial,
+            waterResistant:req.body.waterresistant,
+            display:req.body.productdisplay,
+            fastCharge:req.body.productfastCharge, 
+            battery: req.body.productbattery,
+            weight: req.body.weight,
+            call: req.body.calling,
+            bluetooth: req.body.productbluetooth,
+            wifi: req.body.wifi,
+            StrapColour:req.body.productStrapColour,
+            Warranty:req.body.Warranty
         })
         await addproductDetails.save()
 

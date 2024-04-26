@@ -16,7 +16,7 @@
         value="<%=urlData.proData.productName%>"
       />
     </div>
-<div id="productNameMessage" class="text-danger m-3" ></div>
+    <div id="productNameMessage" class="text-danger m-3" ></div>
 
 
 
@@ -38,83 +38,250 @@
 
 
     <div class="d-flex justify-content-between">
-      <div class="mb-3">
-        <label for="productPrice" class="form-label">Product Price</label>
-        <input
-          type="tel"
-          class="form-control"
-          id="productPrice"
-          name="productPrice"
-          value="<%=urlData.proData.productPrice%>"
-        />
-      </div>
-      <div id="productPriceMessage" class="text-danger m-3" ></div>
+              <div class="mb-3">
+                <label for="productPrice" class="form-label">Product Price</label>
+                <input
+                  type="tel"
+                  class="form-control"
+                  id="productPrice"
+                  name="productPrice"
+                  value="<%=urlData.proData.productPrice%>"
+                />
+              </div>
+              <div id="productPriceMessage" class="text-danger m-3" ></div>
 
 
-      <div class="mb-3">
-        <label for="productCategory" class="form-label">Product Category</label>
-        <select
-            class="form-select"
-            id="productCategory"
-            name="productCategory"
-            required
-        >
-            <option value="" disabled selected>Select a category</option>
-            <% urlData.cate.forEach(category => { %>
-                <option value="<%= category._id %>" <% if(category._id.toString() === urlData.proData.productCategory.toString()) { %> selected <% } %>>
-                    <%= category.categoryName %>
-                </option>
-            <% }) %>
-        </select>
-    </div>
-    
-      <div id="productCategoryMessage" class="text-danger m-3" ></div>
+              <div class="mb-3">
+                <label for="productCategory" class="form-label">Product Category</label>
+                <select
+                    class="form-select"
+                    id="productCategory"
+                    name="productCategory"
+                    required
+                >
+                    <option value="" disabled selected>Select a category</option>
+                    <% urlData.cate.forEach(category => { %>
+                        <option value="<%= category._id %>" <% if(category._id.toString() === urlData.proData.productCategory.toString()) { %> selected <% } %>>
+                            <%= category.categoryName %>
+                        </option>
+                    <% }) %>
+                </select>
+              </div>
+              <div id="productCategoryMessage" class="text-danger m-3" ></div>
 
 
-   
+              <div class="mb-3">
+                <label for="productStrapColour" class="form-label">Strap colour</label>
+                <input type="text" 
+                class="form-control" 
+                id="productStrapColour" 
+                name="productStrapColour"
+                value="<%=urlData.proData.StrapColour%>"
+                />
+                <div id="productStrapColourMessage" class="text-danger m-3"></div>
+              </div>
+          
     </div>
   
 
 
     <div class="d-flex justify-content-between">
-      <div class="mb-3">
-        <label for="productsize" class="form-label">Size</label>
-        <input
-          type="tel"
-          class="form-control"
-          id="productsize"
-          name="productsize"
-          value="<%=urlData.proData.variant[0].productsize%>"
-        />
-      </div>
-      <div id="productsizeMessage" class="text-danger m-3" ></div>
+          <div class="mb-3">
+            <label for="productsize" class="form-label">Size</label>
+            <input
+              type="tel"
+              class="form-control"
+              id="productsize"
+              name="productsize"
+              value="<%=urlData.proData.variant[0].productsize%>"
+            />
+          </div>
+          <div id="productsizeMessage" class="text-danger m-3" ></div>
 
-      <div class="mb-3">
-        <label for="productcolour" class="form-label">Colour</label>
-        <input
-          type="tel"
-          class="form-control"
-          id="productcolour"
-          name="productcolour"
-          value="<%=urlData.proData.variant[0].productcolour%>"
-        />
-      </div>
-      <div id="productcolourMessage" class="text-danger m-3" ></div>
+          <div class="mb-3">
+            <label for="productcolour" class="form-label">Colour</label>
+            <input
+              type="text"
+              class="form-control"
+              id="productcolour"
+              name="productcolour"
+              value="<%=urlData.proData.variant[0].productcolour%>"
+            />
+          </div>
+          <div id="productcolourMessage" class="text-danger m-3" ></div>
 
-      <div class="mb-3">
-        <label for="stockCount" class="form-label">Stock Count</label>
-        <input
-          type="tel"
-          class="form-control"
-          id="stockCount"
-          name="stockCount"
-          value="<%=urlData.proData.stockCount%>"
-        />
-      </div>
-      <div id="stockCountMessage" class="text-danger m-3" ></div>
+          <div class="mb-3">
+            <label for="stockCount" class="form-label">Stock Count</label>
+            <input
+              type="tel"
+              class="form-control"
+              id="stockCount"
+              name="stockCount"
+              value="<%=urlData.proData.stockCount%>"
+            />
+          </div>
+          <div id="stockCountMessage" class="text-danger m-3" ></div>
 
     </div>
 
+
+
+
+    <div class="d-flex justify-content-between">
+      <div class="mb-3">
+          <label for="productDialShape" class="form-label">Dial shape:</label>
+          <input type="text" 
+          class="form-control" 
+          id="productDialShape" 
+          name="productDialShape" 
+          value="<%=urlData.proData.dialShape%>"
+          />
+      </div>
+        <div id="productDialShapeMessage" class="text-danger m-3"></div>
+    
+          
+        <div class="mb-3">
+          <label for="productMadeIn" class="form-label">Made in</label>
+          <input type="text" 
+          class="form-control" 
+          id="productMadeIn" 
+          name="productMadeIn"
+          value="<%=urlData.proData.MadeIn%>" 
+          />
+        </div>
+          <div id="productMadeInMessage" class="text-danger m-3"></div>
+         
+          <div class="mb-3">
+          <label for="strapmaterial" class="form-label">Strap material</label>
+          <input type="text" 
+          class="form-control" 
+          id="strapmaterial" 
+          name="strapmaterial"
+          value="<%=urlData.proData.StrapMaterial%>"
+          />
+          <div id="strapmaterialMessage" class="text-danger m-3"></div>
+     </div>
+  </div>
+  
+  
+  <div class="d-flex justify-content-between">
+      <div class="mb-3">
+          <label for="waterresistant" class="form-label">Water resistant</label>
+          <input type="text" 
+          class="form-control" 
+          id="waterresistant" 
+          name="waterresistant"
+          value="<%=urlData.proData.waterResistant%>"
+          />
+          <div id="waterresistantMessage" class="text-danger m-3"></div>
+      </div>
+  
+      <div class="mb-3">
+          <label for="productdisplay" class="form-label">Display</label>
+          <input type="text" 
+          class="form-control" 
+          id="productdisplay" 
+          name="productdisplay"
+          value="<%=urlData.proData.display%>"
+          />
+          <div id="productdisplayMessage" class="text-danger m-3"></div>
+      </div>
+  
+      <div class="mb-3">
+          <label for="calling" class="form-label">Calling</label>
+          <input type="text" 
+          class="form-control" 
+          id="calling" 
+          name="calling"
+          value="<%=urlData.proData.call%>"
+          />
+          <div id="callingMessage" class="text-danger m-3"></div>
+      </div>
+  </div>
+  
+  
+  
+  <div class="d-flex justify-content-between">
+      <div class="mb-3">
+          <label for="productfastCharge" class="form-label">Fast charge</label>
+          <input type="text" 
+          class="form-control" 
+          id="productfastCharge" 
+          name="productfastCharge"
+          value="<%=urlData.proData.fastCharge%>"
+          />
+          <div id="productfastChargeMessage" class="text-danger m-3"></div>
+      </div>
+  
+      <div class="mb-3">
+          <label for="productbattery" class="form-label">Battery</label>
+          <input type="text"
+           class="form-control" 
+           id="productbattery" 
+           name="productbattery"
+           value="<%=urlData.proData.battery%>"
+           />
+          <div id="productbatteryMessage" class="text-danger m-3"></div>
+      </div>
+  
+      <div class="mb-3">
+          <label for="weight" class="form-label">Weight</label>
+          <input type="text"
+           class="form-control" 
+           id="weight" 
+           name="weight"
+           value="<%=urlData.proData.weight%>"
+           />
+          <div id="weightMessage" class="text-danger m-3"></div>
+      </div>
+  </div>
+  
+  
+  <div class="d-flex justify-content-between">
+      <div class="mb-3">
+          <label for="productbluetooth" class="form-label">Bluetooth</label>
+          <input type="text" 
+          class="form-control" 
+          id="productbluetooth" 
+          name="productbluetooth" 
+          value="<%=urlData.proData.bluetooth%>"
+          />
+          <div id="productbluetoothMessage" class="text-danger m-3"></div>
+      </div>
+  
+      <div class="mb-3">
+          <label for="productWarranty" class="form-label">Warranty</label>
+          <input type="text"
+           class="form-control" 
+           id="productWarranty" 
+           name="productWarranty"
+           value="<%=urlData.proData.Warranty%>"
+           />
+          <div id="productWarrantyMessage" class="text-danger m-3"></div>
+      </div>
+  
+      <div class="mb-3">
+          <label for="wifi" class="form-label">WiFi</label>
+          <input type="text" 
+          class="form-control" 
+          id="wifi" 
+          name="wifi"
+          value="<%=urlData.proData.wifi%>"
+          />
+          <div id="wifiMessage" class="text-danger m-3"></div>
+      </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+    <hr>
     <label for="productImage" class="form-label">Product Image</label>
     <div class="container mt-3 w-100">
       <div class="card shadow-sw w-100 imagebox">
@@ -194,8 +361,10 @@
     <button type="button" productId="<%=urlData.proData._id%>" class="btn btn-primary" onclick="submitForm(this)">
       Update the data
     </button>
-  </form>
 
+
+  </form>
+<br>
   <%- include("../partials/adminfooter.ejs") %>
 
 
@@ -294,20 +463,50 @@
         let productDescription = document.getElementById('productDescription').value;
         let productPrice = document.getElementById('productPrice').value;
         let productCategory = document.getElementById("productCategory").value;
-       
         let productsize = document.getElementById("productsize").value;
         let productcolour = document.getElementById("productcolour").value;
         let stockCount = document.getElementById("stockCount").value;
     
+        let productDialShape = document.getElementById('productDialShape').value;
+        let productMadeIn = document.getElementById('productMadeIn').value;
+        let strapmaterial = document.getElementById('strapmaterial').value;
+        let waterresistant = document.getElementById('waterresistant').value;
+        let productdisplay = document.getElementById('productdisplay').value;
+        let calling = document.getElementById('calling').value;
+        let productfastCharge = document.getElementById('productfastCharge').value;
+        let productbattery = document.getElementById('productbattery').value;
+        let weight = document.getElementById('weight').value;
+        let productbluetooth = document.getElementById('productbluetooth').value;
+        let productWarranty = document.getElementById('productWarranty').value;
+        let wifi = document.getElementById('wifi').value;
+        let productStrapColour = document.getElementById('productStrapColour').value;
+
+
+
         let productNameMessage = document.getElementById('productNameMessage');
         let productDescriptionMessage = document.getElementById('productDescriptionMessage');
         let productPriceMessage = document.getElementById('productPriceMessage');
         let productCategoryMessage = document.getElementById('productCategoryMessage');
-       
         let productsizeMessage = document.getElementById('productsizeMessage');
         let productcolourMessage = document.getElementById('productcolourMessage');
         let stockCountMessage = document.getElementById('stockCountMessage');
     
+        let productDialShapeMessage = document.getElementById('productDialShapeMessage');
+        let productMadeInMessage = document.getElementById('productMadeInMessage');
+        let strapmaterialMessage = document.getElementById('strapmaterialMessage');
+        let waterresistantMessage = document.getElementById('waterresistantMessage');
+        let productdisplayMessage = document.getElementById('productdisplayMessage');
+        let callingMessage = document.getElementById('callingMessage');
+        let productfastChargeMessage = document.getElementById('productfastChargeMessage');
+        let productbatteryMessage = document.getElementById('productbatteryMessage');
+        let weightMessage = document.getElementById('weightMessage');
+        let productbluetoothMessage = document.getElementById('productbluetoothMessage');
+        let productWarrantyMessage = document.getElementById('productWarrantyMessage');
+        let wifiMessage = document.getElementById('wifiMessage');
+        let productStrapColourMessage = document.getElementById('productStrapColourMessage');
+
+
+
         const validTypes = ['image/jpeg', 'image/png'];
         let imgz1=document.getElementById("productimg1");
         let imgz2=document.getElementById("productimg2");
@@ -361,10 +560,7 @@ if (imgz5.files.length > 0 && !validTypes.includes(imgz5.files[0].type)) {
     isValid = false;
 }
 
-
-
         if (productName === "") {
-
             productNameMessage.innerHTML = "Product name cannot be empty";
             isValid = false;
         } else {
@@ -395,18 +591,26 @@ if (imgz5.files.length > 0 && !validTypes.includes(imgz5.files[0].type)) {
         if (productPrice < 0) {
             productPriceMessage.innerHTML = "Price cannot be negative";
             isValid = false;
-        } else {
+        }else if (!/^\d+$/.test(productPrice)) {
+          productPriceMessage.innerHTML = "Should only contain numbers";
+          isValid = false;
+      }  
+        else {
             productPriceMessage.innerHTML = "";
         }
     
-        if (productcolour === "") {
+        if (productcolour.trim() === "") {
             productcolourMessage.innerHTML = "Product colour cannot be empty";
             isValid = false;
-        } else {
+        }else if (!/^[a-zA-Z]+$/.test(productcolour)) {
+          productcolourMessage.innerHTML = "Should only contain alphabets";
+          isValid = false;
+      }
+        else {
             productcolourMessage.innerHTML = "";
         }
     
-        if (stockCount === "") {
+        if (stockCount.trim() === "") {
             stockCountMessage.innerHTML = "Product stock cannot be empty";
             isValid = false;
         } else if (stockCount < 0) {
@@ -416,6 +620,108 @@ if (imgz5.files.length > 0 && !validTypes.includes(imgz5.files[0].type)) {
             stockCountMessage.innerHTML = "";
         }
     
+        if (productDialShape.trim() === "") {
+          productDialShapeMessage.innerHTML = "Dial shape cannot be empty";
+          isValid = false;
+      } else if (!/^[a-zA-Z]+$/.test(productDialShape)) {
+          productDialShapeMessage.innerHTML = "Should only contain alphabets";
+          isValid = false;
+      } else {
+          productDialShapeMessage.innerHTML = "";
+      }
+  
+      if (productMadeIn.trim() === "") {
+          productMadeInMessage.innerHTML = "cannot be empty";
+          isValid = false;
+      } else if (!/^[a-zA-Z]+$/.test(productMadeIn)) {
+          productMadeInMessage.innerHTML = "Should only contain alphabets";
+          isValid = false;
+      } else {
+          productMadeInMessage.innerHTML = "";
+      }
+  
+      if (strapmaterial.trim() === "") {
+          strapmaterialMessage.innerHTML = "Strap material cannot be empty";
+          isValid = false;
+      }
+      else if (!/^[a-zA-Z]+$/.test(strapmaterial)) {
+          strapmaterialMessage.innerHTML = "Should only contain alphabets";
+          isValid = false;
+      } else {
+          strapmaterialMessage.innerHTML = "";
+      }
+  
+      if (waterresistant.trim() === "") {
+          waterresistantMessage.innerHTML = "Water resistant cannot be empty";
+          isValid = false;
+      } else {
+          waterresistantMessage.innerHTML = "";
+      }
+  
+      if (productdisplay.trim() === "") {
+          productdisplayMessage.innerHTML = "Display cannot be empty";
+          isValid = false;
+      }  
+       else {
+          productdisplayMessage.innerHTML = "";
+      }
+      if (calling.trim() === "") {
+          callingMessage.innerHTML = "Calling cannot be empty";
+          isValid = false;
+      }   else {
+          callingMessage.innerHTML = "";
+      }
+  
+      if (productfastCharge.trim() === "") {
+          productfastChargeMessage.innerHTML = "Fast charge cannot be empty";
+          isValid = false;
+      }  else {
+          productfastChargeMessage.innerHTML = "";
+      }
+  
+      if (productbattery.trim() === "") {
+          productbatteryMessage.innerHTML = "Battery cannot be empty";
+          isValid = false;
+      } else {
+          productbatteryMessage.innerHTML = "";
+      }
+      if (weight.trim() === "") {
+          weightMessage.innerHTML = "Weight cannot be empty";
+          isValid = false;
+      } else {
+          weightMessage.innerHTML = "";
+      }
+      if (productbluetooth.trim() === "") {
+          productbluetoothMessage.innerHTML = "Bluetooth cannot be empty";
+          isValid = false;
+      } else {
+          productbluetoothMessage.innerHTML = "";
+      }
+  
+      if (productWarranty.trim() === "") {
+          productWarrantyMessage.innerHTML = "Warranty cannot be empty";
+          isValid = false;
+      } else {
+          productWarrantyMessage.innerHTML = "";
+      }
+      if (productStrapColour.trim() === "") {
+          productStrapColourMessage.innerHTML = "Strap colour cannot be empty";
+          isValid = false;
+      } else if (!/^[a-zA-Z]+$/.test(productStrapColour)) {
+          productStrapColourMessage.innerHTML = "Should only contain alphabets";
+          isValid = false;
+      } else {
+          productStrapColourMessage.innerHTML = "";
+      }
+  
+  
+      if (wifi.trim() === "") {
+          wifiMessage.innerHTML = "Cannot be empty";
+          isValid = false;
+      } else {
+          wifiMessage.innerHTML = "";
+      }
+  
         return isValid;
     }
 

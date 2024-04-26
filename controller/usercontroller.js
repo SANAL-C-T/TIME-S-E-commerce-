@@ -29,7 +29,7 @@ const homeNotLog = async (req, res) => {
         let loadProductA = 0;
 
         const samsungProduct = await productDatas.find({
-            productCategory: '65ae1ded74d4441c5067ee22', // Replace with the actual category ID
+            productCategory: '662b470beb7e16a0efe66945', // Replace with the actual category ID
             isDeleted: false,
         })
             .populate({
@@ -46,7 +46,7 @@ const homeNotLog = async (req, res) => {
         }
 
         const appleProduct = await productDatas.find({
-            productCategory: '65ae1df474d4441c5067ee24', // Replace with the actual category ID
+            productCategory: '662b7ddbeb7e16a0efe66ed8', // Replace with the actual category ID
             isDeleted: false,
         })
             .populate({
@@ -63,7 +63,7 @@ const homeNotLog = async (req, res) => {
         }
 
         const garminProduct = await productDatas.find({
-            productCategory: '65ae1e0674d4441c5067ee26', // Replace with the actual category ID
+            productCategory: '662b7ddeeb7e16a0efe66ede', // Replace with the actual category ID
             isDeleted: false,
         })
             .populate({
@@ -102,13 +102,13 @@ const home = async (req, res) => {
         let loadProductA = 0;
 
         const HavesamsungProduct = await productDatas.find({
-            productCategory: '65ae1ded74d4441c5067ee22', // Replace with the actual category ID
+            productCategory: '662b470beb7e16a0efe66945', // Replace with the actual category ID
             isDeleted: false,
         })
 
         if (HavesamsungProduct.length > 0) {
             const samsungProduct = await productDatas.find({
-                productCategory: '65ae1ded74d4441c5067ee22', // Replace with the actual category ID
+                productCategory: '662b470beb7e16a0efe66945', // Replace with the actual category ID
                 isDeleted: false,
             })
                 .populate({
@@ -131,13 +131,13 @@ const home = async (req, res) => {
         }
 
         const HaveappleProduct = await productDatas.find({
-            productCategory: '65ae1df474d4441c5067ee24', // Replace with the actual category ID
+            productCategory: '662b7ddbeb7e16a0efe66ed8', // Replace with the actual category ID
             isDeleted: false,
         })
 
         if (HaveappleProduct.length > 0) {
             const appleProduct = await productDatas.find({
-                productCategory: '65ae1df474d4441c5067ee24', // Replace with the actual category ID
+                productCategory: '662b7ddbeb7e16a0efe66ed8', // Replace with the actual category ID
                 isDeleted: false,
             })
                 .populate({
@@ -158,14 +158,14 @@ const home = async (req, res) => {
         }
 
         const HavegarminProduct = await productDatas.find({
-            productCategory: '65ae1e0674d4441c5067ee26', // Replace with the actual category ID
+            productCategory: '662b7ddeeb7e16a0efe66ede', // Replace with the actual category ID
             isDeleted: false,
         })
 
         if (HavegarminProduct.length > 0) {
 
             const garminProduct = await productDatas.find({
-                productCategory: '65ae1e0674d4441c5067ee26', // Replace with the actual category ID
+                productCategory: '662b7ddeeb7e16a0efe66ede', // Replace with the actual category ID
                 isDeleted: false,
             })
                 .populate({

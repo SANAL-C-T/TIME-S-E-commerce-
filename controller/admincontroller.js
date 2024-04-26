@@ -48,7 +48,7 @@ const hashpass = async (pass) => {
 //logic to add extradetails of admin,connection to schema
 /* ---------------------------------------------------- */
 const adminDataStore = async (req, res) => {
-    // console.log(req.body)
+     console.log(req.body)
     const secret = await hashpass(req.body.password)
     try {
         const adminDetails = new adminData({
@@ -61,11 +61,7 @@ const adminDataStore = async (req, res) => {
             profileImage: req.body.profileImage
         })
         await adminDetails.save()
-
-
-
-
-
+        console.log("adminDetails saved")
     }
     catch (error) {
         console.log(error.message)
@@ -74,8 +70,22 @@ const adminDataStore = async (req, res) => {
 
 
 
-/* ============================================================ */
+const adminSignUP=async (req, res) => {
+    try {
+      
+   
+        res.render("admin/adminsignup.ejs")
+    } catch (error) {
+        console.log(error.message)
+    }
+}
 
+
+
+
+
+
+/* ============================================================ */
 
 
 //logic for authentication
@@ -1902,13 +1912,6 @@ const bannerAdding = async (req, res) => {
         console.log("hello")
         let bannerImagePath = `/${req.file.filename}`;
         console.log(bannerImagePath)
-        // console.log(req.files);//the file is no longer wwith request , it is stored to a loaction by multer.
-
-
-        // let  bannerDetails = new bannerData({
-
-        // }) 
-
         res.status(200).send("data received");
     }
     catch (error) {
@@ -1921,15 +1924,8 @@ const bannerConfigur = async (req, res) => {
     try {
         const urlData = {
             pageTitle: 'ADD BANNER',
-
-
         }
         res.render("admin/configurBanner.ejs", { urlData })
-        // const bannercollections=new bannerData({
-        //     Section:req.body.section,
-
-
-        // })
     }
     catch (error) {
         console.log(error.message)
@@ -1937,20 +1933,10 @@ const bannerConfigur = async (req, res) => {
 }
 const bannerdatabse = async (req, res) => {
     try {
-
-
         console.log("all  files::::", req.files)
-
-
         console.log("files::::", req.files.bannerImage1[0].path)
-
         console.log("files::::", req.files.bannerImage2[0].path)
-
         console.log("files::::", req.files.bannerImage3[0].path)
-
-
-
-
         const imag = {
             bannerImg1: `/${req.files.bannerImage1[0].path}`,
             bannerImg2: `/${req.files.bannerImage2[0].path}`,
@@ -2377,7 +2363,7 @@ module.exports = {
     bannerConfigur,
     bannerdatabse,
     storebanner,
-
+    adminSignUP,
     addReferalOffer,
     updateReferalOffer,
     renderDashboard,

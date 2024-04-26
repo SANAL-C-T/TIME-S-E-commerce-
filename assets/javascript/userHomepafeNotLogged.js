@@ -60,6 +60,10 @@ function validateSignup() {
         setError(password, passwordMessage, 'Password must be at least 9 characters');
         return false;
     }
+    else if (!/\d/.test(password.value)) {
+        setError(password, passwordMessage, 'Password must be at least 1 number');
+        return false;
+    }
 
     // If all checks pass
     return true;
@@ -97,3 +101,59 @@ function validateLogin() {
 }
 
 
+
+
+function checkStrong() {
+    let password = document.getElementById('password').value;
+   
+    let passwordMessage = document.getElementById('passwordMessage');
+    let s1Message = document.getElementById('S1Message');
+    let s2Message = document.getElementById('S2Message');
+    let s3Message = document.getElementById('S3Message');
+    let s4Message = document.getElementById('S4Message');
+
+    
+    passwordMessage.innerHTML = '';
+
+    // Reset check marks
+    s1Message.innerHTML = 'Should contain atleast a uppercase alphabet.';
+    s2Message.innerHTML = 'Should contain atleast a special character.';
+    s3Message.innerHTML = 'Should contain atleast a number.';
+    s4Message.innerHTML = 'Should contain atleast 9 characters.';
+
+    // Check if password contains alphabet
+    if (/[A-Z]/.test(password)) {
+        s1Message.classList.remove('crossmark');
+        s1Message.classList.add('checkmark');
+    } else {
+        s1Message.classList.remove('checkmark');
+        s1Message.classList.add('crossmark');
+    }
+
+    // Check if password contains special character
+    if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+        s2Message.classList.remove('crossmark');
+        s2Message.classList.add('checkmark');
+    } else {
+        s2Message.classList.remove('checkmark');
+        s2Message.classList.add('crossmark');
+    }
+
+    // Check if password contains number
+    if (/\d/.test(password)) {
+        s3Message.classList.remove('crossmark');
+        s3Message.classList.add('checkmark');
+    } else {
+        s3Message.classList.remove('checkmark');
+        s3Message.classList.add('crossmark');
+    }
+
+    // Check if password length is more than 9 characters
+    if (password.length >= 9) {
+        s4Message.classList.remove('crossmark');
+        s4Message.classList.add('checkmark');
+    } else {
+        s4Message.classList.remove('checkmark');
+        s4Message.classList.add('crossmark');
+    }
+}

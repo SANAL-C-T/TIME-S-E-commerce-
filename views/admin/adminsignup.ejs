@@ -1,4 +1,6 @@
 <%-include("../partials/header.ejs")%>
+<h1> admin sign up</h1>
+
 
 
 
@@ -12,7 +14,11 @@
   <div class="row justify-content-center align-items-center ">
     <div class="col-md-6">
       
-      <form onsubmit="return validateSignup()" action="/signup" method="post">
+      
+
+
+
+      <form onsubmit="return validateSignup()" action="adminsignup" method="post">
         <div class="m-3">
           <label for="username" class="form-label"><i class="fa-solid fa-user" style="color: #010c14;"></i>     Username:</label>
           <input

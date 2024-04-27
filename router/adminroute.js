@@ -55,7 +55,10 @@ adminUrlRouter.post("/Offercategory", jwtAuth.haveToken1, adminin.offercategoryw
 adminUrlRouter.get("/Offerproduct", jwtAuth.haveToken1, adminin.addofferproduct)
 adminUrlRouter.post("/Offerproduct", jwtAuth.haveToken1, adminin.offerproductwise)
 adminUrlRouter.get("/offerreferral", jwtAuth.haveToken1, adminin.offerreferal)
-// adminUrlRouter.post("/referOfferAdd", jwtAuth.haveToken1, adminin.addReferalOffer)
+
+// adminUrlRouter.get("/referOfferAdds", jwtAuth.haveToken1, adminin.addReferalOffer)
+// adminUrlRouter.post("/referOfferAdds", jwtAuth.haveToken1, adminin.addReferalOffer)
+
 adminUrlRouter.post("/referOfferAdd", jwtAuth.haveToken1, adminin.updateReferalOffer)
 adminUrlRouter.post("/removeOffer", jwtAuth.haveToken1, adminin.removeOffer)
 adminUrlRouter.post("/removeProductOffer", jwtAuth.haveToken1, adminin.removeproductOffer)

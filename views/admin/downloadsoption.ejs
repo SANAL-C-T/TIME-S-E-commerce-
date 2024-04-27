@@ -86,7 +86,7 @@
       <thead>
           <tr>
               <th>GENERATED AMOUNT</th>
-            <th> ACTUAL AMOUNT TO ACCOUNT </th>
+            <th> ACTUAL REVENUE </th>
               <th>CASH ON DELIVERY</th>
               <th>ONLINE PAYMENT</th>
               <th>AMOUNT RETURNED</th>
@@ -98,10 +98,10 @@
               <tr> 
              
                   <td>&#8377; <%= urlData?.total %></td>
-                  <td>&#8377; <%= urlData.CODtotal?.total %></td>
-                  <td>&#8377; <%= urlData.razorpayTotal?.total %></td>
-                  <td>&#8377; <%= urlData.returned?.total %></td>
-                  <td>&#8377; <%= urlData.returned?.total %></td>
+                  <td>&#8377; <%= urlData?.actual %></td>
+                  <td>&#8377; <%= urlData.CODtotal %></td>
+                  <td>&#8377; <%= urlData.razorpayTotal %></td>
+                  <td>&#8377; <%= urlData.returned %></td>
                   <td>&#8377; <%= urlData?.discount %></td>
                   
                  </tr>
@@ -130,14 +130,11 @@
     <tbody>
         
             <tr> 
-                <td><%= urlData.count %></td>
-                <td><%= urlData.returncount %></td>
-                <td><%= urlData.deliveredCount %></td>
-                <td><%= urlData.discountedCount%></td>
+                <td><%= urlData?.count %></td>
+                <td><%= urlData?.returncount %></td>
+                <td><%= urlData?.deliveredCount %></td>
+                <td><%= urlData?.discountedCount%></td>
             
-                
-               
-     
     </tbody>
 </table>
 <br>

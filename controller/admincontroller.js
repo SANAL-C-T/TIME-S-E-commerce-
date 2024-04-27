@@ -1090,176 +1090,119 @@ var discountedCount;
 
 // to download the sale report
 const downloadoption = async (req, res) => {
-
-    console.log("download transaction")
+    console.log("download transaction");
 
     try {
-        let ordersOfUser = await orderData.find({})
-        // console.log("ordersOfUser:::",ordersOfUser)  //true
-
+        let ordersOfUser = await orderData.find({});
         let totalAmountSum = await orderData.aggregate([
             { $group: { _id: null, total: { $sum: "$OrderTotalPrice" } } }
-        ]).exec();
+        ]);
+        let generated = totalAmountSum.length > 0 ? totalAmountSum[0].total : 0;
+        console.log("totalAmountSum::", generated);
 
-        // console.log(totalAmountSum) true
         let totalPAYMENTSum = await orderData.aggregate([
             { $group: { _id: "$paymentMethod", total: { $sum: "$OrderTotalPrice" } } }
-        ]).exec();
+        ]);
+        console.log("totalPAYMENTSum::", totalPAYMENTSum);
 
-        //console.log(totalPAYMENTSum) true 
         let totalReturnedSum = await orderData.aggregate([
             { $match: { Status: "Returned" } },
             { $group: { _id: "$Status", total: { $sum: "$OrderTotalPrice" } } }
-        ]).exec();
+        ]);
+        totalReturnedSum = totalReturnedSum.length > 0 ? totalReturnedSum[0].total : 0;
 
-
-        if (totalReturnedSum === null || totalReturnedSum.length === 0) {
-            totalReturnedSum = 0;
-
-        } else {
-            totalReturnedSum = await orderData.aggregate([
-                { $match: { Status: "Returned" } },
-                { $group: { _id: "$Status", total: { $sum: "$OrderTotalPrice" } } }
-            ]).exec();
-        }
-
-        console.log(totalReturnedSum) // []
-
+        console.log("totalReturnedSum::", totalReturnedSum); // []
 
         const orders = await orderData.find({}).populate({
             path: "userid",
             model: "user"
         });
-        //console.log(orders) true
-
+        console.log(orders);
 
         let totalReturnedCount = await orderData.aggregate([
             { $match: { Status: "Returned" } },
             { $group: { _id: null, count: { $sum: 1 } } }
-        ]).exec();
-
-        //............................
-        if (totalReturnedCount === null || totalReturnedCount.length === 0) {
-            console.log("No documents match the criteria for totalReturnedCount.");
-            totalReturnedCount = 0;
-
-        } else {
-            totalReturnedCount = await orderData.aggregate([
-                { $match: { Status: "Returned" } },
-                { $group: { _id: null, count: { $sum: 1 } } }
-            ]).exec();
-        }
-        console.log(totalReturnedCount)
-        //........................................
-        // console.log("return count:::", totalReturnedCount[0].count);
-
-
-
+        ]);
+        totalReturnedCount = totalReturnedCount.length > 0 ? totalReturnedCount[0].count : 0;
+        console.log("totalReturnedCount::", totalReturnedCount);
 
         let totalDeliveredCount = await orderData.aggregate([
             { $match: { Status: "delivered" } },
             { $group: { _id: null, count: { $sum: 1 } } }
-        ]).exec();
+        ]);
+        totalDeliveredCount = totalDeliveredCount.length > 0 ? totalDeliveredCount[0].count : 0;
+        console.log("totalDeliveredCount:::", totalDeliveredCount);
 
-        //............................
-        if (totalDeliveredCount === null || totalDeliveredCount.length === 0) {
-            console.log("No documents match the criteria for totalReturnedCount.");
-            totalDeliveredCount = 0;
-
-        } else {
-            totalDeliveredCount = await orderData.aggregate([
-                { $match: { Status: "delivered" } },
-                { $group: { _id: null, count: { $sum: 1 } } }
-            ]).exec();
-        }
-        // console.log("totalDeliveredCount:::", totalDeliveredCount[0].count);
-
-
-
-
-
-        ///...............
         let discountAmount = await orderData.aggregate([
             { $unwind: "$items" },
             { $match: { "items.discounted": true } },
             { $group: { _id: null, totalDiscountAmount: { $sum: "$items.DiscountedAmount" } } }
-        ]).exec();
+        ]);
+        discountAmount = discountAmount.length > 0 ? discountAmount[0].totalDiscountAmount : 0;
+        console.log("discount amount", discountAmount);
 
-        //............................
-        if (discountAmount === null || discountAmount.length === 0) {
-            console.log("No documents match the criteria for totalReturnedCount.");
-            discountAmount = 0;
-
-        } else {
-            discountAmount = await orderData.aggregate([
-                { $match: { Status: "delivered" } },
-                { $group: { _id: null, count: { $sum: 1 } } }
-            ]).exec();
-        }
-        // console.log("discount amount", discountAmount[0].totalDiscountAmount);
-
-
-
-        //DISCOUNT BY COUPON
         let totalcouponDiscount = await orderData.aggregate([
             { $match: { discountedByCoupon: true } },
             { $group: { _id: null, total: { $sum: "$discountgiven" } } }
-        ]).exec();
-
-        // Check if totalcouponDiscount is null or empty
-        if (totalcouponDiscount == null || totalcouponDiscount.length === 0) {
-            totalcouponDiscount = 0;
-        } else {
-            // Extract the total from the result
-            totalcouponDiscount = totalcouponDiscount[0].total;
-        }
-
-
-        console.log("totalcouponDiscount::", totalcouponDiscount)
-
+        ]);
+        totalcouponDiscount = totalcouponDiscount.length > 0 ? totalcouponDiscount[0].total : 0;
+        console.log("totalcouponDiscount::", totalcouponDiscount);
 
         const discountedItemCount = await orderData.aggregate([
             { $unwind: "$items" },
             { $group: { _id: null, discountedItemCount: { $sum: { $cond: [{ $eq: ["$items.discounted", true] }, 1, 0] } } } }
-        ]).exec();
-        // console.log("discount count", discountedItemCount[0].discountedItemCount);
+        ]);
+        console.log("discount count", discountedItemCount[0].discountedItemCount);
 
-        let totalcounts = await orderData.find({}).count()
-        console.log(totalcounts)
+        let totalcounts = await orderData.find({}).count();
+        console.log("TOTAL COUNT OF ORDER:", totalcounts);
+
+        // Filter totalPAYMENTSum array to get COD and razorpay totals
+        let CODtotal = 0;
+        let razorpayTotal = 0;
+        totalPAYMENTSum.forEach(item => {
+            if (item._id === "COD") {
+                CODtotal = item.total;
+            } else if (item._id === "razorpay") {
+                razorpayTotal = item.total;
+            }
+        });
+
+
+let actualAmount=generated-totalReturnedSum;
 
         const urlData = {
             pageTitle: 'SALES REPORT',
             salesData: orders,
-            total: totalAmountSum[0].total,
-            CODtotal: totalPAYMENTSum[0],
-            razorpayTotal: totalPAYMENTSum[1],
+            total: generated,
+            actual:actualAmount,
+            CODtotal: CODtotal,
+            razorpayTotal: razorpayTotal,
             count: totalcounts,
-            returned: totalReturnedSum[0],
+            returned: totalReturnedSum,
             discount: totalcouponDiscount,
             discountedCount: discountedItemCount[0].discountedItemCount,
-            returncount: totalReturnedCount[0].count,
-            deliveredCount: totalDeliveredCount[0].count
-        }
+            returncount: totalReturnedCount,
+            deliveredCount: totalDeliveredCount
+        };
 
-
-        //this below code for report printing..
-        downloadtotal = totalAmountSum[0].total;
-        downloadCODtotal = totalPAYMENTSum[0].total;
-        totalcounts = totalPAYMENTSum[1].total;
-        downloadrazorpayTotal = totalPAYMENTSum[1].total
+        // Setting variables for report printing
+        downloadtotal = generated;
+        downloadCODtotal = CODtotal;
+        downloadrazorpayTotal = razorpayTotal;
         downloadcount = totalcounts;
-        downloadreturned = totalReturnedSum[0].total;
+        downloadreturned = totalReturnedSum;
         discount = totalcouponDiscount;
         discountedCount = discountedItemCount[0].discountedItemCount;
-        // console.log(totalcounts)
 
-        res.render("admin/downloadsoption.ejs", { urlData })
-    }
-    catch (error) {
-        console.log(error.message)
+        // Rendering the template
+        res.render("admin/downloadsoption.ejs", { urlData });
+    } catch (error) {
+        console.log(error.message);
         res.render("admin/warning.ejs");
     }
-}
+};
+
 
 
 
@@ -1460,9 +1403,6 @@ const addofferproduct = async (req, res) => {
 
 const offerreferal = async (req, res) => {
     try {
-
-
-
 
         const bonusIs = await referData.find({})
         const bonusavalible = bonusIs[0].bonusAmount;
